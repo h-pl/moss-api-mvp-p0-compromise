@@ -31,6 +31,7 @@ node node_modules/next/dist/bin/next dev --webpack -p 4002 --hostname 127.0.0.1
 
 ## 当前行为
 
+- 个人 Key 支持模型范围选择：创建默认全选、至少一个，编辑和刷新保留；桌面两列卡片、手机单列，不提供并发输入。个人表格增加“授权模型”列。
 - Owner 创建 Key：名称、授权模型、各模型并发上限、备注；模型和单项上限受企业授权约束。
 - 同模型的所有 Key 共享企业并发池，Key 上限不预留资源，上限之和允许超过企业上限。
 - 完整 Key 仅创建成功时展示及复制，关闭后不可回看。编辑、停用、恢复、删除具有实际本地状态变化，删除不清除历史归因。
@@ -58,3 +59,12 @@ node node_modules/next/dist/bin/next build --webpack
 ```
 
 [实现与验收说明](prd/platform/实现与验收.md) · [设计依据](prd/platform/DESIGN.md) · [旧版 README](old/README-before-platform-20260914.md)
+
+
+## 版本与变更
+
+| Tag | 版本范围 | 变更说明 |
+| --- | --- | --- |
+| `moss-api-mvp-p0-compromise-v1.0.0-20260914` | 2026-09-14 妥协版定稿：Owner/Key 权限、个人模型授权、用量与导出、计费及 Platform 界面 | [相对原 MVP 的完整变更](prd/platform/变更说明-MVP至妥协版-20260914.md) |
+
+本 tag 包含代码与本地 PRD。旧 MVP 历史文件仍保留用于追溯，当前研发入口为 [prd/README.md](prd/README.md)。
