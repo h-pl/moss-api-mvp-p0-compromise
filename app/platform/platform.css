@@ -105,7 +105,7 @@
 .p-key-table .p-name-button{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .p-key-table .p-actions{gap:8px}.p-key-table .p-actions .p-icon-button{width:24px;height:28px;flex-shrink:0}
 .p-key-table .p-status{white-space:nowrap}
-.p-personal-keys .p-col-name{width:23%}.p-personal-keys .p-col-key{width:18%}.p-personal-keys .p-col-note{width:20%}.p-personal-keys .p-col-created{width:20%}.p-personal-keys .p-col-status{width:7%}.p-personal-keys .p-col-actions{width:12%}
+.p-personal-keys .p-col-name{width:14%}.p-personal-keys .p-col-key{width:12%}.p-personal-keys .p-col-models{width:26%}.p-personal-keys .p-col-note{width:14%}.p-personal-keys .p-col-created{width:16%}.p-personal-keys .p-col-status{width:6%}.p-personal-keys .p-col-actions{width:12%}.p-personal-keys .p-model-lines>div{grid-template-columns:minmax(0,1fr)}
 .p-key-table table{min-width:1280px}
 .p-key-table th:last-child,.p-key-table td:last-child{padding-left:8px;padding-right:8px}
 .p-key-table .p-actions{gap:4px}
@@ -391,3 +391,14 @@
 .p-rate-group .p-rate-enterprise{min-width:1200px}
 
 .p-bill-table thead th,.p-usage-export-dialog .p-export-preview thead th{color:#777}
+
+/* Personal keys select model access without editable concurrency quotas. */
+.p-personal-key-dialog{width:760px}
+.p-personal-model-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}
+.p-personal-model-card{display:flex;align-items:center;gap:12px;min-width:0;min-height:60px;padding:14px 16px;border:1px solid #e5e5e5;border-radius:8px;background:#fff;cursor:pointer;font-size:13px;line-height:22px}
+.p-personal-model-card span{min-width:0;overflow-wrap:anywhere}
+.p-personal-model-card.is-selected{border-color:#999;background:#f7f7f6}
+.p-personal-model-card:hover{border-color:#555}
+.p-personal-model-card:focus-within{outline:2px solid #555;outline-offset:2px}
+.p-personal-model-field>.p-error{margin-top:10px;color:#b73535}
+@media(max-width:600px){.p-personal-model-grid{grid-template-columns:1fr;gap:8px}.p-personal-model-card{min-height:52px;padding:12px}}

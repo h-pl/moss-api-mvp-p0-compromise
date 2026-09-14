@@ -101,4 +101,12 @@ check('URL 非法参数回退，其他身份的 Key 不会进入筛选', () => {
   assert.equal(state.range, '7'); assert.equal(state.model, 'all'); assert.equal(state.key, 'all');
   assert.equal(state.page, 1); assert.equal(state.pageSize, 10); assert.equal(state.tab, 'overview');
 });
+check('个人 Key 模型范围持久化，不自动补回取消授权的模型', () => {
+  const personalStore = makeStore(now);
+  const key = personalStore.keys.find(item => item.context === 'personal');
+  key.policies = { [models[0].id]: contextModels('personal')[0].limit };
+  assert.equal(validateKey(key.name, key.note, key.policies, contextModels('personal')), null);
+  assert.deepEqual(parseStore(JSON.stringify(personalStore)).keys.find(item => item.id === key.id).policies, key.policies);
+  assert.ok(validateKey(key.name, key.note, {}, contextModels('personal')));
+});
 console.log(`\n${checks} platform business checks passed.`);
