@@ -1,0 +1,405 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "approx_char_count": 4389,
+    "has_more": false,
+    "ranges": [
+      {
+        "actual_range": "A1:C4",
+        "cells": [
+          [
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "font_weight": "bold",
+                "horizontal_alignment": "center",
+                "vertical_alignment": "middle"
+              },
+              "value": "版本"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "font_weight": "bold",
+                "horizontal_alignment": "center",
+                "vertical_alignment": "middle"
+              },
+              "value": "核心变化"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "font_weight": "bold",
+                "horizontal_alignment": "center",
+                "vertical_alignment": "middle"
+              },
+              "value": "定位章节"
+            }
+          ],
+          [
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "3.0"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "费用中心选定 billing3/usage3，费用按用户、用量按 Key，账单按模型并显示计费规则；导出完整授权账期；更新权限、筛选和验收"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "7.1、7.3.3～7.3.4、7.4～7.5、7.7～7.8"
+            }
+          ],
+          [
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "2.3"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "收敛 MVP：取消 Key 轮换；并发只展示近 24h 峰值，80% 橙/95% 红，不透出 RPM、拒绝统计，不做告警中心"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "3.3、7.3.1、7.4.2、7.6、7.8"
+            }
+          ],
+          [
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "2.3"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "统一身份、三角色、四状态、审计与生产数据门禁；架构和状态机使用 Mermaid，截图随模块"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "7.2～7.7、8.1～8.3"
+            }
+          ]
+        ],
+        "col_indices": [
+          "A",
+          "B",
+          "C"
+        ],
+        "range": "A1:C4",
+        "row_indices": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "truncated": false
+      }
+    ],
+    "returned_cell_count": 12,
+    "revision": 438,
+    "warning_message": "处理 ranges[n].cells 之前，必须先查看顶层 has_more，以及每个 range 的 actual_range / row_indices / col_indices。定位真实行号时用 row_indices[i]，定位真实列字母时用 col_indices[j]，不要按二维数组下标自己数行列；skip_hidden=true、skip_filter=true 或结果被截断时，这样会错位。"
+  }
+}

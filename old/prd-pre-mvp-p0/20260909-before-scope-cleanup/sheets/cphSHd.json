@@ -1,0 +1,498 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "approx_char_count": 5495,
+    "has_more": false,
+    "ranges": [
+      {
+        "actual_range": "A1:C5",
+        "cells": [
+          [
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "font_weight": "bold",
+                "horizontal_alignment": "center",
+                "vertical_alignment": "middle"
+              },
+              "value": "历史参考（P0无此页）· 区域/操作"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "font_weight": "bold",
+                "horizontal_alignment": "center",
+                "vertical_alignment": "middle"
+              },
+              "value": "需求与规则"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "font_weight": "bold",
+                "horizontal_alignment": "center",
+                "vertical_alignment": "middle"
+              },
+              "value": "验收条件"
+            }
+          ],
+          [
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "历史参考（P0无此页）· 权益列表"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "固定五列：音色、Voice ID、适用模型、授权范围 / 来源、状态；用途置于音色名称下"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "按正常账号、模型权限和权益有效性筛选可用记录；不展示授权期限、生效/到期日期及相关页面文案"
+            }
+          ],
+          [
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "历史参考（P0无此页）· 搜索筛选"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "关键词匹配音色名称、Voice ID、适用模型或用途，与来源取交集；默认10条，可选10/20/50条"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "标题总数为当前账号可用授权数，不随搜索/来源改变；条件变化回第一页，无结果可重置；企业切换后不残留旧权益"
+            }
+          ],
+          [
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "历史参考（P0无此页）· 复制 Voice ID"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "复制完整 ID，结果明确反馈"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "复制失败不提示成功；复制 ID 不授予调用权限"
+            }
+          ],
+          [
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "历史参考（P0无此页）· 调用边界"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "页面只读，无购买、上传、授权编辑或续期入口"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "实际调用再次校验企业、模型授权、有效期与状态"
+            }
+          ]
+        ],
+        "col_indices": [
+          "A",
+          "B",
+          "C"
+        ],
+        "range": "A1:C5",
+        "row_indices": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "truncated": false
+      }
+    ],
+    "returned_cell_count": 15,
+    "revision": 438,
+    "warning_message": "处理 ranges[n].cells 之前，必须先查看顶层 has_more，以及每个 range 的 actual_range / row_indices / col_indices。定位真实行号时用 row_indices[i]，定位真实列字母时用 col_indices[j]，不要按二维数组下标自己数行列；skip_hidden=true、skip_filter=true 或结果被截断时，这样会错位。"
+  }
+}

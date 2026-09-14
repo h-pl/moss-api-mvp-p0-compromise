@@ -1,0 +1,498 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "approx_char_count": 5516,
+    "has_more": false,
+    "ranges": [
+      {
+        "actual_range": "A1:C5",
+        "cells": [
+          [
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "font_weight": "bold",
+                "horizontal_alignment": "center",
+                "vertical_alignment": "middle"
+              },
+              "value": "历史参考（P0无此页）· 区域/操作"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "font_weight": "bold",
+                "horizontal_alignment": "center",
+                "vertical_alignment": "middle"
+              },
+              "value": "需求与规则"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "font_weight": "bold",
+                "horizontal_alignment": "center",
+                "vertical_alignment": "middle"
+              },
+              "value": "验收条件"
+            }
+          ],
+          [
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "历史参考（P0无此页）· 查询"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "关键词、时间（默认近 7 天，可选近 30 天/全部）、模块、动作、结果"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "模块变化时清除不匹配动作；标题总量与当前筛选结果数区分"
+            }
+          ],
+          [
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "历史参考（P0无此页）· 列表/详情"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "时间、操作人/角色/脱敏手机号、模块、动作、目标、结果、IP；详情补充来源、前后值、失败原因、User-Agent；不透出操作 request_id"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "时间按 Asia/Shanghai 展示；同次保存的多项变化内部关联，客户按操作记录核对"
+            }
+          ],
+          [
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "历史参考（P0无此页）· 导出"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "当前授权筛选全部结果，不只当前分页；导出成功/失败本身记审计"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "导出文件按生成快照固定，不要求把该次导出自身事件递归放入文件"
+            }
+          ],
+          [
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "历史参考（P0无此页）· 不可变与脱敏"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "审计写入由可信服务端控制，业务调用方不可修改/删除"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "无 secret、完整证件号；失败动作有原因，不将前端点击当作业务成功"
+            }
+          ]
+        ],
+        "col_indices": [
+          "A",
+          "B",
+          "C"
+        ],
+        "range": "A1:C5",
+        "row_indices": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "truncated": false
+      }
+    ],
+    "returned_cell_count": 15,
+    "revision": 438,
+    "warning_message": "处理 ranges[n].cells 之前，必须先查看顶层 has_more，以及每个 range 的 actual_range / row_indices / col_indices。定位真实行号时用 row_indices[i]，定位真实列字母时用 col_indices[j]，不要按二维数组下标自己数行列；skip_hidden=true、skip_filter=true 或结果被截断时，这样会错位。"
+  }
+}

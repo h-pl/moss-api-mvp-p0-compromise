@@ -1,0 +1,52 @@
+{
+  "name": "moss-api-mvp-p0-compromise",
+  "version": "3.0.0-beta.8",
+  "private": true,
+  "packageManager": "pnpm@11.19.0",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "dev:platform": "next dev --webpack -p 4002",
+    "verify:platform": "node --experimental-strip-types scripts/verify-platform.mjs",
+    "dev": "vinext dev --port 4001",
+    "demo:minimax": "node scripts/minimax-random-concurrency.mjs",
+    "build": "vinext build",
+    "build:vercel": "next build --webpack",
+    "start": "vinext start --port 4001",
+    "start:vercel": "next start -p 4001",
+    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
+    "verify:v3": "node scripts/verify-v3.mjs",
+    "verify": "pnpm run lint && pnpm run verify:v3 && pnpm run build:vercel",
+    "verify:mvp": "node scripts/verify-mvp.mjs && node scripts/verify-usage8.mjs"
+  },
+  "dependencies": {
+    "@internationalized/date": "^3.12.4",
+    "next": "16.2.6",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "recharts": "^3.10.1",
+    "reka-ui": "^2.10.4",
+    "vue": "^3.5.42"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "1.37.1",
+    "@cloudflare/workers-types": "4.20260515.1",
+    "@openai/sites-vite-plugin": "^0.1.0 || ^0.2.0",
+    "@tailwindcss/postcss": "4.2.1",
+    "@types/node": "22.19.19",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.2",
+    "@vitejs/plugin-rsc": "0.5.26",
+    "eslint": "9.39.4",
+    "eslint-config-next": "16.2.6",
+    "react-server-dom-webpack": "19.2.6",
+    "tailwindcss": "4.2.1",
+    "typescript": "5.9.3",
+    "vinext": "1.0.0-beta.3",
+    "vite": "8.0.13",
+    "wrangler": "4.92.0"
+  },
+  "type": "module"
+}

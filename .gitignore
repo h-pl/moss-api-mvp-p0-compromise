@@ -1,0 +1,15 @@
+node_modules
+.pnpm-store/
+.next/
+.next-platform/
+.vinext/
+.wrangler/
+dist/
+.DS_Store
+.env*
+!.env.example
+*.tsbuildinfo
+/premium-audit.json
+/截图/
+.vercel
+/.playwright-mcp/

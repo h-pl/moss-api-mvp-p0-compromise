@@ -1,0 +1,1270 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "approx_char_count": 14021,
+    "has_more": false,
+    "ranges": [
+      {
+        "actual_range": "A1:E8",
+        "cells": [
+          [
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "font_weight": "bold",
+                "horizontal_alignment": "center",
+                "vertical_alignment": "middle"
+              },
+              "value": "模块"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "font_weight": "bold",
+                "horizontal_alignment": "center",
+                "vertical_alignment": "middle"
+              },
+              "value": "页面"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "font_weight": "bold",
+                "horizontal_alignment": "center",
+                "vertical_alignment": "middle"
+              },
+              "value": "路由"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "font_weight": "bold",
+                "horizontal_alignment": "center",
+                "vertical_alignment": "middle"
+              },
+              "value": "状态"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "font_weight": "bold",
+                "horizontal_alignment": "center",
+                "vertical_alignment": "middle"
+              },
+              "value": "页面主任务"
+            }
+          ],
+          [
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "接入管理"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "API 密钥"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_family": "monospace",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "?view=keys"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "已定稿"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "管理本人 Key 与查看本人模型权限"
+            }
+          ],
+          [
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "接入管理"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "音色授权（P0下线）"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_family": "monospace",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "旧链接归一到 ?view=keys"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "P0不交付；仅保留历史记录"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "无音色页、筛选、分页及复制入口"
+            }
+          ],
+          [
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "费用中心"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "费用概览"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_family": "monospace",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "?view=billing3"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "已定稿"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "按模型与用户核对账期费用"
+            }
+          ],
+          [
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "费用中心"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "用量明细"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_family": "monospace",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "?view=usage3"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "已定稿"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "按模型、用户与 Key 核对计费用量"
+            }
+          ],
+          [
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "企业管理"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "企业与用户"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_family": "monospace",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "?view=enterprise"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "已定稿"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "管理成员、模型授权与用户并发"
+            }
+          ],
+          [
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "企业管理"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "企业认证"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_family": "monospace",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "?view=security"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "已定稿"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "核对企业主体与认证结果，只读，无会话管理"
+            }
+          ],
+          [
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "企业管理"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "操作审计（P0下线）"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_family": "monospace",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "旧链接归一到 ?view=enterprise"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "P0不交付；仅保留历史记录"
+            },
+            {
+              "border_styles": {
+                "bottom": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "left": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "right": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                },
+                "top": {
+                  "color": "rgb(0, 0, 0)",
+                  "style": "solid",
+                  "weight": "thin"
+                }
+              },
+              "cell_styles": {
+                "font_color": "rgb(0, 0, 0)",
+                "font_size": 13,
+                "vertical_alignment": "middle"
+              },
+              "value": "不交付客户操作审计页面、详情和导出"
+            }
+          ]
+        ],
+        "col_indices": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "range": "A1:E8",
+        "row_indices": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "truncated": false
+      }
+    ],
+    "returned_cell_count": 40,
+    "revision": 438,
+    "warning_message": "处理 ranges[n].cells 之前，必须先查看顶层 has_more，以及每个 range 的 actual_range / row_indices / col_indices。定位真实行号时用 row_indices[i]，定位真实列字母时用 col_indices[j]，不要按二维数组下标自己数行列；skip_hidden=true、skip_filter=true 或结果被截断时，这样会错位。"
+  }
+}

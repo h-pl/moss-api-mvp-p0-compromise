@@ -1,0 +1,28 @@
+"use client";
+import { ReactNode } from "react";
+import { Tone, View } from "./data";
+
+export type IconName = "home"|"box"|"pulse"|"layers"|"play"|"docs"|"folder"|"account"|"key"|"gauge"|"voice"|"wallet"|"logs"|"users"|"server"|"bell"|"search"|"close"|"menu"|"chevron"|"check"|"shield"|"chart"|"order"|"copy";
+export function BrandMark(){return <svg className="brand-mark" viewBox="0 0 64 32" aria-hidden="true"><path d="M3 16C8 5 17 5 25 16s17 11 25 0S60 5 63 16c-3 11-12 11-20 0S26 5 18 16 6 27 3 16Z"/></svg>}
+export function Icon({name,size=18}:{name:IconName;size?:number}){
+ const c={width:size,height:size,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:1.8,strokeLinecap:"round" as const,strokeLinejoin:"round" as const,"aria-hidden":true};
+ const p:Record<IconName,ReactNode>={
+  home:<><path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10M9 20v-6h6v6"/></>,box:<><path d="m12 3 9 5-9 5-9-5Z"/><path d="m3 8 9 5 9-5M3 8v8l9 5 9-5V8"/></>,pulse:<path d="M3 12h4l2-5 4 10 2-5h6"/>,layers:<><path d="m12 3 9 5-9 5-9-5Z"/><path d="m3 12 9 5 9-5M3 16l9 5 9-5"/></>,play:<path d="m8 5 11 7-11 7Z"/>,docs:<><path d="M5 3h11l3 3v15H5Z"/><path d="M16 3v4h4M8 11h8M8 15h8"/></>,folder:<><path d="M3 7h7l2 2h9v10H3Z"/><path d="M3 7V5h7l2 2"/></>,account:<><circle cx="12" cy="8" r="3"/><path d="M5 20a7 7 0 0 1 14 0"/></>,key:<><circle cx="8" cy="12" r="4"/><path d="m11 9 9-6M15 6l3 3M17 4l3 3"/></>,gauge:<><path d="M4 18a8 8 0 1 1 16 0"/><path d="m12 14 4-4M6 18h12"/></>,voice:<path d="M4 12v2M8 8v10M12 5v16M16 8v10M20 12v2"/>,wallet:<><path d="M4 6h14a2 2 0 0 1 2 2v10H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h13"/><path d="M15 11h7v4h-7a2 2 0 0 1 0-4Z"/></>,logs:<><path d="M5 5h14M5 12h14M5 19h10"/><circle cx="2.5" cy="5" r=".5"/><circle cx="2.5" cy="12" r=".5"/><circle cx="2.5" cy="19" r=".5"/></>,users:<><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M16 5a3 3 0 0 1 0 6M17 14a5 5 0 0 1 4 5v1"/></>,server:<><rect x="3" y="4" width="18" height="6" rx="2"/><rect x="3" y="14" width="18" height="6" rx="2"/><path d="M7 7h.01M7 17h.01M11 7h6M11 17h6"/></>,bell:<><path d="M6 16h12l-1.5-2v-4a4.5 4.5 0 0 0-9 0v4Z"/><path d="M10 19h4"/></>,search:<><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/></>,close:<path d="m6 6 12 12M18 6 6 18"/>,menu:<path d="M4 7h16M4 12h16M4 17h16"/>,chevron:<path d="m9 18 6-6-6-6"/>,check:<path d="m5 12 4 4L19 6"/>,shield:<><path d="M12 3 4 6v5c0 5 3 8 8 10 5-2 8-5 8-10V6Z"/><path d="m9 12 2 2 4-5"/></>,chart:<><path d="M4 20V10M10 20V4M16 20v-7M22 20V7"/><path d="M2 20h22"/></>,order:<><path d="M6 3h12v18H6Z"/><path d="M9 7h6M9 11h6M9 15h4"/></>,copy:<><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></>};
+ return <svg {...c}>{p[name]}</svg>;
+}
+export function Status({children,tone="good"}:{children:ReactNode;tone?:Tone}){return <span className={`status ${tone}`}><i/>{children}</span>}
+export function PageHeader({eyebrow,title,description,action}:{eyebrow?:string;title:string;description:string;action?:ReactNode}){const visibleTitle=title==="费用中心2"?"费用概览2":title;return <header className="page-header"><div className="page-header-main">{eyebrow?<span className="eyebrow">{eyebrow}</span>:null}<h1>{visibleTitle}</h1><p>{description}</p></div>{action?<div className="page-action">{action}</div>:null}</header>}
+export function Breadcrumbs({items,go}:{items:{label:string;view?:View}[];go:(v:View)=>void}){return <nav className="breadcrumbs" aria-label="面包屑"><button type="button" onClick={()=>go("overview")}>平台首页</button>{items.map((item,index)=><span key={`${item.label}-${index}`}><i>/</i>{item.view?<button type="button" onClick={()=>go(item.view!)}>{item.label}</button>:<b>{item.label}</b>}</span>)}</nav>}
+export function Metric({label,value,meta,tone}:{label:string;value:string;meta:string;tone?:Tone}){return <article className={`metric ${tone??""}`}><span>{label}</span><strong>{value}</strong><small>{meta}</small></article>}
+export function Tabs({items,active,go}:{items:{id:View;label:string}[];active:View;go:(v:View)=>void}){
+ if(!items.length)return null;
+ return <div className="tabs" role="tablist" aria-label="页面分区">{items.map((item,index)=><button key={item.id} type="button" role="tab" tabIndex={active===item.id?0:-1} aria-selected={active===item.id} className={active===item.id?"active":""} onClick={()=>go(item.id)} onKeyDown={event=>{
+  const next=event.key==="ArrowRight"?(index+1)%items.length:event.key==="ArrowLeft"?(index-1+items.length)%items.length:event.key==="Home"?0:event.key==="End"?items.length-1:-1;
+  if(next<0)return;
+  event.preventDefault();
+  go(items[next].id);
+  window.requestAnimationFrame(()=>document.querySelector<HTMLButtonElement>('.tabs [aria-selected="true"]')?.focus());
+ }}>{item.label}</button>)}</div>;
+}
+export function DataTable({caption,heads,rows}:{caption:string;heads:string[];rows:ReactNode[][]}){return <div className="table-scroll"><table><caption className="sr-only">{caption}</caption><thead><tr>{heads.map(h=><th scope="col" key={h}>{h}</th>)}</tr></thead><tbody>{rows.map((r,i)=><tr key={i}>{r.map((c,j)=><td key={j}>{c}</td>)}</tr>)}</tbody></table></div>}
+export function Sparkline({values,tone="ink"}:{values:number[];tone?:"ink"|"green"|"orange"}){const min=Math.min(...values),max=Math.max(...values),range=max-min||1;const points=values.map((v,i)=>`${i/(values.length-1)*100},${82-(v-min)/range*66}`).join(" ");return <svg className={`sparkline ${tone}`} viewBox="0 0 100 90" preserveAspectRatio="none" aria-hidden="true"><path className="gridline" d="M0 16H100M0 49H100M0 82H100"/><polyline points={points}/><circle cx="100" cy={82-(values.at(-1)!-min)/range*66} r="1.7"/></svg>}

@@ -1,0 +1,187 @@
+.mvp-capacity {min-width:180px;max-width:300px;color:var(--text)}
+.mvp-candidate :is(.eu2-model-resources, .credential7-model-resources) table {min-width:800px;table-layout:fixed}
+.mvp-candidate .eu2-model-resources th:first-child {width:44%}
+.mvp-candidate .eu2-model-resources th:nth-child(2) {width:56%}
+.mvp-candidate .eu2-members th:first-child {width:20%}
+.mvp-candidate .eu2-members th:nth-child(3) {width:31%}
+.mvp-candidate .credential7-model-resources th:first-child {width:38%}
+.mvp-candidate .credential7-model-resources :is(th,td):nth-child(2) {width:40%;padding-right:44px}
+.mvp-candidate .credential7-model-resources :is(th,td):nth-child(3) {width:22%;padding-left:32px}
+.mvp-capacity>div:first-child{display:flex;justify-content:space-between;align-items:baseline;gap:18px}
+.mvp-capacity b{font-size:16px;font-variant-numeric:tabular-nums}.mvp-capacity b span{font-size:13px;font-weight:400;color:var(--muted)}
+.mvp-capacity small,.mvp-capacity-empty small{display:block;font-size:11px;color:var(--muted);margin-top:5px}
+.mvp-capacity-track{height:4px;background:#eef0f1;border-radius:3px;margin-top:8px;overflow:hidden}.mvp-capacity-track i{display:block;height:100%;background:#a6aeb3}
+.mvp-capacity.warning b{color:#b96019}.mvp-capacity.warning .mvp-capacity-track i{background:#b96019}.mvp-capacity.critical b{color:#b8323a}.mvp-capacity.critical .mvp-capacity-track i{background:#b8323a}
+.mvp-capacity.warning .mvp-capacity-status{color:#b96019}.mvp-capacity.critical .mvp-capacity-status{color:#b8323a}
+.mvp-capacity-status{white-space:nowrap}
+.mvp-note{font-size:12px;line-height:1.8;color:var(--muted);margin-top:18px}
+.mvp-billing{--u8-accent:#ed772e;--u8-line:#e8eaec;--u8-muted:#777e86}
+.mvp-billing-metrics{grid-template-columns:repeat(3,minmax(0,1fr));margin:24px 0}.mvp-chart{padding:24px;margin:24px 0}.mvp-billing-table{overflow:hidden}.mvp-billing-table table{min-width:1100px}
+.mvp-billing .u8-balance{margin-bottom:24px}.mvp-billing .metric strong{font-size:26px}
+@media(max-width:760px){.mvp-billing-metrics{grid-template-columns:1fr}.mvp-chart{padding:16px}.mvp-billing .metric strong{font-size:24px}.mvp-capacity{min-width:160px}}
+
+.enterprise4-dialog.mvp-policy-dialog{width:min(960px,calc(100vw - 32px))}
+.enterprise4-dialog.mvp-policy-dialog .enterprise4-policy-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.enterprise4-dialog.mvp-policy-dialog .enterprise4-policy-card{min-height:0;padding:14px}
+.enterprise4-dialog.mvp-policy-dialog .enterprise4-policy-card>label:first-child{display:flex;height:auto;align-items:flex-start;gap:9px}
+.enterprise4-dialog.mvp-policy-dialog .mvp-model-card-title{display:flex;flex:1;flex-wrap:wrap;align-items:baseline;gap:4px 9px;min-width:0}
+.enterprise4-dialog.mvp-policy-dialog .enterprise4-policy-card>label:first-child b{flex:none;white-space:normal;overflow-wrap:anywhere;line-height:1.5;font-size:12px}
+.enterprise4-dialog.mvp-policy-dialog .enterprise4-policy-card>label:first-child .enterprise4-policy-remaining{margin:0;white-space:nowrap;font-size:11px;color:var(--muted);font-weight:400}
+.enterprise4-dialog.mvp-policy-dialog .enterprise4-policy-card>label:first-child em{flex-shrink:0;margin-left:auto}
+.enterprise4-dialog.mvp-policy-dialog .enterprise4-policy-input{grid-template-columns:70px minmax(0,1fr) 15px;margin:12px 0 0;gap:10px}
+.enterprise4-dialog.mvp-policy-dialog .enterprise4-policy-input input{height:36px;font-size:12px}
+.enterprise4-dialog.mvp-policy-dialog .enterprise4-policy-card>label:first-child .enterprise4-policy-remaining.is-over-quota{color:var(--red)}
+.enterprise4-dialog.mvp-policy-dialog .enterprise4-policy-input input[aria-invalid="true"]{border-color:var(--red)}
+@media(max-width:620px){.enterprise4-dialog.mvp-policy-dialog .enterprise4-policy-grid{grid-template-columns:minmax(0,1fr)}}
+
+/* API Key 用量明细：桌面列宽统一在此调整，合计 100%，无宽屏覆盖。 */
+.usage3-page .u8-table-scroll table{min-width:0}
+.usage3-page .u8-table-scroll .u8-model-name{white-space:normal;overflow-wrap:anywhere}
+.usage3-page .u8-table-scroll th:nth-child(1){width:17%} /* API Key */
+.usage3-page .u8-table-scroll th:nth-child(2){width:18%} /* 所属用户 */
+.usage3-page .u8-table-scroll th:nth-child(3){width:14%} /* 模型 */
+.usage3-page .u8-table-scroll th:nth-child(4){width:13%} /* 计费调用次数 */
+.usage3-page .u8-table-scroll th:nth-child(5){width:14%} /* 计费用量 */
+.usage3-page .u8-table-scroll th:nth-child(6){width:12%} /* 消耗积分 */
+.usage3-page .u8-table-scroll th:nth-child(7){width:12%} /* 折后金额估算 */
+.usage3-page .u8-table-scroll tfoot td:nth-child(3)>span{display:block}
+
+/* 用户用量概览：桌面列宽统一在此调整，合计 100%。 */
+.billing3-user-overview .u8-table-scroll table{min-width:0}
+.billing3-user-overview .u8-table-scroll .u8-model-name{white-space:normal;overflow-wrap:anywhere}
+.billing3-user-overview .u8-table-scroll th:nth-child(1){width:18%} /* 用户 */
+.billing3-user-overview .u8-table-scroll th:nth-child(2){width:16%} /* 模型 */
+.billing3-user-overview .u8-table-scroll th:nth-child(3){width:12%} /* 计费调用次数 */
+.billing3-user-overview .u8-table-scroll th:nth-child(4){width:15%} /* 计费用量 */
+.billing3-user-overview .u8-table-scroll th:nth-child(5){width:15%} /* 消耗积分 */
+.billing3-user-overview .u8-table-scroll th:nth-child(6){width:13%} /* 折后金额估算 */
+.billing3-user-overview .u8-table-scroll th:nth-child(7){width:11%} /* 操作 */
+.billing3-user-overview .u8-table-scroll tfoot td:nth-child(3)>span{display:block}
+
+.usage3-page .page-action .btn.secondary{font-size:14px;gap:0}
+
+.usage3-page .usage3-calls-heading{white-space:nowrap}
+.usage3-user-title{display:flex;align-items:center;gap:6px;min-width:0}
+.usage3-user-title>span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.usage3-user-title>.eu2-role{flex-shrink:0;white-space:nowrap}
+
+.billing3-detail-link{border:0;padding:4px 0;background:transparent;color:var(--ink);font-size:12px;white-space:nowrap;cursor:pointer}
+.billing3-detail-link:hover{color:var(--ink);text-decoration:none}
+.billing3-detail-link:focus-visible{outline:2px solid var(--focus);outline-offset:3px;border-radius:3px}
+
+/* Billing and usage share density, numeric spacing and secondary text. */
+:is(.billing3-page,.usage3-page) .u8-table-scroll :is(th,td){padding-left:16px;padding-right:16px}
+:is(.billing3-page,.usage3-page) .u8-table-scroll .numeric{white-space:nowrap}
+:is(.billing3-page,.usage3-page) .u8-table-scroll tbody td.numeric{font-weight:400}
+:is(.billing3-page,.usage3-page) .u8-scope small{display:inline;margin-left:10px}
+.billing3-page .metric small:empty{display:none}
+.billing3-page .mvp-billing-metrics{margin:20px 0}
+.billing3-page .mvp-billing-metrics .metric:first-child strong{font-weight:700}
+.billing3-page .mvp-billing-metrics .metric:not(:first-child) strong{font-weight:500}
+.billing3-page .page-action .btn.secondary{font-size:14px;gap:0}
+.usage3-page .u8-metric strong{margin-bottom:0}
+
+.billing3-report-model{display:flex;align-items:center;gap:8px}
+.billing3-report-model .u8-service{margin-top:0;flex-shrink:0}
+.billing3-report-dialog .billing6-report-table :is(th,td){padding:16px;font-size:12px}
+.billing3-report-dialog .billing6-report-table :is(th,td):nth-child(n+3){text-align:right}
+.billing3-report-dialog .billing6-report-table{max-height:none}
+.billing3-report-dialog .billing3-report-note{font-size:12px;color:var(--muted);margin-top:16px}
+@media print{
+  .billing3-report-dialog .billing6-report-table :is(th,td){padding:8px;font-size:9px;white-space:normal}
+  .billing3-report-dialog .billing6-report-table :is(th,td):first-child{min-width:0}
+  .billing3-report-model{flex-wrap:wrap;overflow-wrap:anywhere}
+}
+
+/* Reserve a separate action column after the right-aligned amount. */
+.billing3-page .billing3-user-overview .u8-table-scroll :is(thead,tbody) tr>:nth-child(6){padding-right:28px}
+.billing3-page .billing3-user-overview .u8-table-scroll :is(thead,tbody) tr>:nth-child(7){text-align:center;padding-left:24px;padding-right:24px}
+
+.billing3-page .billing3-user-overview .u8-table-scroll tfoot td:nth-child(5){padding-right:28px}
+
+/* P0 shared list controls: identical pagination and action semantics on all four lists. */
+.mvp-candidate .mvp-pagination {display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px;padding:16px 20px;border-top:1px solid var(--border);color:var(--muted);font-size:11px}
+.mvp-candidate .mvp-pagination > div, .mvp-candidate .mvp-pagination label, .mvp-candidate .mvp-pagination nav {display:flex;align-items:center;gap:10px;white-space:nowrap}
+.mvp-candidate .mvp-pagination nav {margin:0}
+.mvp-candidate .mvp-pagination select {height:32px;min-width:72px;padding:0 10px;border:1px solid var(--border-strong);border-radius:7px;background:var(--surface);color:var(--ink-2);font:11px var(--font)}
+.mvp-candidate .mvp-pagination .btn {display:inline-flex;width:auto;height:32px;min-height:32px;padding:0 10px;border:1px solid var(--border-strong);border-radius:7px;background:var(--surface);color:var(--ink);font:11px var(--font)}
+.mvp-candidate .mvp-pagination .btn:disabled {color:var(--muted);opacity:.4;cursor:not-allowed}
+.mvp-candidate .mvp-pagination nav > span {color:var(--ink);font-size:11px;min-width:36px;text-align:center}
+.mvp-candidate :is(.u8-reset,.eu2-reset) {font-size:11px;color:var(--muted);border:0;background:none;padding:8px 0;text-decoration:none}
+.mvp-candidate :is(.u8-reset,.eu2-reset):hover {color:var(--ink);text-decoration:none}
+.mvp-candidate .u8-filters select {height:38px;font-size:12px;border-radius:7px}
+.mvp-candidate .u8-details-header h2, .mvp-candidate .u8-chart-heading h2 {font-size:15px}
+.mvp-candidate .u8-details-header h2 > span {font-size:11px}
+.mvp-candidate .u8-table-scroll th {font-size:11px}
+.mvp-candidate .u8-table-scroll td {font-size:11px}
+.mvp-candidate .u8-table-scroll small {font-size:10px}
+.mvp-candidate .billing3-detail-link {font-size:11px}
+@media(max-width:620px){
+ .mvp-candidate .mvp-pagination {padding:14px 16px;align-items:flex-start;flex-direction:column}
+ .mvp-candidate .mvp-pagination > div {flex-wrap:wrap;margin-left:0;max-width:100%}
+}
+
+.personal-page .panel{margin-bottom:20px}
+.personal-hero{padding:28px;display:flex;align-items:center;justify-content:space-between;gap:24px;background:linear-gradient(110deg,#f3f5f1,#fff)}
+.personal-page h2{font-size:18px;margin:0 0 10px}
+.personal-hero h2{font-size:25px;margin-top:16px}
+.personal-page p{font-size:12px;color:var(--muted);line-height:1.8}
+.personal-page .btn{text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap}
+.personal-services{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:24px}
+.personal-services>div{padding:0 24px;border-right:1px solid var(--border)}
+.personal-services>div:first-child{padding-left:0}.personal-services>div:last-child{border-right:0;padding-right:0}
+.personal-services .btn{margin-top:20px}
+.personal-quickstart{padding:24px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.personal-nav-link{display:flex;width:100%;height:38px;align-items:center;gap:10px;border-radius:8px;color:#4d4d4d;padding:0 11px;text-decoration:none;font-size:13px}
+.personal-nav-link:hover{background:#f0f0f0}.personal-nav-link svg{color:#696969}
+.personal-service-note{margin-top:4px}
+@media(max-width:620px){.personal-hero,.personal-quickstart{align-items:flex-start;flex-direction:column;padding:20px}.personal-services{grid-template-columns:1fr;padding:20px}.personal-services>div{padding:20px 0;border-right:0;border-bottom:1px solid var(--border)}.personal-services>div:first-child{padding-top:0}.personal-services>div:last-child{padding-bottom:0;border-bottom:0}}
+
+.enterprise4-dialog.mvp-policy-dialog .enterprise4-policy-card>label:first-child input{accent-color:var(--ink)}
+
+.usage3-page .u8-table-scroll :is(th,td){padding-left:10px;padding-right:10px}
+.usage3-page .u8-table-scroll th.numeric{white-space:normal;line-height:1.5}
+.usage3-page .u8-table-scroll td.numeric{font-size:12px}
+.usage3-page .usage3-user-title{flex-wrap:wrap;gap:4px}
+
+/* Both overview tables fit their container; narrow containers use labelled records. */
+:is(.billing3-user-overview,.usage3-page .u8-details){container-type:inline-size}
+:is(.billing3-user-overview,.usage3-page) .u8-table-scroll{overflow:visible}
+:is(.billing3-user-overview,.usage3-page) .u8-table-scroll :is(th,td){padding-left:10px;padding-right:10px;overflow-wrap:anywhere}
+:is(.billing3-user-overview,.usage3-page) .u8-table-scroll th{white-space:normal;line-height:1.5}
+:is(.billing3-user-overview,.usage3-page) .u8-table-scroll th.numeric{white-space:normal}
+:is(.billing3-user-overview,.usage3-page) .u8-table-scroll td.numeric{font-size:12px;white-space:normal}
+:is(.billing3-user-overview,.usage3-page) .usage3-user-title{flex-wrap:wrap;gap:4px}
+.billing3-user-overview .u8-table-scroll tr>:nth-child(7){text-align:center}
+@container(max-width:760px){
+  .u8-table-scroll :is(table,tbody,tfoot,tr){display:block;width:100%}
+  .u8-table-scroll thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+  .u8-table-scroll tbody tr:not(.u8-spacer-row){padding:12px 6px;border-bottom:1px solid #edf0f2}
+  .u8-table-scroll tbody tr.u8-spacer-row{display:none}
+  :is(.billing3-user-overview,.usage3-page) .u8-table-scroll td[data-label]{display:grid;grid-template-columns:minmax(0,35%) minmax(0,1fr);column-gap:12px;width:100%;height:auto;min-height:34px;padding:7px 10px;border:0;text-align:right}
+  .u8-table-scroll td[data-label]::before{content:attr(data-label);grid-column:1;grid-row:1 / span 6;text-align:left;color:#747b84;font-size:12px;font-weight:400}
+  .u8-table-scroll td[data-label]>*{grid-column:2;min-width:0;max-width:100%;justify-self:end}
+  .u8-table-scroll td[data-label] .u8-model-name{white-space:normal;overflow:visible}
+  :is(.billing3-user-overview,.usage3-page) .u8-table-scroll td:not([data-label]){display:block;width:100%;height:auto}
+  .u8-table-scroll tfoot th{display:block;width:100%;height:auto;padding:16px 10px}
+  .u8-table-scroll tfoot td:empty{display:none}
+}
+
+/* Match the outer table gutters to the card heading and pagination. */
+:is(.billing3-user-overview,.usage3-page .u8-details) :is(.u8-details-header,.u8-pagination){padding-left:24px;padding-right:24px}
+@container(min-width:761px){
+  :is(.billing3-user-overview,.usage3-page) .u8-table-scroll tr>:first-child{padding-left:24px}
+  :is(.billing3-user-overview,.usage3-page) .u8-table-scroll tr>:last-child{padding-right:24px}
+}
+@container(max-width:760px){
+  :is(.billing3-user-overview,.usage3-page .u8-details) :is(.u8-details-header,.u8-pagination){padding-left:16px;padding-right:16px}
+  :is(.billing3-user-overview,.usage3-page) .u8-table-scroll tfoot :is(th,td){padding-left:16px;padding-right:16px}
+}
+
+
+.enterprise4-dialog.mvp-shared-policy-dialog .mvp-model-card-title{flex-direction:row;align-items:baseline;gap:4px 9px}
+.enterprise4-dialog.mvp-shared-policy-dialog .enterprise4-policy-input{grid-template-columns:76px minmax(0,1fr) 15px}
+.enterprise4-dialog.mvp-shared-policy-dialog .enterprise4-policy-input>span{display:flex;align-items:center;gap:5px;white-space:nowrap}
+
+.enterprise4-dialog.mvp-shared-policy-dialog .enterprise4-policy-grid{max-height:calc(100dvh - 420px);overflow:auto}
+@media(max-width:700px){.enterprise4-dialog.mvp-shared-policy-dialog .enterprise4-policy-grid{max-height:max(120px,calc(100dvh - 500px))}}

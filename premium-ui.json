@@ -1,0 +1,21 @@
+{
+  "profile": "product-admin",
+  "sourceRoots": ["app"],
+  "locale": "zh-CN",
+  "canonicalMap": "prd/UX-CONTRACT.md",
+  "requiredCapabilities": ["Select/Listbox", "Form", "Scrollbar", "Toast"],
+  "ownership": {
+    "Select/Listbox": "native"
+  },
+  "requiredCommands": ["lint", "contract", "sitesBuild", "vercelBuild"],
+  "commands": {
+    "lint": "pnpm run lint",
+    "contract": "pnpm run verify:v3",
+    "sitesBuild": "pnpm run build",
+    "vercelBuild": "pnpm run build:vercel"
+  },
+  "evidence": {
+    "fullFlow": "prd/PRD-企业账号与资源治理.md",
+    "failurePaths": "scripts/verify-v3.mjs"
+  }
+}

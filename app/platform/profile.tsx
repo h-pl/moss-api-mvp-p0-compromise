@@ -1,0 +1,6 @@
+'use client';
+import { Icon } from './ui';
+export default function Profile({ notify }: { notify: (message: string) => void }) {
+  const copy = async () => { try { await navigator.clipboard.writeText('moss-user-linxiao'); notify('已复制'); } catch { notify('复制失败，请手动复制。'); } };
+  return <main id="main-content" className="p-main p-profile"><div className="p-profile-content"><h1>个人信息</h1><section className="p-profile-section"><h2>基本信息</h2><div className="p-profile-basic"><div><span>头像</span><span className="p-avatar p-profile-avatar">林</span></div><div><span>昵称</span><span>林晓</span></div><div><span>用户 ID</span><span>moss-user-linxiao <button className="p-icon-button" aria-label="复制用户 ID" onClick={copy}><Icon name="copy" /></button></span></div><div><span>手机号</span><span>—</span></div><div><span>邮箱</span><span>—</span></div></div></section><section className="p-profile-section p-profile-certification"><header><h2>企业认证</h2><span className="p-muted">未认证</span></header><div className="p-profile-cert-card"><span className="p-avatar p-avatar-enterprise"><Icon name="person" size={24} /></span><div><strong>完成企业认证，开通企业采购能力</strong><span>认证后可选择企业对公转账方式购买积分。</span></div><a className="p-button p-primary" href="https://platform.mosi.cn/app/profile" target="_blank" rel="noreferrer">去认证</a></div></section></div></main>;
+}
