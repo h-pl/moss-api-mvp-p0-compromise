@@ -4,6 +4,12 @@
 
 本轮唯一有效方案见 [Platform 企业端 PRD](prd/platform/PRD-platform企业端.md)。旧版邀请、成员、席位、Admin/Developer 和子租户体系退出当前产品入口，旧源码仅保留作历史参考。
 
+## 在线预览
+
+[Moss API · MVP P0 妥协版](https://moss-api-mvp-p0-compromise.vercel.app)
+
+由本仓库 `main` 分支自动部署到 Vercel。
+
 ## 本地预览
 
 ```sh
