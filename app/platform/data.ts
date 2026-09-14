@@ -106,5 +106,5 @@ export function rangeFor(value: string, now: number) {
   // Usage is synchronized the next day; presets contain completed Beijing days.
   const end = now - DAY;
   const to = dateKey(end);
-  return { from: value === 'month' ? to.slice(0, 7) + '-01' : dateKey(end - (Number(value) - 1) * DAY), to };
+  return { from: value === 'month' ? dateKey(now).slice(0, 7) + '-01' : dateKey(end - (Number(value) - 1) * DAY), to };
 }

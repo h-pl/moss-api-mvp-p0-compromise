@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { aggregate, concurrencyPeak, contextModels, csv, dateKey, filterRequests, makeRequests, makeStore, models, parseStore, rangeFor, validateKey, DAY } from '../app/platform/data.ts';
 import { rateFor, ratePoints, chargeCents, estimateYuan } from '../app/platform/pricing-data.ts';
 import { usageExport } from '../app/platform/export-data.ts';
+import { readUsageQuery, writeUsageQuery } from '../app/platform/usage-url.ts';
 let checks = 0;
 const check = (name, run) => { run(); checks++; console.log(`✓ ${name}`); };
 const now = Date.parse('2026-09-14T10:00:00Z');
@@ -64,5 +65,40 @@ check('两种 CSV 保留 Key ID、不导出请求次数，且列值保持对应'
       assert.equal(result.data[1][result.headers.indexOf('消耗积分')], '0.00');
     }
   }
+});
+check('月初本月不回退上个月，且没有可导出的已同步记录', () => {
+  for (const day of ['2026-10-01', '2027-01-01', '2028-03-01']) {
+    const instant = Date.parse(`${day}T00:00:00+08:00`);
+    const range = rangeFor('month', instant);
+    assert.equal(range.from, day);
+    assert.ok(range.from > range.to);
+    assert.equal(filterRequests(makeRequests(instant), 'enterprise', { ...range, model: 'all', key: 'all' }).length, 0);
+  }
+  assert.deepEqual(rangeFor('month', Date.parse('2026-10-02T00:00:00+08:00')), { from: '2026-10-01', to: '2026-10-01' });
+});
+check('两种 CSV 金额保留四位，汇总后与账单两位金额一致', () => {
+  const billed = rows.filter(row => row.cents > 0);
+  for (const kind of ['keys', 'requests']) {
+    const result = usageExport(kind, billed, store.keys, '星河科技', filters);
+    const amounts = result.data.map(row => row.at(-1));
+    assert.ok(amounts.every(value => /^\d+\.\d{4}$/.test(value)));
+    const tenThousandths = amounts.reduce((sum, value) => sum + Math.round(Number(value) * 10000), 0);
+    const cents = billed.reduce((sum, row) => sum + row.cents, 0);
+    assert.equal(tenThousandths, cents * 5);
+    assert.equal((tenThousandths / 10000).toFixed(2), estimateYuan(cents).toFixed(2));
+  }
+});
+check('URL 完整恢复筛选、请求页签和分页，保留其他参数', () => {
+  const state = { range: 'custom', custom: { from: '2026-09-01', to: '2026-09-12' }, model: models[0].id, key: 'ent-key-1', tab: 'requests', page: 3, pageSize: 20 };
+  const query = writeUsageQuery('?source=review', state);
+  assert.equal(new URLSearchParams(query).get('source'), 'review');
+  assert.deepEqual(readUsageQuery(query, store.keys, now), state);
+  assert.equal(readUsageQuery('?key=ent-key-1', store.keys, now).key, 'ent-key-1');
+  assert.equal(new URLSearchParams(writeUsageQuery(query, { ...state, range: '7' })).has('from'), false);
+});
+check('URL 非法参数回退，其他身份的 Key 不会进入筛选', () => {
+  const state = readUsageQuery('?range=custom&from=2026-02-31&to=bad&model=unknown&key=ent-key-1&page=-1&pageSize=999&tab=unknown', store.keys.filter(key => key.context === 'personal'), now);
+  assert.equal(state.range, '7'); assert.equal(state.model, 'all'); assert.equal(state.key, 'all');
+  assert.equal(state.page, 1); assert.equal(state.pageSize, 10); assert.equal(state.tab, 'overview');
 });
 console.log(`\n${checks} platform business checks passed.`);

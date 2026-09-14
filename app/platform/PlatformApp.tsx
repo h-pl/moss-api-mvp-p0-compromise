@@ -23,6 +23,7 @@ export default function PlatformApp({ initialPage = 'keys' }: { initialPage?: Pa
   const [loadError, setLoadError] = useState('');
   const [page, setPage] = useState<Page>(initialPage);
   const [selectedKey, setSelectedKey] = useState('all');
+  const [usageVisit, setUsageVisit] = useState(0);
   const [accountOpen, setAccountOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [info, setInfo] = useState<'credits' | 'contact' | 'logout' | null>(null);
@@ -41,7 +42,7 @@ export default function PlatformApp({ initialPage = 'keys' }: { initialPage?: Pa
     setClock(Date.now());
     const timer = window.setInterval(() => setClock(Date.now()), 60_000);
     setPage(currentPage(initialPage));
-    const pop = () => { setPage(currentPage('keys')); setSelectedKey('all'); setAccountOpen(false); };
+    const pop = () => { setUsageVisit(value => value + 1); setPage(currentPage('keys')); setSelectedKey('all'); setAccountOpen(false); };
     const storage = (event: StorageEvent) => { if (event.key === STORAGE_KEY && event.newValue) { try { setStore(parseStore(event.newValue)); setSelectedKey('all'); } catch { setLoadError('其他窗口的数据更新无法读取，请刷新重试。'); } } };
     window.addEventListener('popstate', pop); window.addEventListener('storage', storage);
     return () => { window.clearInterval(timer); window.removeEventListener('popstate', pop); window.removeEventListener('storage', storage); };
@@ -59,8 +60,8 @@ export default function PlatformApp({ initialPage = 'keys' }: { initialPage?: Pa
   const enterpriseBalance = 1_000_000 - requests.filter(r => r.context === 'enterprise' && r.start < settledBefore).reduce((sum, r) => sum + r.cents, 0);
   const balance = context === 'enterprise' ? 1_000_000 - total : 50_000 - total;
   const persist = (next: Store) => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(next)); setStore(next); return null; } catch { return '保存失败，浏览器存储不可用或空间不足。请重试，当前修改尚未保存。'; } };
-  const switchContext = (next: Context) => { if (!store) return; const error = persist({ ...store, context: next }); if (error) { setToast(error); return; } setAccountOpen(false); setMobileOpen(false); setSelectedKey('all'); setInfo(null); };
-  const navigate = (next: Page, key = 'all') => { setPage(next); setSelectedKey(key); setMobileOpen(false); setAccountOpen(false); window.history.pushState({}, '', `/app/${next === 'keys' ? 'api-keys' : next}`); window.scrollTo({ top: 0 }); };
+  const switchContext = (next: Context) => { if (!store) return; const error = persist({ ...store, context: next }); if (error) { setToast(error); return; } setAccountOpen(false); setMobileOpen(false); setSelectedKey('all'); setInfo(null); window.history.replaceState(window.history.state, '', window.location.pathname); setUsageVisit(value => value + 1); };
+  const navigate = (next: Page, key = 'all') => { setPage(next); setSelectedKey(key); setMobileOpen(false); setAccountOpen(false); window.history.pushState({}, '', `/app/${next === 'keys' ? 'api-keys' : next}${next === 'usage' && key !== 'all' ? `?key=${encodeURIComponent(key)}` : ''}`); setUsageVisit(value => value + 1); window.scrollTo({ top: 0 }); };
   const save = (key: KeyRecord) => {
     if (!store || key.context !== context) return '账户身份已变化，请关闭窗口后重试。';
     const existing = store.keys.find(k => k.id === key.id);
@@ -83,7 +84,7 @@ export default function PlatformApp({ initialPage = 'keys' }: { initialPage?: Pa
       { id: 'separator', type: 'separator' },
       { id: 'switch', text: context === 'enterprise' ? '切换至个人空间' : '切换至星河科技', label: context === 'enterprise' ? '切换至个人空间' : '切换至星河科技', select: () => switchContext(context === 'enterprise' ? 'personal' : 'enterprise') },
     ]} /></div></div></aside>
-    {loadError ? <main id="main-content" className="p-main"><Notice>{loadError}</Notice><button className="p-button" onClick={() => window.location.reload()}>重新加载</button></main> : !store ? <main id="main-content" className="p-main"><p role="status">正在加载账户信息…</p></main> : page === 'keys' ? <Keys key={context} keys={keys} context={context} save={save} viewUsage={id => navigate('usage', id)} /> : page === 'usage' ? <Usage key={`${context}:${selectedKey}`} context={context} keys={keys} requests={requests} initialKey={selectedKey} balance={balance} getCredits={() => { setCreditPack(400); setInfo('credits'); }} /> : page === 'pricing' ? <Pricing contact={() => setInfo('contact')} context={context} getCredits={credits => { setCreditPack(credits); setInfo('credits'); }} /> : <Profile notify={setToast} />}
+    {loadError ? <main id="main-content" className="p-main"><Notice>{loadError}</Notice><button className="p-button" onClick={() => window.location.reload()}>重新加载</button></main> : !store ? <main id="main-content" className="p-main"><p role="status">正在加载账户信息…</p></main> : page === 'keys' ? <Keys key={context} keys={keys} context={context} save={save} viewUsage={id => navigate('usage', id)} /> : page === 'usage' ? <Usage key={`${context}:${selectedKey}:${usageVisit}`} context={context} keys={keys} requests={requests} initialKey={selectedKey} balance={balance} getCredits={() => { setCreditPack(400); setInfo('credits'); }} /> : page === 'pricing' ? <Pricing contact={() => setInfo('contact')} context={context} getCredits={credits => { setCreditPack(credits); setInfo('credits'); }} /> : <Profile notify={setToast} />}
     {toast ? <div className="p-toast" role="status">{toast}</div> : null}
     {info === 'credits' ? <Credits initialPack={creditPack} context={context} personalBalance={personalBalance} enterpriseBalance={enterpriseBalance} close={() => setInfo(null)} contact={() => setInfo('contact')} /> : null}
     {info === 'contact' ? <Dialog title="联系客服" close={() => setInfo(null)}><div className="p-dialog-body"><p>企业授权、合同和付款问题，请联系您的客户经理或运营人员。</p><p className="p-muted">您也可以在 Moss 平台的账户菜单中打开“联系客服”，获取官方联系方式。</p></div><footer><button className="p-button" onClick={() => setInfo(null)}>关闭</button><a className="p-button p-primary" href="https://platform.mosi.cn/app/usage" target="_blank" rel="noreferrer">前往 Moss 平台<Icon name="arrow" /></a></footer></Dialog> : null}
