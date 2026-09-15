@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
-import { Context, DAY, Filters, KeyRecord, RequestRecord, aggregate, concurrencyPeak, contextModels, csv, dateKey, filterRequests, models, points, rangeFor, timeLabel } from './data';
+import { Context, DAY, Filters, KeyRecord, RequestRecord, aggregate, concurrencyPeak, contextModels, csv, dateKey, filterRequests, makeConcurrencySamples, models, points, rangeFor, timeLabel } from './data';
 import { Dialog, Empty, Help, Icon, Notice, Pagination, Select } from './ui';
 import { discountLabel, ratePoints, estimateYuan } from './pricing-data';
 import { RekaTabs, RekaDateRangePicker } from './reka';
@@ -37,7 +37,8 @@ export default function Usage({ context, keys, requests, initialKey, balance, ge
   const available = contextModels(context);
   const keyChoices = keys.filter(k => model === 'all' || model in k.policies || requests.some(r => r.keyId === k.id && r.model === model));
   const peakModels = available.filter(m => (model === 'all' || model === m.id) && (keyId === 'all' || selectedKey && (m.id in selectedKey.policies || requests.some(r => r.keyId === keyId && r.model === m.id))));
-  const peaks = useMemo(() => Object.fromEntries(models.map(m => [m.id, concurrencyPeak(requests, context, m.id, keyId, now)])), [requests, context, keyId, now]);
+  const concurrencySamples = useMemo(() => makeConcurrencySamples(now), [now]);
+  const peaks = useMemo(() => Object.fromEntries(models.map(m => [m.id, concurrencyPeak(concurrencySamples, context, m.id, keyId, now)])), [concurrencySamples, context, keyId, now]);
   const currentPage = Math.min(page, Math.max(1, Math.ceil(rows.length / pageSize)));
   useEffect(() => {
     const query = writeUsageQuery(window.location.search, { range, custom, model, key: keyId, tab, page: currentPage, pageSize });

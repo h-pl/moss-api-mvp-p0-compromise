@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { aggregate, concurrencyPeak, contextModels, csv, dateKey, filterRequests, makeRequests, makeStore, models, parseStore, rangeFor, validateKey, DAY } from '../app/platform/data.ts';
+import { aggregate, concurrencyPeak, contextModels, csv, dateKey, filterRequests, makeConcurrencySamples, makeRequests, makeStore, models, parseStore, rangeFor, validateKey, DAY } from '../app/platform/data.ts';
 import { rateFor, ratePoints, chargeCents, estimateYuan } from '../app/platform/pricing-data.ts';
 import { usageExport } from '../app/platform/export-data.ts';
 import { readUsageQuery, writeUsageQuery } from '../app/platform/usage-url.ts';
@@ -25,6 +25,18 @@ check('企业峰值不能累加各Key错峰峰值', () => { const sample = [even
 check('结束边界不与同刻开始重复占用', () => assert.equal(concurrencyPeak([event('a', now - 20, now - 10), event('a', now - 10, now)], 'enterprise', 'm', 'all', now).peak, 1));
 check('滚动24h计入跨窗口在途请求，不计未来请求', () => { const sample = [event('a', now - DAY - 100, now + 100), event('b', now - DAY - 100, now - DAY - 1), event('c', now + 1, now + 10)]; assert.equal(concurrencyPeak(sample, 'enterprise', 'm', 'all', now).peak, 1); });
 check('共享峰值fixture不超过企业上限', () => { for (let day = 0; day < 29; day++) for (const model of models) assert.ok(concurrencyPeak(requests, 'enterprise', model.id, 'all', now - day * DAY).peak <= model.limit); });
+check('并发演示跨分钟、跨日和旧存储保持零值、正常、接近及达到上限', () => {
+  const history = makeRequests(store.anchor);
+  for (const offset of [0, 60_001, DAY, 7 * DAY, 31 * DAY]) {
+    const clock = now + offset, samples = makeConcurrencySamples(clock);
+    assert.deepEqual(models.map(m => concurrencyPeak(samples, 'enterprise', m.id, 'all', clock).peak), [41, 50, 21, 0, 34, 30]);
+    assert.ok(samples.every(r => r.start <= clock && r.start > clock - DAY));
+    assert.equal(concurrencyPeak(samples, 'enterprise', models[5].id, 'ent-key-six-model-preview', clock).peak, 30);
+    assert.equal(concurrencyPeak(samples, 'enterprise', models[5].id, 'new-key', clock).peak, 0);
+    assert.equal(concurrencyPeak(samples, 'personal', models[5].id, 'all', clock).peak, 0);
+  }
+  assert.deepEqual(makeRequests(store.anchor), history);
+});
 check('编辑、停用、删除不改写历史计量记录', () => { const before = aggregate(rows, true); store.keys[0].policies = { [models[0].id]: 1 }; store.keys[0].enabled = false; store.keys[0].deletedAt = now; assert.deepEqual(aggregate(filterRequests(makeRequests(store.anchor), 'enterprise', filters, Date.parse('2026-09-14T00:00:00+08:00')), true), before); });
 check('持久化仅保留掩码，不含完整密钥', () => { const serialized = JSON.stringify(store); assert.ok(!serialized.includes('sk-prototype-')); assert.deepEqual(parseStore(serialized), store); });
 check('损坏数据明确报错，不自动覆盖', () => { assert.throws(() => parseStore('{bad')); assert.throws(() => parseStore('{"version":2}')); });

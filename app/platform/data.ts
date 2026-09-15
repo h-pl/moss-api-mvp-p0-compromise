@@ -33,10 +33,10 @@ export function makeStore(now = Date.now()): Store {
 }
 // An immutable request fixture is independent of current key policy, deletion or status.
 // Shared-pool peaks are computed from overlapping accepted request intervals.
-export function makeRequests(anchor: number): RequestRecord[] {
+export function makeRequests(anchor: number, days = 30): RequestRecord[] {
   const original = makeStore(anchor).keys;
   const requests: RequestRecord[] = [];
-  for (let day = 0; day < 30; day++) {
+  for (let day = 0; day < days; day++) {
     for (let modelIndex = 0; modelIndex < models.length; modelIndex++) {
       const model = models[modelIndex];
       const batch = anchor - day * DAY - (modelIndex + 1) * 3_600_000;
@@ -55,6 +55,12 @@ export function makeRequests(anchor: number): RequestRecord[] {
     }
   }
   return requests.sort((a, b) => b.start - a.start);
+}
+// Monitoring fixtures follow the preview clock, independently of immutable billing history.
+// Keep all four visual states available even when the saved store anchor is several days old.
+export function makeConcurrencySamples(now: number): RequestRecord[] {
+  const anchor = Math.floor(now / 60_000) * 60_000;
+  return makeRequests(anchor, 1).filter(r => r.context === 'enterprise' && r.model !== 'moss-ttsd-1.0');
 }
 export function filterRequests(requests: RequestRecord[], context: Context, filters: Filters, settledBefore?: number) {
   const start = new Date(`${filters.from}T00:00:00+08:00`).getTime();
