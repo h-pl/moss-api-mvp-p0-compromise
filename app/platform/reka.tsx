@@ -1,7 +1,7 @@
 'use client';
 import { ReactNode, useId, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { createApp, h, shallowRef, type Component, type VNodeChild, type VNodeRef } from 'vue';
+import { createApp, defineComponent, h, onBeforeUnmount, shallowRef, watch, type Component, type VNodeChild, type VNodeRef } from 'vue';
 import * as R from 'reka-ui';
 import { parseDate, type DateValue } from '@internationalized/date';
 
@@ -69,7 +69,50 @@ export function RekaResourceDisclosure({ title, children }: { title: ReactNode; 
   ])} />;
 }
 export function RekaMenu({ open, onOpenChange, trigger, items }: { open: boolean; onOpenChange: (open: boolean) => void; trigger: ReactNode; items: MenuItem[] }) { return <VueIsland slots={{ trigger, ...Object.fromEntries(items.map(item => [item.id, item.label])) }} render={slot => v(R.DropdownMenuRoot, { open, 'onUpdate:open': onOpenChange }, () => [v(R.DropdownMenuTrigger, { class: 'p-account-trigger' }, () => slot('trigger')), v(R.DropdownMenuPortal, {}, () => v(R.DropdownMenuContent, { class: 'p-account-menu', side: 'top', align: 'start', sideOffset: 8, collisionPadding: 10 }, () => items.map(item => item.type === 'separator' ? v(R.DropdownMenuSeparator, { key: item.id, class: 'p-account-separator' }) : item.type === 'label' ? v(R.DropdownMenuLabel, { key: item.id, class: 'p-account-label' }, () => slot(item.id)) : v(R.DropdownMenuItem, { key: item.id, class: `p-account-item ${item.className ?? ''}`, textValue: item.text, onSelect: item.select }, () => slot(item.id)))))])} />; }
-export function RekaTabs({ value, onValueChange, items, children, toolbar, className = 'p-tabs', bodyClassName = '', toolbarClassName = 'p-tabs-toolbar', footer }: { value: string; onValueChange: (value: string) => void; items: { value: string; label: ReactNode }[]; children: ReactNode; toolbar?: ReactNode; className?: string; bodyClassName?: string; toolbarClassName?: string; footer?: ReactNode }) { return <VueIsland slots={{ content: children, toolbar, footer, ...Object.fromEntries(items.map(i => [i.value, i.label])) }} render={slot => v(R.TabsRoot, { modelValue: value, 'onUpdate:modelValue': onValueChange }, () => [h('div', { class: toolbarClassName }, [v(R.TabsList, { class: className, 'aria-label': className === 'p-credits-tabs' ? '充值方式' : '用量数据' }, () => [className === 'p-tabs' ? v(R.TabsIndicator, { class: 'p-tabs-indicator', 'aria-hidden': true }) : null, ...items.map(item => v(R.TabsTrigger, { value: item.value, key: item.value }, () => slot(item.value)))]), toolbar ? slot('toolbar') : null]), v(R.TabsContent, { value, class: bodyClassName, key: value }, () => slot('content')), footer ? slot('footer') : null])} />; }
+// One persistent panel avoids briefly hiding/remounting the React portal while
+// Vue and React reconcile the selected tab. Keep Reka's ARIA registry in sync.
+const PersistentTabsContent = defineComponent({
+  props: { value: { type: String, required: true } },
+  setup(props, { slots }) {
+    const context = R.injectTabsRootContext();
+    watch(() => props.value, (value, previous) => {
+      if (previous !== undefined) context.unregisterContent(previous);
+      context.registerContent(value);
+    }, { immediate: true });
+    onBeforeUnmount(() => context.unregisterContent(props.value));
+    return () => h('div', {
+      id: `${context.baseId}-content-${props.value}`,
+      role: 'tabpanel', tabindex: 0, 'data-state': 'active',
+      'aria-labelledby': `${context.baseId}-trigger-${props.value}`,
+    }, slots.default?.());
+  },
+});
+export function RekaTabs({ value, onValueChange, items, children, toolbar, className = 'p-tabs', bodyClassName = '', toolbarClassName = 'p-tabs-toolbar', footer }: { value: string; onValueChange: (value: string) => void; items: { value: string; label: ReactNode }[]; children: ReactNode; toolbar?: ReactNode; className?: string; bodyClassName?: string; toolbarClassName?: string; footer?: ReactNode }) {
+  const panel = useRef<HTMLElement | null>(null);
+  const [minHeight, setMinHeight] = useState(0);
+  const changeTab = (next: string) => {
+    if (next === value) return;
+    // A shorter tab must still extend to the current viewport bottom, otherwise
+    // the browser clamps scrollY even when the content host stays mounted.
+    const height = panel.current ? Math.max(0, Math.ceil(window.innerHeight - panel.current.getBoundingClientRect().top)) : 0;
+    if (panel.current) panel.current.style.minHeight = `${height}px`;
+    setMinHeight(height);
+    onValueChange(next);
+  };
+  // Keep the React portal mounted: replacing its Vue host briefly collapses the
+  // page and causes the browser to clamp the scroll position on tab changes.
+  return <VueIsland slots={{ content: children, toolbar, footer, ...Object.fromEntries(items.map(i => [i.value, i.label])) }} render={slot => v(R.TabsRoot, { modelValue: value, 'onUpdate:modelValue': changeTab }, () => [
+    h('div', { class: toolbarClassName }, [
+      v(R.TabsList, { class: className, 'aria-label': className === 'p-credits-tabs' ? '充值方式' : '用量数据' }, () => [
+        className === 'p-tabs' ? v(R.TabsIndicator, { class: 'p-tabs-indicator', 'aria-hidden': true }) : null,
+        ...items.map(item => v(R.TabsTrigger, { value: item.value, key: item.value }, () => slot(item.value))),
+      ]),
+      toolbar ? slot('toolbar') : null,
+    ]),
+    v(PersistentTabsContent, { value, class: bodyClassName, style: { minHeight: `${minHeight}px` }, ref: (node: { $el: HTMLElement } | null) => { panel.current = node?.$el ?? null; } }, () => slot('content')),
+    footer ? slot('footer') : null,
+  ])} />;
+}
 
 type CalendarScope = { weekDays: string[]; grid: { value: DateValue; rows: DateValue[][] }[] };
 export function RekaDateRangePicker({ from, to, max, onValueChange }: { from: string; to: string; max: string; onValueChange: (range: { from: string; to: string }) => void }) {
