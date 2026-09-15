@@ -85,7 +85,7 @@ function ExportDialog({ kind, setKind, rows, filters, context, keys, close }: { 
   const [done, setDone] = useState(false);
   const summary = aggregate(rows, true);
   const title = '导出明细';
-  const account = context === 'enterprise' ? '星河科技' : '个人空间';
+  const account = context === 'enterprise' ? '星河科技' : '林晓 · 2090649342695182666';
   const totalCents = rows.reduce((sum, row) => sum + row.cents, 0);
   const downloadedRows = kind === 'requests' ? rows.length : summary.length;
   const download = () => {
