@@ -42,7 +42,9 @@ export function makeRequests(anchor: number): RequestRecord[] {
       const batch = anchor - day * DAY - (modelIndex + 1) * 3_600_000;
       original.forEach((key, keyIndex) => {
         if (!key.policies[model.id] || !key.enabled) return;
-        const count = key.context === 'personal' ? 2 : Math.min(key.policies[model.id], 7 + (day * 7 + keyIndex * 11 + modelIndex * 3) % 24);
+        // Latest-day fixtures include normal, near-limit (34/40), and full (30/30) peaks.
+        const sampleCount = day === 0 && modelIndex >= 4 ? [34, 30][modelIndex - 4] : 7 + (day * 7 + keyIndex * 11 + modelIndex * 3) % 24;
+        const count = key.context === 'personal' ? 2 : Math.min(key.policies[model.id], sampleCount);
         for (let n = 0; n < count; n++) {
           const start = batch + n * 110 + (keyIndex % 2) * 600;
           const status = n === 2 && day % 9 === 0 ? '失败' : '成功';
