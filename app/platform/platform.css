@@ -322,7 +322,7 @@
 .p-bill-table thead{background:#fff}
 .p-bill-table th{font-weight:500;color:#777;white-space:nowrap}
 .p-bill-table td.p-number{white-space:nowrap}
-.p-bill-table thead th:nth-child(1){width:28%}.p-bill-table thead th:nth-child(2){width:24%}.p-bill-table thead th:nth-child(3){width:12%}.p-bill-table thead th:nth-child(4){width:14%}.p-bill-table thead th:nth-child(5){width:11%}.p-bill-table thead th:nth-child(6){width:11%}
+.p-bill-table thead th:nth-child(1){width:28%}.p-bill-table thead th:nth-child(2){width:16%}.p-bill-table thead th:nth-child(3){width:14%}.p-bill-table thead th:nth-child(4){width:15%}.p-bill-table thead th:nth-child(5){width:13%}.p-bill-table thead th:nth-child(6){width:14%}
 .p-bill-model{white-space:nowrap}.p-bill-kind{display:inline-block;margin-left:8px;padding:1px 5px;border-radius:4px;background:#f1f2f4;color:#888;font-size:12px;line-height:20px}
 .p-bill-rate{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;white-space:nowrap}.p-bill-rate+.p-bill-rate{margin-top:8px}
 .p-bill-rate>span{white-space:nowrap}.p-bill-rate del{color:#999;font-size:11px}.p-bill-rate .p-discount{font-size:11px;line-height:18px;padding:1px 5px}.p-bill-rate small{flex-basis:100%;color:#777;font-size:12px;line-height:20px}
@@ -354,12 +354,12 @@
 
 .p-dialog.p-usage-export-dialog{width:1120px;max-width:calc(100vw - 48px)}
 .p-usage-export-dialog .p-export-preview table{min-width:1000px;table-layout:fixed}
-.p-usage-export-dialog .p-export-preview th:nth-child(1){width:30%}
-.p-usage-export-dialog .p-export-preview th:nth-child(2){width:20%}
-.p-usage-export-dialog .p-export-preview th:nth-child(3){width:12%}
-.p-usage-export-dialog .p-export-preview th:nth-child(4){width:14%}
-.p-usage-export-dialog .p-export-preview th:nth-child(5){width:11%}
-.p-usage-export-dialog .p-export-preview th:nth-child(6){width:13%}
+.p-usage-export-dialog .p-export-preview th:nth-child(1){width:28%}
+.p-usage-export-dialog .p-export-preview th:nth-child(2){width:17%}
+.p-usage-export-dialog .p-export-preview th:nth-child(3){width:14%}
+.p-usage-export-dialog .p-export-preview th:nth-child(4){width:15%}
+.p-usage-export-dialog .p-export-preview th:nth-child(5){width:12%}
+.p-usage-export-dialog .p-export-preview th:nth-child(6){width:14%}
 .p-usage-export-dialog .p-export-preview th,.p-usage-export-dialog .p-export-preview .p-number{white-space:nowrap}
 .p-usage-export-dialog .p-export-preview td{vertical-align:middle}
 .p-usage-export-dialog .p-export-preview td:nth-child(2){overflow-wrap:anywhere}

@@ -13,7 +13,7 @@ export default function BillPreview({ rows, filters, context, keys, close }: { r
   const summary = aggregate(rows);
   const total = summary.reduce((sum, row) => sum + row.cents, 0);
   const billedCount = summary.reduce((sum, row) => sum + row.billedCount, 0);
-  const account = context === 'enterprise' ? '星河科技' : '林晓 · moss-user-linxiao';
+  const account = context === 'enterprise' ? '星河科技' : '林晓 · 2090649342695182666';
   const period = `${filters.from} 至 ${filters.to}`;
   const title = '账单预览';
   const scope = `${filters.model === 'all' ? '全部模型' : filters.model} / ${filters.key === 'all' ? '全部 API Key' : keys.find(key => key.id === filters.key)?.name ?? filters.key}`;
