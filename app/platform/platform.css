@@ -45,7 +45,6 @@
 .p-account-separator{height:1px;background:#eee;margin:4px 8px}
 .p-signed-out{min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:24px}
 .p-signed-out h1{font-size:24px}
-.p-dialog-overlay-light{background:rgba(0,0,0,.45)}
 .p-credits-dialog{width:920px;border-radius:16px}
 .p-credits-dialog>header{position:absolute;right:0;top:0;padding:16px;background:transparent;z-index:5}
 .p-credits-dialog>header h2{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}

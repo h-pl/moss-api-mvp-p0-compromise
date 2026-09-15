@@ -41,10 +41,10 @@ function glyph(name: string, size = 16) {
   const paths: Record<string, string> = { chevron: 'm6 9 6 6 6-6', left: 'm15 5-7 7 7 7', right: 'm9 5 7 7-7 7', close: 'm6 6 12 12M6 18 18 6', check: 'm5 12 4 4L19 6', calendar: 'M8 2v4M16 2v4M3 10h18M4 4h16v17H4Z' };
   return h('svg', { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': 1.5, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'aria-hidden': 'true' }, [h('path', { d: paths[name] ?? paths.chevron })]);
 }
-export function RekaDialog({ title, children, close, wide = false, alert = false, className = '', lightOverlay = false }: { title: ReactNode; children: ReactNode; close: () => void; wide?: boolean; alert?: boolean; className?: string; lightOverlay?: boolean }) {
+export function RekaDialog({ title, children, close, wide = false, alert = false, className = '' }: { title: ReactNode; children: ReactNode; close: () => void; wide?: boolean; alert?: boolean; className?: string }) {
   const previous = useRef<HTMLElement | null>(null);
   return <VueIsland slots={{ title, body: children }} render={slot => v(R.DialogRoot, { open: true, 'onUpdate:open': (open: boolean) => { if (!open) close(); } }, () => v(R.DialogPortal, {}, () => [
-    v(R.DialogOverlay, { class: `p-dialog-overlay ${lightOverlay ? 'p-dialog-overlay-light' : ''}` }),
+    v(R.DialogOverlay, { class: 'p-dialog-overlay' }),
     v(R.DialogContent, { class: `p-dialog ${wide ? 'p-dialog-wide' : ''} ${className}`, role: alert ? 'alertdialog' : 'dialog', 'aria-describedby': undefined,
       onInteractOutside: (e: Event) => e.preventDefault(),
       onOpenAutoFocus: (e: Event) => { e.preventDefault(); previous.current = document.activeElement as HTMLElement; requestAnimationFrame(() => { const el = document.querySelector<HTMLElement>('.p-dialog [data-autofocus]') ?? document.querySelector<HTMLElement>('.p-dialog input:not(:disabled)') ?? document.querySelector<HTMLElement>('.p-dialog button'); el?.focus(); }); },
