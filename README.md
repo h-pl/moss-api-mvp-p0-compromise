@@ -2,7 +2,7 @@
 
 基于现有 [Moss Platform](https://platform.mosi.cn/app/api-keys) 的页面布局、字体、品牌标识与组件样式，迁入 Owner 管理 Key、模型授权、共享并发及用量导出能力。
 
-本轮唯一有效方案见 [Platform 企业端 PRD](prd/platform/PRD-platform企业端.md)。旧版邀请、成员、席位、Admin/Developer 和子租户体系退出当前产品入口，旧源码仅保留作历史参考。
+当前研发交付以 [MVP-P0 图文 PRD](prd/platform/PRD-Moss-API-MVP-P0-飞书版.md) 为准；[飞书在线版](https://acnc6zeentra.feishu.cn/docx/S9zbdxp89oGfXYxKWkTc22QAnef)与[PRD / Figma 交接入口](prd/platform/HANDOFF-PRD-Figma-MVP-P0.md)同步维护。旧版邀请、成员、席位、Admin/Developer 和子租户体系退出当前产品入口，旧源码仅保留作历史参考。
 
 ## 在线预览
 

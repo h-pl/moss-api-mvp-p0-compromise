@@ -1,0 +1,256 @@
+{
+  "date": "2026-09-15",
+  "figma": "https://www.figma.com/design/uKJHefil0SBm8xMnc37NnE",
+  "source": "https://moss-api-mvp-p0-compromise.vercel.app",
+  "sourceCommit": "2ab1d6e",
+  "billingSamplePeriod": "2026-09-07/2026-09-13",
+  "updates": {
+    "enterpriseUsage": [
+      {
+        "mutatedNodeIds": [
+          "19:771",
+          "24:1349",
+          "19:79",
+          "24:79",
+          "24:821",
+          "39:1474"
+        ],
+        "audit": [
+          {
+            "id": "19:694",
+            "name": "费用中心 / 用量与积分 / 企业·用量概览",
+            "peakValues": [
+              "41",
+              "50",
+              "21",
+              "0",
+              "34",
+              "30"
+            ],
+            "status": [
+              "峰值接近上限",
+              "峰值达到上限"
+            ]
+          },
+          {
+            "id": "24:1272",
+            "name": "费用中心 / 用量与积分 / 企业·请求明细",
+            "peakValues": [
+              "41",
+              "50",
+              "21",
+              "0",
+              "34",
+              "30"
+            ],
+            "status": [
+              "峰值接近上限",
+              "峰值达到上限"
+            ]
+          },
+          {
+            "id": "19:2",
+            "name": "费用中心 / 用量与积分 / 企业·账单预览",
+            "peakValues": [
+              "41",
+              "50",
+              "21",
+              "0",
+              "34",
+              "30"
+            ],
+            "status": [
+              "峰值接近上限",
+              "峰值达到上限"
+            ]
+          },
+          {
+            "id": "24:2",
+            "name": "费用中心 / 用量与积分 / 企业·导出明细·按模型与Key",
+            "peakValues": [
+              "41",
+              "50",
+              "21",
+              "0",
+              "34",
+              "30"
+            ],
+            "status": [
+              "峰值接近上限",
+              "峰值达到上限"
+            ]
+          },
+          {
+            "id": "24:744",
+            "name": "费用中心 / 用量与积分 / 企业·导出明细·逐请求",
+            "peakValues": [
+              "41",
+              "50",
+              "21",
+              "0",
+              "34",
+              "30"
+            ],
+            "status": [
+              "峰值接近上限",
+              "峰值达到上限"
+            ]
+          },
+          {
+            "id": "39:1397",
+            "name": "费用中心 / 用量与积分 / 企业·请求详情",
+            "peakValues": [
+              "41",
+              "50",
+              "21",
+              "0",
+              "34",
+              "30"
+            ],
+            "status": [
+              "峰值接近上限",
+              "峰值达到上限"
+            ]
+          }
+        ]
+      }
+    ],
+    "credits": [
+      [
+        {
+          "id": "28:328",
+          "name": "费用中心 / 积分获取 / 企业·个人充值",
+          "overlay": [
+            {
+              "id": "28:654",
+              "opacity": 0.800000011920929
+            }
+          ],
+          "fonts": [
+            "Noto Sans SC",
+            "Sora"
+          ]
+        },
+        {
+          "id": "30:1036",
+          "name": "费用中心 / 积分获取 / 企业·企业支付",
+          "overlay": [
+            {
+              "id": "30:1362",
+              "opacity": 0.800000011920929
+            }
+          ],
+          "fonts": [
+            "Noto Sans SC",
+            "Sora"
+          ]
+        },
+        {
+          "id": "51:185",
+          "name": "费用中心 / 积分获取 / 个人·充值",
+          "overlay": [
+            {
+              "id": "51:419",
+              "opacity": 0.800000011920929
+            }
+          ],
+          "fonts": [
+            "Noto Sans SC",
+            "Sora"
+          ]
+        }
+      ]
+    ],
+    "keys": [
+      [
+        {
+          "id": "17:1030",
+          "name": "接入管理 / API 密钥 / 企业·默认",
+          "fonts": [
+            "Sora",
+            "Noto Sans SC"
+          ],
+          "emptyHint": false,
+          "brokenLinks": []
+        },
+        {
+          "id": "17:272",
+          "name": "接入管理 / API 密钥 / 个人·默认",
+          "fonts": [
+            "Sora",
+            "Noto Sans SC"
+          ],
+          "emptyHint": false,
+          "brokenLinks": []
+        },
+        {
+          "id": "119:1271",
+          "name": "接入管理 / API 密钥 / 企业·工作空间切换",
+          "fonts": [
+            "Sora",
+            "Noto Sans SC"
+          ],
+          "emptyHint": false,
+          "brokenLinks": []
+        },
+        {
+          "id": "120:1373",
+          "name": "接入管理 / API 密钥 / 个人·工作空间切换",
+          "fonts": [
+            "Sora",
+            "Noto Sans SC"
+          ],
+          "emptyHint": false,
+          "brokenLinks": []
+        },
+        {
+          "id": "107:1178",
+          "name": "接入管理 / API 密钥 / 企业·未选择模型",
+          "fonts": [
+            "Sora",
+            "Noto Sans SC"
+          ],
+          "emptyHint": true,
+          "brokenLinks": []
+        }
+      ]
+    ],
+    "accountMenu": "118:41",
+    "workspaceFrames": [
+      "119:1271",
+      "120:1373"
+    ],
+    "enterpriseScrollLinks": [
+      "19:844",
+      "24:1420"
+    ],
+    "notes": [
+      "88:45",
+      "88:47",
+      "44:41"
+    ],
+    "cover": [
+      "44:4",
+      "44:8",
+      "44:14",
+      "44:15",
+      "44:18"
+    ]
+  },
+  "checks": {
+    "renderedScreens": [
+      "19:694",
+      "19:762",
+      "19:2",
+      "28:328",
+      "51:185",
+      "119:1271",
+      "120:1373",
+      "88:41"
+    ],
+    "pricingColumnsAligned": true,
+    "enterpriseEmptyHintPresent": true,
+    "personalUsageStates": 6,
+    "nativeAnimation": "220ms sliding indicator remains implemented in deployed app; Figma navigation preserves scroll."
+  }
+}

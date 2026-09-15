@@ -1,0 +1,378 @@
+{
+  "date": "2026-09-15",
+  "fileKey": "uKJHefil0SBm8xMnc37NnE",
+  "pageId": "7:23",
+  "deployment": "2641981",
+  "boards": [
+    {
+      "id": "62:2",
+      "name": "01 按钮 · 类型与状态",
+      "x": 2080,
+      "y": 80,
+      "w": 1400,
+      "h": 526
+    },
+    {
+      "id": "66:2",
+      "name": "02 表单 · 输入框",
+      "x": 2080,
+      "y": 820,
+      "w": 1400,
+      "h": 314
+    },
+    {
+      "id": "67:2",
+      "name": "03 表单 · 选择器",
+      "x": 2080,
+      "y": 1220,
+      "w": 1400,
+      "h": 438
+    },
+    {
+      "id": "68:2",
+      "name": "04 表单 · 开关与授权选择",
+      "x": 2080,
+      "y": 1740,
+      "w": 1400,
+      "h": 448
+    },
+    {
+      "id": "69:2",
+      "name": "06 弹窗 · 操作确认",
+      "x": 3680,
+      "y": 80,
+      "w": 2400,
+      "h": 502
+    },
+    {
+      "id": "70:2",
+      "name": "07 弹窗 · 创建与编辑",
+      "x": 3680,
+      "y": 650,
+      "w": 2400,
+      "h": 1237
+    },
+    {
+      "id": "71:40",
+      "name": "08 弹窗 · 密钥与请求详情",
+      "x": 3680,
+      "y": 1950,
+      "w": 2400,
+      "h": 913
+    },
+    {
+      "id": "74:41",
+      "name": "09 弹窗 · 账单与导出",
+      "x": 3680,
+      "y": 3100,
+      "w": 2400,
+      "h": 1699
+    },
+    {
+      "id": "75:41",
+      "name": "05 提示 · 信息与反馈",
+      "x": 2080,
+      "y": 2320,
+      "w": 1400,
+      "h": 624
+    },
+    {
+      "id": "76:41",
+      "name": "组件目录 · 2026-09-15",
+      "x": 80,
+      "y": 3890,
+      "w": 1728,
+      "h": 416
+    }
+  ],
+  "components": [
+    {
+      "id": "10:22",
+      "name": "导航 / 顶栏 / 个人",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "10:96",
+      "name": "导航 / 侧栏 / 个人·API密钥",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "32:22",
+      "name": "导航 / 顶栏 / 企业",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "32:97",
+      "name": "导航 / 侧栏 / 企业·API密钥",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "32:172",
+      "name": "导航 / 侧栏 / 企业·用量与积分",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "32:247",
+      "name": "导航 / 侧栏 / 企业·计费标准",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "41:505",
+      "name": "导航 / 侧栏 / 个人·用量与积分",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "50:75",
+      "name": "导航 / 侧栏 / 个人·计费标准",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "14:9",
+      "name": "按钮 / 主按钮",
+      "type": "COMPONENT_SET"
+    },
+    {
+      "id": "14:4",
+      "name": "State=Default",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "14:5",
+      "name": "State=Hover",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "14:7",
+      "name": "State=Disabled",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "62:13",
+      "name": "State=Focus",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "63:12",
+      "name": "按钮 / 次按钮",
+      "type": "COMPONENT_SET"
+    },
+    {
+      "id": "63:4",
+      "name": "State=Default",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "63:6",
+      "name": "State=Hover",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "63:8",
+      "name": "State=Focus",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "63:10",
+      "name": "State=Disabled",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "64:12",
+      "name": "按钮 / 文字按钮",
+      "type": "COMPONENT_SET"
+    },
+    {
+      "id": "64:4",
+      "name": "State=Default",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "64:6",
+      "name": "State=Hover",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "64:8",
+      "name": "State=Focus",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "64:10",
+      "name": "State=Disabled",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "66:14",
+      "name": "表单 / 输入框",
+      "type": "COMPONENT_SET"
+    },
+    {
+      "id": "66:6",
+      "name": "State=Default",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "66:8",
+      "name": "State=Filled",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "66:10",
+      "name": "State=Focus",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "66:12",
+      "name": "State=Disabled",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "67:39",
+      "name": "表单 / 选择器",
+      "type": "COMPONENT_SET"
+    },
+    {
+      "id": "67:5",
+      "name": "Type=Outlined, State=Default",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "67:10",
+      "name": "Type=Outlined, State=Open",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "67:22",
+      "name": "Type=Pill, State=Default",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "67:27",
+      "name": "Type=Pill, State=Open",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "68:9",
+      "name": "表单 / 开关",
+      "type": "COMPONENT_SET"
+    },
+    {
+      "id": "68:5",
+      "name": "Checked=false",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "68:7",
+      "name": "Checked=true",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "30:17",
+      "name": "授权卡片 / 个人模型",
+      "type": "COMPONENT_SET"
+    },
+    {
+      "id": "30:9",
+      "name": "Selected=True",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "30:10",
+      "name": "Selected=False",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "69:56",
+      "name": "弹窗 / 操作确认",
+      "type": "COMPONENT_SET"
+    },
+    {
+      "id": "69:21",
+      "name": "Purpose=停用",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "69:38",
+      "name": "Purpose=启用",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "69:55",
+      "name": "Purpose=删除",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "70:378",
+      "name": "弹窗 / Key 表单",
+      "type": "COMPONENT_SET"
+    },
+    {
+      "id": "70:83",
+      "name": "Purpose=个人创建",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "70:255",
+      "name": "Purpose=企业创建",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "70:377",
+      "name": "Purpose=企业编辑",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "71:57",
+      "name": "弹窗 / 信息展示 / 一次性密钥",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "71:127",
+      "name": "弹窗 / 信息展示 / 请求详情",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "74:249",
+      "name": "弹窗 / 账单预览",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "74:504",
+      "name": "弹窗 / 导出明细 · 模型与 Key",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "74:577",
+      "name": "弹窗 / 导出明细 / 逐请求",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "75:45",
+      "name": "提示 / 信息提示",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "75:51",
+      "name": "提示 / 说明浮层",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "75:54",
+      "name": "提示 / 成功通知",
+      "type": "COMPONENT"
+    },
+    {
+      "id": "75:60",
+      "name": "提示 / 字段错误",
+      "type": "COMPONENT"
+    }
+  ],
+  "touchedIds": [
+    "30:10",
+    "76:41",
+    "76:42",
+    "76:43",
+    "76:44",
+    "76:45"
+  ]
+}
