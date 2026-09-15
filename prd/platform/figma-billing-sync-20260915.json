@@ -1,0 +1,19 @@
+{
+  "date": "2026-09-15",
+  "sourceCommit": "f9948f909421b7acaa6019e4553eef7b3b1e53eb",
+  "sourceUrl": "https://moss-api-mvp-p0-compromise.vercel.app",
+  "figmaFile": "uKJHefil0SBm8xMnc37NnE",
+  "updatedFrames": ["28:2", "41:671", "19:2", "98:736", "39:1397", "98:1349", "24:2", "100:918", "100:1581"],
+  "verifiedUnchangedFrames": ["24:744"],
+  "newPrintFrames": {"enterprise": "171:1100", "personal": "174:1100"},
+  "prototypePrintButtons": {"19:689": "171:1100", "98:1344": "174:1100"},
+  "screenshots": "assets/20260915-sync",
+  "scope": "Four-column pricing, effective billing rules, account identity, numerical column widths, removal of discount fields and trailing dividers, print footer, personal pricing copy.",
+  "personalPricingCopy": "调用统一按积分结算；人民币仅用于购买积分包。",
+  "fontNote": "Production MiSans; Figma Noto Sans SC for Chinese, Sora for English and numbers.",
+  "printVerification": {
+    "personal": "Actual Chrome print preview verified: A4 landscape, one page, complete headers and totals, generation timestamp only in footer.",
+    "enterprise": "Editable Figma print frame updated. Actual print screenshot pending; native window access stopped after automatic approval rejection."
+  },
+  "sampleNote": "Figma retains its existing sample dates and numbers. Business fields and rules match the current code; sample amounts are not production pricing configuration."
+}
