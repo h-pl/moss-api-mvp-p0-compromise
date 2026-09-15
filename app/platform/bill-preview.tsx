@@ -45,7 +45,7 @@ export default function BillPreview({ rows, filters, context, keys, close }: { r
       })}
     </tbody><tfoot><tr><th colSpan={2}>合计</th><td className="p-number">{billedCount.toLocaleString('zh-CN')}</td><td className="p-number">{(['TTS', 'ASR'] as const).map(kind => { const group = summary.filter(row => models.find(model => model.id === row.model)?.kind === kind); return group.length ? <div key={kind}>{units(group[0].model, group.reduce((sum, row) => sum + row.units, 0))}</div> : null; })}</td><td className="p-number">{points(total)} 积分</td><td className="p-number">{amount(total)}</td></tr></tfoot></table></div>
     <p className="p-bill-note">计费规则以调用时的记录为准；积分按请求计量后汇总，折后金额为估算。</p>
-    <div className="p-bill-stamp">{account} · {period} · 生成时间 {timeLabel(generatedAt)}（UTC+8）</div>
+    <div className="p-bill-stamp">生成时间 {timeLabel(generatedAt)}（UTC+8）</div>
   </div>;
   return <><Dialog title={title} close={close} className="p-bill-dialog"><div className="p-dialog-body">{content}{error ? <p role="alert" className="p-error">{error}</p> : null}</div><footer><button className="p-button p-primary" onClick={print} disabled={printing}><Icon name="print" />{printing ? '正在打开打印…' : '打印账单'}</button></footer></Dialog>{createPortal(<div className="p-bill-print-sheet">{content}</div>, document.body)}</>;
 }
