@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { aggregate, Context, Filters, KeyRecord, models, points, RequestRecord, timeLabel } from './data';
 import { estimateYuan, ratePoints } from './pricing-data';
@@ -17,9 +17,19 @@ export default function BillPreview({ rows, filters, context, keys, close }: { r
   const scope = `${filters.model === 'all' ? '全部模型' : filters.model} / ${filters.key === 'all' ? '全部 API Key' : keys.find(key => key.id === filters.key)?.name ?? filters.key}`;
   const amount = (cents: number) => `¥${estimateYuan(cents).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   const units = (model: string, value: number) => models.find(item => item.id === model)?.kind === 'ASR' ? `${(value / 3600).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} 小时` : `${value.toLocaleString('zh-CN')} 字符`;
-  const month = filters.from.slice(0, 7) === filters.to.slice(0, 7)
-    ? `${filters.from.slice(0, 4)}年${Number(filters.from.slice(5, 7))}月账单`
-    : '用量账单';
+  const sameMonth = filters.from.slice(0, 7) === filters.to.slice(0, 7);
+  const filePeriod = sameMonth
+    ? `${filters.from.slice(0, 4)}年${Number(filters.from.slice(5, 7))}月`
+    : period;
+  const month = sameMonth ? `${filePeriod}账单` : '用量账单';
+  const filename = `用量账单 — Moss API（${account}）— ${filePeriod}`;
+  // Native Save as PDF uses the page title. Keep it until the preview closes,
+  // including in browsers whose print dialog does not block window.print().
+  useEffect(() => {
+    const previousTitle = document.title;
+    document.title = filename;
+    return () => { document.title = previousTitle; };
+  }, [filename]);
   const title = '账单预览';
   const print = async () => {
     setPrinting(true);
