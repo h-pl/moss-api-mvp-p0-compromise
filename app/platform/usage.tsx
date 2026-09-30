@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
-import { Context, DAY, Filters, KeyRecord, RequestRecord, aggregate, concurrencyPeak, contextModels, csv, dateKey, filterRequests, makeConcurrencySamples, models, points, rangeFor, timeLabel } from './data';
+import { Context, DAY, Filters, KeyRecord, RequestRecord, aggregate, concurrencyPeak, contextModels, csv, dateKey, filterRequests, makeConcurrencySamples, mockUsageCutoff, MOCK_USAGE_THROUGH, models, points, rangeFor, timeLabel } from './data';
 import { Dialog, Empty, Help, Icon, Notice, Pagination, Select } from './ui';
 import { ratePoints, estimateYuan } from './pricing-data';
 import { RekaTabs, RekaDateRangePicker } from './reka';
@@ -24,15 +24,17 @@ export default function Usage({ context, keys, requests, initialKey, balance, ge
   const [request, setRequest] = useState<RequestRecord | null>(null);
   useEffect(() => { const timer = window.setInterval(() => setNow(Math.floor(Date.now() / 60_000) * 60_000), 60_000); return () => window.clearInterval(timer); }, []);
   const dates = range === 'custom' ? custom : rangeFor(range, now);
-  const latestUsageDate = dateKey(now - DAY);
+  const latestUsageDate = dateKey(now - DAY) > MOCK_USAGE_THROUGH ? dateKey(now - DAY) : MOCK_USAGE_THROUGH;
   const monthPending = range === 'month' && dates.from > dates.to;
   const invalidRange = !monthPending && (!dates.from || !dates.to || dates.from > dates.to || dates.to > latestUsageDate);
   const filters: Filters = { ...dates, model, key: keyId };
-  const settledBefore = new Date(`${dateKey(now)}T00:00:00+08:00`).getTime();
+  const actualSettledBefore = new Date(`${dateKey(now)}T00:00:00+08:00`).getTime();
+  const settledBefore = mockUsageCutoff(dates.to, now);
+  const futurePreview = settledBefore > actualSettledBefore;
   const rows = useMemo(() => invalidRange ? [] : filterRequests(requests, context, { from: dates.from, to: dates.to, model, key: keyId }, settledBefore).filter(request => request.cents > 0), [requests, context, dates.from, dates.to, model, keyId, settledBefore, invalidRange]);
   const summary = useMemo(() => aggregate(rows), [rows]);
   const sum = rows.reduce((n, r) => n + r.cents, 0);
-  const total = requests.filter(r => r.context === context && r.start < settledBefore).reduce((n, r) => n + r.cents, 0);
+  const total = requests.filter(r => r.context === context && r.start < actualSettledBefore).reduce((n, r) => n + r.cents, 0);
   const selectedKey = keys.find(k => k.id === keyId);
   const available = contextModels(context);
   const keyChoices = keys.filter(k => model === 'all' || model in k.policies || requests.some(r => r.keyId === k.id && r.model === model));
@@ -50,7 +52,7 @@ export default function Usage({ context, keys, requests, initialKey, balance, ge
     <section className="p-stats p-account-stats" aria-label="账户积分"><article><h2>积分余额</h2><div><strong><Icon name="wallet" size={21} />{points(balance)}</strong><button className="p-button p-primary p-pill" onClick={getCredits}>获取积分</button></div></article><article><h2>累计消耗积分</h2><strong>{points(total)}</strong></article></section>
     <section className="p-usage-filters" aria-label="用量筛选"><div><Select className="p-pill-select p-time-select" aria-label="时间范围" value={range} onValueChange={value => { setRange(value); setPage(1); }}><option value="7">近 7 天</option><option value="month">本月</option><option value="custom">自定义时间</option></Select><Select className="p-pill-select p-model-select" aria-label="模型筛选" value={model} onValueChange={value => { setModel(value); setPage(1); }}><option value="all">全部模型</option>{models.map(m => <option key={m.id} value={m.id}>{m.id}</option>)}</Select><Select className="p-pill-select p-key-select" aria-label="Key 筛选" value={keyId} onValueChange={value => { setKeyId(value); setPage(1); }}><option value="all">全部 Key</option>{(keyChoices.some(k => k.id === keyId) || keyId === 'all' ? keyChoices : [...keyChoices, selectedKey!]).filter(Boolean).map(k => <option value={k.id} key={k.id}>{k.name} · {k.masked.slice(-4)}{k.deletedAt ? '（已删除）' : !k.enabled ? '（已停用）' : ''}</option>)}</Select><Help text={context === 'enterprise' ? '筛选条件同时用于用量、账单和明细导出。并发峰值仅随模型、Key 筛选变化，固定统计近 24 小时。' : '筛选条件同时用于用量、账单和明细导出。'} /></div>
     {range === 'custom' ? <div className="p-date-range"><RekaDateRangePicker from={custom.from} to={custom.to} max={latestUsageDate} onValueChange={value => { setCustom(value); setPage(1); }} /></div> : null}
-    {invalidRange ? <p role="alert" className="p-error">请选择有效日期范围，结束日期不得早于开始日期或晚于昨日。</p> : null}<p className="p-data-note">所有时间均按北京时间（GMT+8）显示。用量数据每日更新，通常于次日同步完成。</p></section>
+    {invalidRange ? <p role="alert" className="p-error">请选择有效日期范围，结束日期不得早于开始日期或晚于 {latestUsageDate}。</p> : null}<p className="p-data-note">所有时间均按北京时间（GMT+8）显示。{futurePreview ? '当前范围包含未来模拟用量。' : '用量数据每日更新，通常于次日同步完成。'}</p></section>
     <section className="p-stats p-usage-stats" aria-label="用量统计"><article><h2>消耗积分</h2><strong>{points(sum)}</strong></article><article><h2>计费请求次数</h2><strong>{rows.length.toLocaleString()} <small>次</small></strong></article></section>
     {context === 'enterprise' ? <section className="p-panel p-concurrency" aria-label="近 24 小时并发峰值"><div className="p-section-heading"><div><h2>近 24h 并发峰值 <Help text={`近 24 小时的最高同时处理请求数 / 当前${keyId === 'all' ? '企业' : 'Key'}并发上限。绿色低于 80%，橙色为 80% 至不足 100%，红色为达到或超过上限；不代表当前并发。`} /></h2></div><small>更新于 {timeLabel(now).slice(5, 16)}</small></div>
       {peakModels.length ? <div key={`${context}:${model}:${keyId}`} className="p-peaks" style={{ gridTemplateColumns: `repeat(${Math.min(6, peakModels.length)}, minmax(0, 1fr))` }}>{peakModels.map(m => { const p = peaks[m.id]; const limit = keyId === 'all' ? m.limit : selectedKey?.policies[m.id]; const inactive = selectedKey && (selectedKey.deletedAt || !selectedKey.enabled); const ratio = limit ? p.peak / limit : 0; return <article key={m.id}><div className="p-peak-name"><span className="p-model-ellipsis" title={m.id}>{m.id}</span>{inactive ? <span className="p-muted">{selectedKey?.deletedAt ? 'Key 已删除' : 'Key 已停用'}</span> : null}</div><div className="p-peak-value"><strong>{p.peak}</strong><span>/ {limit ?? '未授权'} {limit ? '路' : ''}</span></div><div className={`p-meter ${ratio >= 1 ? 'p-meter-full' : ratio >= .8 ? 'p-meter-near' : ''}`} role="meter" aria-label={`${m.id} 峰值占当前上限`} aria-valuenow={Math.min(p.peak, limit ?? p.peak)} aria-valuemin={0} aria-valuemax={limit ?? Math.max(p.peak, 1)} aria-valuetext={`近24小时峰值 ${p.peak}，当前上限 ${limit ?? '未授权'}`}><span style={{ width: `${Math.min(100, ratio * 100)}%` }} /></div>{limit && ratio >= .8 ? <small className={ratio >= 1 ? 'p-peak-status-full' : 'p-peak-status-near'}>{p.peak > limit ? '历史峰值高于当前上限' : ratio >= 1 ? '峰值达到上限' : '峰值接近上限'}</small> : null}</article>; })}</div> : <Empty>该 Key 未授权所选模型，且没有对应的历史请求。</Empty>}

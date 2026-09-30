@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
-import { Context, KeyRecord, Page, STORAGE_KEY, Store, contextModels, makeRequests, makeStore, parseStore, points, validateKey, dateKey } from './data';
+import { Context, KeyRecord, Page, STORAGE_KEY, Store, contextModels, makeUsageRequests, makeStore, parseStore, points, validateKey, dateKey } from './data';
 import { RekaMenu } from './reka';
 import Keys from './keys';
 import Usage from './usage';
@@ -51,7 +51,7 @@ export default function PlatformApp({ initialPage = 'keys' }: { initialPage?: Pa
   useEffect(() => { document.title = `${page === 'keys' ? 'API Key' : page === 'usage' ? '用量与积分' : page === 'pricing' ? '计费标准' : '个人信息'} — Moss API`; }, [page]);
   useEffect(() => { if (!toast) return; const timer = window.setTimeout(() => setToast(''), 4000); return () => window.clearTimeout(timer); }, [toast]);
   const anchor = store?.anchor;
-  const requests = useMemo(() => anchor ? makeRequests(anchor) : [], [anchor]);
+  const requests = useMemo(() => anchor ? makeUsageRequests(anchor) : [], [anchor]);
   const context = store?.context ?? 'enterprise';
   const keys = store?.keys.filter(k => k.context === context) ?? [];
   const settledBefore = new Date(`${dateKey(clock ?? 0)}T00:00:00+08:00`).getTime();

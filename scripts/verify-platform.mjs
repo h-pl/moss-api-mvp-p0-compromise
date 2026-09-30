@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { aggregate, concurrencyPeak, contextModels, csv, dateKey, filterRequests, makeConcurrencySamples, makeRequests, makeStore, models, parseStore, rangeFor, validateKey, DAY } from '../app/platform/data.ts';
+import { aggregate, concurrencyPeak, contextModels, csv, dateKey, filterRequests, makeConcurrencySamples, makeRequests, makeUsageRequests, makeStore, mockUsageCutoff, MOCK_USAGE_FROM, MOCK_USAGE_THROUGH, models, parseStore, rangeFor, validateKey, DAY } from '../app/platform/data.ts';
 import { rateFor, ratePoints, chargeCents, estimateYuan } from '../app/platform/pricing-data.ts';
 import { usageExport } from '../app/platform/export-data.ts';
 import { readUsageQuery, writeUsageQuery } from '../app/platform/usage-url.ts';
@@ -120,5 +120,60 @@ check('个人 Key 模型范围持久化，不自动补回取消授权的模型',
   assert.equal(validateKey(key.name, key.note, key.policies, contextModels('personal')), null);
   assert.deepEqual(parseStore(JSON.stringify(personalStore)).keys.find(item => item.id === key.id).policies, key.policies);
   assert.ok(validateKey(key.name, key.note, {}, contextModels('personal')));
+});
+const extendedRequests = makeUsageRequests(store.anchor);
+const previewNow = Date.parse('2026-09-30T12:00:00+08:00');
+check('旧缓存补齐九月至十月每天的企业与个人六模型数据，包含 10 月 31 日', () => {
+  const start = Date.parse(`${MOCK_USAGE_FROM}T00:00:00+08:00`);
+  const end = Date.parse(`${MOCK_USAGE_THROUGH}T00:00:00+08:00`) + DAY;
+  for (let day = start; day < end; day += DAY) {
+    const dayRequests = extendedRequests.filter(r => r.start >= day && r.start < day + DAY && r.cents > 0);
+    for (const context of ['enterprise', 'personal']) {
+      assert.deepEqual(new Set(dayRequests.filter(r => r.context === context).map(r => r.model)), new Set(models.map(m => m.id)));
+    }
+  }
+  assert.ok(extendedRequests.every(r => r.end < end));
+});
+check('扩充数据保留旧请求及计费结果，刷新稳定且请求 ID 唯一', () => {
+  const byId = new Map(extendedRequests.map(r => [r.id, r]));
+  assert.equal(byId.size, extendedRequests.length);
+  for (const r of requests) assert.deepEqual(byId.get(r.id), r);
+  assert.deepEqual(makeUsageRequests(store.anchor), extendedRequests);
+});
+check('凌晨建立的旧缓存只覆盖部分模型时仍补齐当日六模型', () => {
+  const sample = makeUsageRequests(Date.parse('2026-09-30T01:00:00+08:00'));
+  for (const context of ['enterprise', 'personal']) {
+    assert.deepEqual(new Set(sample.filter(r => dateKey(r.start) === '2026-09-30' && r.context === context && r.cents > 0).map(r => r.model)), new Set(models.map(m => m.id)));
+  }
+});
+check('最近七天有已同步数据，十月未来数据不进入当前已结算累计', () => {
+  const today = Date.parse('2026-09-30T00:00:00+08:00');
+  const recent = { ...rangeFor('7', previewNow), model: 'all', key: 'all' };
+  const recentRows = filterRequests(extendedRequests, 'enterprise', recent, mockUsageCutoff(recent.to, previewNow));
+  assert.ok(recentRows.length > 0);
+  assert.ok(recentRows.every(r => r.start < today));
+  assert.equal(mockUsageCutoff(recent.to, previewNow), today);
+  const futureRows = filterRequests(extendedRequests, 'enterprise', { from: '2026-10-01', to: '2026-10-31', model: 'all', key: 'all' }, today);
+  assert.equal(futureRows.length, 0);
+});
+check('未来账期可预览并导出，十月三十一日完整计入且模型 Key 汇总一致', () => {
+  const futureFilters = { from: '2026-10-01', to: '2026-10-31', model: 'all', key: 'all' };
+  const cutoff = mockUsageCutoff(futureFilters.to, previewNow);
+  assert.equal(cutoff, Date.parse('2026-11-01T00:00:00+08:00'));
+  for (const context of ['enterprise', 'personal']) {
+    const futureRows = filterRequests(extendedRequests, context, futureFilters, cutoff).filter(r => r.cents > 0);
+    assert.ok(futureRows.some(r => dateKey(r.start) === '2026-10-31'));
+    assert.ok(futureRows.every(r => dateKey(r.start) >= futureFilters.from && dateKey(r.start) <= futureFilters.to));
+    const total = futureRows.reduce((sum, r) => sum + r.cents, 0);
+    for (const byKey of [false, true]) assert.equal(aggregate(futureRows, byKey).reduce((sum, r) => sum + r.cents, 0), total);
+    const exported = usageExport('requests', futureRows, store.keys, '测试账户', futureFilters);
+    assert.equal(exported.data.length, futureRows.length);
+    assert.equal(exported.data.reduce((sum, r) => sum + Math.round(Number(r.at(-1)) * 10000), 0), total * 5);
+  }
+  assert.equal(mockUsageCutoff('2026-11-01', previewNow), Date.parse('2026-09-30T00:00:00+08:00'));
+});
+check('未来日期筛选和请求页签可通过 URL 刷新恢复', () => {
+  const state = { range: 'custom', custom: { from: '2026-10-01', to: '2026-10-31' }, model: 'all', key: 'all', tab: 'requests', page: 1, pageSize: 10 };
+  assert.deepEqual(readUsageQuery(writeUsageQuery('', state), store.keys, previewNow), state);
 });
 console.log(`\n${checks} platform business checks passed.`);

@@ -9,6 +9,8 @@ export type Store = { version: 1; anchor: number; context: Context; keys: KeyRec
 export type Filters = { from: string; to: string; model: string; key: string };
 export const STORAGE_KEY = 'moss-platform-owner-v1';
 export const DAY = 86_400_000;
+export const MOCK_USAGE_FROM = '2026-09-01';
+export const MOCK_USAGE_THROUGH = '2026-10-31';
 export const models: Model[] = [
   { id: 'moss-tts-1.0-pro', kind: 'TTS', limit: 100, unit: '字符', color: '#f38b32' },
   { id: 'moss-tts-1.5-flash', kind: 'TTS', limit: 80, unit: '字符', color: '#76ab8d' },
@@ -55,6 +57,27 @@ export function makeRequests(anchor: number, days = 30): RequestRecord[] {
     }
   }
   return requests.sort((a, b) => b.start - a.start);
+}
+// Extend stale saved fixtures with a fixed calendar; existing request IDs and
+// charges stay unchanged, and refreshing never moves the simulated dates.
+export function makeUsageRequests(anchor: number): RequestRecord[] {
+  const end = Date.parse(`${MOCK_USAGE_THROUGH}T00:00:00+08:00`) + DAY;
+  const history = makeRequests(anchor).filter(request => request.start < end);
+  const groupKey = (request: RequestRecord) => `${dateKey(request.start)}:${request.context}:${request.keyId}:${request.model}`;
+  const existingGroups = new Set(history.map(groupKey));
+  const days = Math.round((end - Date.parse(`${MOCK_USAGE_FROM}T00:00:00+08:00`)) / DAY);
+  const calendar = makeRequests(end - 6 * 3_600_000, days)
+    .filter(request => !existingGroups.has(groupKey(request)))
+    .map(request => ({ ...request, id: `req_calendar_${dateKey(request.start)}_${request.id.slice(4)}` }));
+  return [...history, ...calendar].sort((a, b) => b.start - a.start);
+}
+// Future dates are selectable only for the supplied mock calendar. Account
+// balances continue to use the actual Beijing settlement cutoff.
+export function mockUsageCutoff(to: string, now: number) {
+  const today = Date.parse(`${dateKey(now)}T00:00:00+08:00`);
+  return to >= dateKey(now) && to <= MOCK_USAGE_THROUGH
+    ? Date.parse(`${to}T00:00:00+08:00`) + DAY
+    : today;
 }
 // Monitoring fixtures follow the preview clock, independently of immutable billing history.
 // Keep all four visual states available even when the saved store anchor is several days old.
