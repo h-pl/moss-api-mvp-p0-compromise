@@ -43,7 +43,7 @@
 .usage3-page .u8-table-scroll th:nth-child(4){width:13%} /* 计费调用次数 */
 .usage3-page .u8-table-scroll th:nth-child(5){width:14%} /* 计费用量 */
 .usage3-page .u8-table-scroll th:nth-child(6){width:12%} /* 消耗积分 */
-.usage3-page .u8-table-scroll th:nth-child(7){width:12%} /* 折后金额估算 */
+.usage3-page .u8-table-scroll th:nth-child(7){width:12%} /* 折后金额 */
 .usage3-page .u8-table-scroll tfoot td:nth-child(3)>span{display:block}
 
 /* 用户用量概览：桌面列宽统一在此调整，合计 100%。 */
@@ -54,7 +54,7 @@
 .billing3-user-overview .u8-table-scroll th:nth-child(3){width:12%} /* 计费调用次数 */
 .billing3-user-overview .u8-table-scroll th:nth-child(4){width:15%} /* 计费用量 */
 .billing3-user-overview .u8-table-scroll th:nth-child(5){width:15%} /* 消耗积分 */
-.billing3-user-overview .u8-table-scroll th:nth-child(6){width:13%} /* 折后金额估算 */
+.billing3-user-overview .u8-table-scroll th:nth-child(6){width:13%} /* 折后金额 */
 .billing3-user-overview .u8-table-scroll th:nth-child(7){width:11%} /* 操作 */
 .billing3-user-overview .u8-table-scroll tfoot td:nth-child(3)>span{display:block}
 

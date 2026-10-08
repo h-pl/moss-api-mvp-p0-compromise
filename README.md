@@ -39,7 +39,7 @@ node node_modules/next/dist/bin/next dev --webpack -p 4002 --hostname 127.0.0.1
 - 账单按模型汇总；用量明细按模型 → Key 汇总；支持逐请求 CSV；账单预览使用浏览器打印保存 PDF。CSV 金额保留 4 位小数，汇总后统一保留 2 位。筛选、汇总、图表、分页及导出共用计量数据。
 - 企业并发峰值按请求区间重叠计算，不累加各 Key 的独立历史峰值。
 
-- 每模型独立企业折扣；请求保存结算费率快照，导出保留结算单价与模型折扣，计费版本仅用于内部追溯。
+- 每模型独立企业折扣；请求保存结算费率快照，逐请求 CSV 保留结算单价与单价单位，计费版本仅用于内部追溯。
 - 原站充值双页签、积分包与对公信息布局；企业支付不显示个人充值的商务定制区。
 - 使用真正的 Reka UI（Vue 岛 + React 内容插槽）处理弹窗、下拉、页签、开关、复选框、菜单与跨月日期范围，样式取自 platform。
 
@@ -65,6 +65,7 @@ node node_modules/next/dist/bin/next build --webpack
 
 | Tag | 版本范围 | 变更说明 |
 | --- | --- | --- |
+| `moss-api-mvp-p0-compromise-v1.0.2-20261008` | 计费列表、请求明细、账单及导出明细样式统一，PRD 与截图同步 | [本次修改与验收](prd/platform/发布说明-20261008.md) |
 | `moss-api-mvp-p0-compromise-v1.0.0-20260914` | 2026-09-14 妥协版定稿：Owner/Key 权限、个人模型授权、用量与导出、计费及 Platform 界面 | [相对原 MVP 的完整变更](prd/platform/变更说明-MVP至妥协版-20260914.md) |
 
 本 tag 包含代码与本地 PRD。旧 MVP 历史文件仍保留用于追溯，当前研发入口为 [prd/README.md](prd/README.md)。

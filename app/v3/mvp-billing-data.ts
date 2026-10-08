@@ -41,7 +41,7 @@ const csvQuantity = (row: Pick<MvpBillingRow, "ttsCharacters" | "asrDeciseconds"
 
 // Use stable IDs for grouping only; customer exports show names and masked keys.
 export function csvMvpBilling(rows: MvpBillingRow[], filters: Usage8Filters, models: Usage8Model[], keys: Usage8Key[]) {
-  const values: (string | number)[][] = [["账期", "统计开始（UTC+8）", "统计结束（UTC+8）", "模型", "用户", "API Key 名称", "API Key（脱敏）", "计费调用次数（次）", "计费用量", "计费单位", "消耗积分（积分）", "折后金额估算（元）"]];
+  const values: (string | number)[][] = [["账期", "统计开始（UTC+8）", "统计结束（UTC+8）", "模型", "用户", "API Key 名称", "API Key（脱敏）", "计费调用次数（次）", "计费用量", "计费单位", "消耗积分（积分）", "折后金额（元）"]];
   groupMvpBilling(rows).sort((a, b) => b.calls - a.calls || a.keyId.localeCompare(b.keyId)).forEach(row => {
     const key = keys.find(item => item.id === row.keyId);
     const model = models.find(item => item.id === row.modelId);

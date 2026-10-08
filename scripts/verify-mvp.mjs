@@ -414,7 +414,7 @@ test('Usage3 costs and export retain authorized scope, precision and all aggrega
   const csv=billing.csvMvpBilling(rows,filters,models,catalog);
   const lines=csv.replace(/^\uFEFF/,'').split('\r\n');
   assert.equal(lines.length,groups.length+1);
-  assert.equal(lines[0],['账期','统计开始（UTC+8）','统计结束（UTC+8）','模型','用户','API Key 名称','API Key（脱敏）','计费调用次数（次）','计费用量','计费单位','消耗积分（积分）','折后金额估算（元）'].map(value=>`"${value}"`).join(','));
+  assert.equal(lines[0],['账期','统计开始（UTC+8）','统计结束（UTC+8）','模型','用户','API Key 名称','API Key（脱敏）','计费调用次数（次）','计费用量','计费单位','消耗积分（积分）','折后金额（元）'].map(value=>`"${value}"`).join(','));
   const attack=catalog.map(key=>({...key,name:'=SUM(1,2)'}));
   assert.ok(billing.csvMvpBilling(rows,filters,models,attack).includes("'=SUM(1,2)"));
   const allRows=usage.selectUsage8(source,filters,{userId:actor.email,enterpriseWide:true,modelIds:models.map(model=>model.id)});
