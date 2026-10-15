@@ -1,4 +1,4 @@
-import { models, rangeFor, type KeyRecord } from './data.ts';
+import { usageModels as models, rangeFor, type KeyRecord } from './data.ts';
 
 export type UsageQuery = {
   range: string;

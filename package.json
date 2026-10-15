@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev:platform": "next dev --webpack -p 4002",
-    "verify:platform": "node --experimental-strip-types scripts/verify-platform.mjs",
+    "verify:platform": "node --experimental-strip-types scripts/verify-platform.mjs && node --experimental-strip-types scripts/verify-bill.mjs",
     "dev": "vinext dev --port 4001",
     "demo:minimax": "node scripts/minimax-random-concurrency.mjs",
     "build": "vinext build",

@@ -1,12 +1,15 @@
+import { BILL_MOCK_PERIOD, makeBillMockRequests } from './bill-fixture.ts';
+import type { BillGroup } from './bill-data.ts';
 import { chargeCents, rateFor, type RatePolicy } from './pricing-data.ts';
 /** Prototype repository. No production credentials or billing records are used. */
 export type Context = 'enterprise' | 'personal';
 export type Page = 'keys' | 'usage' | 'profile' | 'pricing';
 export type Model = { id: string; kind: 'TTS' | 'ASR'; limit: number; unit: string; color: string };
 export type KeyRecord = { id: string; context: Context; name: string; masked: string; note: string; policies: Record<string, number>; enabled: boolean; createdAt: number; deletedAt?: number };
-export type RequestRecord = { id: string; context: Context; keyId: string; model: string; start: number; end: number; status: '成功' | '失败'; units: number; cents: number; rate?: RatePolicy };
+export type RequestRecord = { id: string; context: Context; keyId: string; model: string; start: number; end: number; status: '成功' | '失败'; units: number; cents: number; rate?: RatePolicy; billing?: Pick<BillGroup, 'kind' | 'threshold' | 'lines'> };
 export type Store = { version: 1; anchor: number; context: Context; keys: KeyRecord[] };
 export type Filters = { from: string; to: string; model: string; key: string };
+export const MOCK_ENTERPRISE_CREDITS = 50_000_000; // 500,000 points, covering the approved high-volume fixture.
 export const STORAGE_KEY = 'moss-platform-owner-v1';
 export const DAY = 86_400_000;
 export const MOCK_USAGE_FROM = '2026-09-01';
@@ -19,6 +22,8 @@ export const models: Model[] = [
   { id: 'moss-voice-generator-1.0', kind: 'TTS', limit: 40, unit: '字符', color: '#d4b46f' },
   { id: 'moss-transcribe-diarize-pro', kind: 'ASR', limit: 30, unit: '秒', color: '#c9848f' },
 ];
+export const usageModels = [...models, { id: 'kimi-k3', kind: 'LLM', unit: 'tokens', color: '#82929e' }];
+export const requestEndpoint = (model: string) => model === 'kimi-k3' ? '/v1/chat/completions' : '/api/v2/tasks';
 export function contextModels(context: Context) { return models.map(m => ({ ...m, limit: context === 'enterprise' ? m.limit : 5 })); }
 export const points = (cents: number) => (cents / 100).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 export const dateKey = (time: number) => new Date(time + 8 * 3_600_000).toISOString().slice(0, 10);
@@ -58,8 +63,8 @@ export function makeRequests(anchor: number, days = 30): RequestRecord[] {
   }
   return requests.sort((a, b) => b.start - a.start);
 }
-// Extend stale saved fixtures with a fixed calendar; existing request IDs and
-// charges stay unchanged, and refreshing never moves the simulated dates.
+// Extend saved fixtures with a fixed calendar. The approved October 1–7
+// enterprise ledger replaces that week; other historical requests stay unchanged.
 export function makeUsageRequests(anchor: number): RequestRecord[] {
   const end = Date.parse(`${MOCK_USAGE_THROUGH}T00:00:00+08:00`) + DAY;
   const history = makeRequests(anchor).filter(request => request.start < end);
@@ -69,7 +74,8 @@ export function makeUsageRequests(anchor: number): RequestRecord[] {
   const calendar = makeRequests(end - 6 * 3_600_000, days)
     .filter(request => !existingGroups.has(groupKey(request)))
     .map(request => ({ ...request, id: `req_calendar_${dateKey(request.start)}_${request.id.slice(4)}` }));
-  return [...history, ...calendar].sort((a, b) => b.start - a.start);
+  const legacy = [...history, ...calendar].filter(request => !(request.context === 'enterprise' && dateKey(request.start) >= BILL_MOCK_PERIOD.from && dateKey(request.start) <= BILL_MOCK_PERIOD.to));
+  return [...legacy, ...makeBillMockRequests()].sort((a, b) => b.start - a.start);
 }
 // Future dates are selectable only for the supplied mock calendar. Account
 // balances continue to use the actual Beijing settlement cutoff.
@@ -98,7 +104,7 @@ export function aggregate(requests: RequestRecord[], byKey = false): Aggregate[]
     const row = rows.get(id) ?? { model: r.model, keyId: byKey ? r.keyId : '', count: 0, billedCount: 0, units: 0, cents: 0 };
     row.count++; if (r.cents > 0) row.billedCount++; row.units += r.units; row.cents += r.cents; rows.set(id, row);
   });
-  return [...rows.values()].sort((a, b) => models.findIndex(m => m.id === a.model) - models.findIndex(m => m.id === b.model) || a.keyId.localeCompare(b.keyId));
+  return [...rows.values()].sort((a, b) => usageModels.findIndex(m => m.id === a.model) - usageModels.findIndex(m => m.id === b.model) || a.keyId.localeCompare(b.keyId));
 }
 export function concurrencyPeak(requests: RequestRecord[], context: Context, model: string, key: string, now: number) {
   const from = now - DAY;

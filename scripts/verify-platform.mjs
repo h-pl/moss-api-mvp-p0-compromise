@@ -129,7 +129,7 @@ check('旧缓存补齐九月至十月每天的企业与个人六模型数据，�
   for (let day = start; day < end; day += DAY) {
     const dayRequests = extendedRequests.filter(r => r.start >= day && r.start < day + DAY && r.cents > 0);
     for (const context of ['enterprise', 'personal']) {
-      assert.deepEqual(new Set(dayRequests.filter(r => r.context === context).map(r => r.model)), new Set(models.map(m => m.id)));
+      assert.deepEqual(new Set(dayRequests.filter(r => r.context === context).map(r => r.model)), new Set([...models.map(m => m.id), ...(context === 'enterprise' && dateKey(day) >= '2026-10-01' && dateKey(day) <= '2026-10-07' ? ['kimi-k3'] : [])]));
     }
   }
   assert.ok(extendedRequests.every(r => r.end < end));

@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
-import { Context, KeyRecord, Page, STORAGE_KEY, Store, contextModels, makeUsageRequests, makeStore, parseStore, points, validateKey, dateKey } from './data';
+import { Context, KeyRecord, Page, MOCK_ENTERPRISE_CREDITS, STORAGE_KEY, Store, contextModels, makeUsageRequests, makeStore, parseStore, points, validateKey, dateKey } from './data';
 import { RekaMenu } from './reka';
 import Keys from './keys';
 import Usage from './usage';
@@ -57,8 +57,8 @@ export default function PlatformApp({ initialPage = 'keys' }: { initialPage?: Pa
   const settledBefore = new Date(`${dateKey(clock ?? 0)}T00:00:00+08:00`).getTime();
   const total = requests.filter(r => r.context === context && r.start < settledBefore).reduce((sum, r) => sum + r.cents, 0);
   const personalBalance = 50_000 - requests.filter(r => r.context === 'personal' && r.start < settledBefore).reduce((sum, r) => sum + r.cents, 0);
-  const enterpriseBalance = 1_000_000 - requests.filter(r => r.context === 'enterprise' && r.start < settledBefore).reduce((sum, r) => sum + r.cents, 0);
-  const balance = context === 'enterprise' ? 1_000_000 - total : 50_000 - total;
+  const enterpriseBalance = MOCK_ENTERPRISE_CREDITS - requests.filter(r => r.context === 'enterprise' && r.start < settledBefore).reduce((sum, r) => sum + r.cents, 0);
+  const balance = context === 'enterprise' ? MOCK_ENTERPRISE_CREDITS - total : 50_000 - total;
   const persist = (next: Store) => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(next)); setStore(next); return null; } catch { return '保存失败，浏览器存储不可用或空间不足。请重试，当前修改尚未保存。'; } };
   const switchContext = (next: Context) => { if (!store) return; const error = persist({ ...store, context: next }); if (error) { setToast(error); return; } setAccountOpen(false); setMobileOpen(false); setSelectedKey('all'); setInfo(null); window.history.replaceState(window.history.state, '', window.location.pathname); setUsageVisit(value => value + 1); };
   const navigate = (next: Page, key = 'all') => { setPage(next); setSelectedKey(key); setMobileOpen(false); setAccountOpen(false); window.history.pushState({}, '', `/app/${next === 'keys' ? 'api-keys' : next}${next === 'usage' && key !== 'all' ? `?key=${encodeURIComponent(key)}` : ''}`); setUsageVisit(value => value + 1); window.scrollTo({ top: 0 }); };
