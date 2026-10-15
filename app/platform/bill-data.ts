@@ -30,10 +30,23 @@ export function billGroups(rows: RequestRecord[], context: Context, filters: Fil
   for (const group of settled.values()) if (group.kind === 'ASR') group.lines.sort((a, b) => tierOrder(a.threshold) - tierOrder(b.threshold));
   const legacy: BillGroup[] = aggregate(rows.filter(row => !row.billing)).map(row => {
     const kind = models.find(model => model.id === row.model)?.kind ?? 'TTS';
-    const policies = [...new Map(rows.filter(request => request.model === row.model && request.rate).map(request => [JSON.stringify(request.rate), request.rate!])).values()];
+    const policies = [...new Map(rows.filter(request => !request.billing && request.model === row.model && request.rate).map(request => [JSON.stringify(request.rate), request.rate!])).values()];
     return { model: row.model, kind, billedCount: row.billedCount, lines: [{ rates: policies.length ? policies.map(policy => `${estimateYuan(ratePoints(policy) * 100).toFixed(3)} 元 / ${policy.basisLabel}`) : ['—'], units: kind === 'ASR' ? row.units / 3600 : row.units, unit: kind === 'ASR' ? '小时' : '字符', cents: row.cents }] };
   });
-  return [...legacy, ...settled.values()].sort((a, b) => rank(a) - rank(b) || tierOrder(a.threshold) - tierOrder(b.threshold));
+  // A different data source does not create another bill row for the same model.
+  // Preserve distinct historical rates/thresholds inside the model's group.
+  for (const group of legacy) {
+    const id = `${group.model}:`;
+    const target = settled.get(id);
+    if (!target) { settled.set(id, group); continue; }
+    target.billedCount += group.billedCount;
+    for (const line of group.lines) {
+      const existing = target.lines.find(item => item.unit === line.unit && item.threshold === line.threshold && item.label === line.label && item.rates.join('|') === line.rates.join('|'));
+      if (existing) { existing.units += line.units; existing.cents += line.cents; }
+      else target.lines.push(line);
+    }
+  }
+  return [...settled.values()].sort((a, b) => rank(a) - rank(b) || tierOrder(a.threshold) - tierOrder(b.threshold));
 }
 export function billTotals(groups: BillGroup[]) {
   const units = new Map<BillUnit, number>();

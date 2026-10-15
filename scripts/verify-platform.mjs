@@ -123,13 +123,13 @@ check('个人 Key 模型范围持久化，不自动补回取消授权的模型',
 });
 const extendedRequests = makeUsageRequests(store.anchor);
 const previewNow = Date.parse('2026-09-30T12:00:00+08:00');
-check('旧缓存补齐九月至十月每天的企业与个人六模型数据，包含 10 月 31 日', () => {
+check('旧缓存补齐九月至十月语音数据，十月企业每天包含 Kimi', () => {
   const start = Date.parse(`${MOCK_USAGE_FROM}T00:00:00+08:00`);
   const end = Date.parse(`${MOCK_USAGE_THROUGH}T00:00:00+08:00`) + DAY;
   for (let day = start; day < end; day += DAY) {
     const dayRequests = extendedRequests.filter(r => r.start >= day && r.start < day + DAY && r.cents > 0);
     for (const context of ['enterprise', 'personal']) {
-      assert.deepEqual(new Set(dayRequests.filter(r => r.context === context).map(r => r.model)), new Set([...models.map(m => m.id), ...(context === 'enterprise' && dateKey(day) >= '2026-10-01' && dateKey(day) <= '2026-10-07' ? ['kimi-k3'] : [])]));
+      assert.deepEqual(new Set(dayRequests.filter(r => r.context === context).map(r => r.model)), new Set([...models.map(m => m.id), ...(context === 'enterprise' && dateKey(day) >= '2026-10-01' && dateKey(day) <= '2026-10-31' ? ['kimi-k3'] : [])]));
     }
   }
   assert.ok(extendedRequests.every(r => r.end < end));

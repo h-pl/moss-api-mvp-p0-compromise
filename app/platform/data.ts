@@ -1,4 +1,4 @@
-import { BILL_MOCK_PERIOD, makeBillMockRequests } from './bill-fixture.ts';
+import { BILL_MOCK_PERIOD, makeBillMockRequests, makeRecentKimiMockRequests } from './bill-fixture.ts';
 import type { BillGroup } from './bill-data.ts';
 import { chargeCents, rateFor, type RatePolicy } from './pricing-data.ts';
 /** Prototype repository. No production credentials or billing records are used. */
@@ -75,7 +75,7 @@ export function makeUsageRequests(anchor: number): RequestRecord[] {
     .filter(request => !existingGroups.has(groupKey(request)))
     .map(request => ({ ...request, id: `req_calendar_${dateKey(request.start)}_${request.id.slice(4)}` }));
   const legacy = [...history, ...calendar].filter(request => !(request.context === 'enterprise' && dateKey(request.start) >= BILL_MOCK_PERIOD.from && dateKey(request.start) <= BILL_MOCK_PERIOD.to));
-  return [...legacy, ...makeBillMockRequests()].sort((a, b) => b.start - a.start);
+  return [...legacy, ...makeBillMockRequests(), ...makeRecentKimiMockRequests(MOCK_USAGE_THROUGH)].sort((a, b) => b.start - a.start);
 }
 // Future dates are selectable only for the supplied mock calendar. Account
 // balances continue to use the actual Beijing settlement cutoff.
