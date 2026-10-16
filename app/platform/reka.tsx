@@ -60,8 +60,8 @@ export function RekaSelect({ value, onValueChange, options, className = '', labe
   ])} />;
 }
 export function RekaMultiSelect({ value, onValueChange, options, allLabel, itemLabel, label, className = '' }: { value: string | string[]; onValueChange: (value: string | string[]) => void; options: { value: string; label: string }[]; allLabel: string; itemLabel: string; label: string; className?: string }) {
-  const selected = value === 'all' ? [] : Array.isArray(value) ? value : [value];
-  const unrestricted = selected.length === 0;
+  const unrestricted = isAllSelection(value, options.map(option => option.value));
+  const selected = unrestricted ? options.map(option => option.value) : Array.isArray(value) ? value : [value];
   const title = unrestricted || isAllSelection(value, options.map(option => option.value)) ? allLabel : selected.length === 1 ? options.find(option => option.value === selected[0])?.label ?? selected[0] : `已选 ${selected.length} 个${itemLabel}`;
   const toggle = (id: string, checked: boolean) => {
     const next = checked ? [...new Set([...selected, id])] : selected.filter(value => value !== id);
