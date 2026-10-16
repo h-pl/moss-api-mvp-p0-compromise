@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 import { createApp, defineComponent, h, onBeforeUnmount, shallowRef, watch, type Component, type VNodeChild, type VNodeRef } from 'vue';
 import * as R from 'reka-ui';
 import { parseDate, type DateValue } from '@internationalized/date';
+import { isAllSelection } from './data';
 
 /** Vue owns Reka's component tree and focus/keyboard behavior. React portals only fill content slots. */
 type Slot = (name: string, tag?: string, attributes?: Record<string, unknown>) => VNodeChild;
@@ -58,13 +59,37 @@ export function RekaSelect({ value, onValueChange, options, className = '', labe
     v(R.SelectPortal, {}, () => v(R.SelectContent, { class: 'p-select-content', position: 'popper', sideOffset: 5, collisionPadding: 12 }, () => [v(R.SelectScrollUpButton, { class: 'p-select-scroll' }, () => '⌃'), v(R.SelectViewport, {}, () => options.map(o => v(R.SelectItem, { key: o.value, value: o.value, class: 'p-select-item' }, () => [v(R.SelectItemText, {}, () => o.label), v(R.SelectItemIndicator, {}, () => glyph('check', 14))]))), v(R.SelectScrollDownButton, { class: 'p-select-scroll' }, () => '⌄')])),
   ])} />;
 }
+export function RekaMultiSelect({ value, onValueChange, options, allLabel, itemLabel, label, className = '' }: { value: string | string[]; onValueChange: (value: string | string[]) => void; options: { value: string; label: string }[]; allLabel: string; itemLabel: string; label: string; className?: string }) {
+  const selected = value === 'all' ? [] : Array.isArray(value) ? value : [value];
+  const unrestricted = selected.length === 0;
+  const title = unrestricted || isAllSelection(value, options.map(option => option.value)) ? allLabel : selected.length === 1 ? options.find(option => option.value === selected[0])?.label ?? selected[0] : `已选 ${selected.length} 个${itemLabel}`;
+  const toggle = (id: string, checked: boolean) => {
+    const next = checked ? [...new Set([...selected, id])] : selected.filter(value => value !== id);
+    // No explicit selection means unrestricted; selecting every item stays explicit.
+    onValueChange(next.length === 0 ? 'all' : next.length > 1 ? next : next[0]);
+  };
+  return <VueIsland render={() => v(R.DropdownMenuRoot, { modal: false }, () => [
+    v(R.DropdownMenuTrigger, { class: `p-select-trigger ${className}`, 'aria-label': label }, () => [h('span', {}, title), glyph('chevron', 14)]),
+    v(R.DropdownMenuPortal, {}, () => v(R.DropdownMenuContent, { class: 'p-select-content p-multi-select-content', align: 'start', sideOffset: 5, collisionPadding: 12, 'aria-label': label }, () => [
+      v(R.DropdownMenuCheckboxItem, { class: 'p-select-item p-multi-select-item', modelValue: unrestricted, onSelect: (event: Event) => { event.preventDefault(); onValueChange('all'); } }, () => [h('span', {}, allLabel), h('span', { class: 'p-multi-select-indicator', 'aria-hidden': true }, unrestricted ? [glyph('check', 14)] : [])]),
+      ...options.map(option => v(R.DropdownMenuCheckboxItem, { key: option.value, modelValue: selected.includes(option.value), 'onUpdate:modelValue': (checked: boolean) => toggle(option.value, checked), onSelect: (event: Event) => event.preventDefault(), class: 'p-select-item p-multi-select-item', textValue: option.label }, () => [h('span', {}, option.label), h('span', { class: 'p-multi-select-indicator', 'aria-hidden': true }, selected.includes(option.value) ? [glyph('check', 14)] : [])])),
+    ])),
+  ])} />;
+}
 export function RekaSwitch({ checked, label, onCheckedChange }: { checked: boolean; label: string; onCheckedChange: (value: boolean) => void }) { return <VueIsland render={() => v(R.SwitchRoot, { modelValue: checked, 'onUpdate:modelValue': onCheckedChange, class: `p-switch ${checked ? 'p-switch-on' : ''}`, 'aria-label': label }, () => v(R.SwitchThumb))} />; }
 export function RekaCheckbox({ checked, onCheckedChange }: { checked: boolean; onCheckedChange: (value: boolean) => void }) { return <VueIsland render={() => v(R.CheckboxRoot, { modelValue: checked, 'onUpdate:modelValue': (value: boolean | 'indeterminate') => onCheckedChange(value === true), class: 'p-checkbox' }, () => v(R.CheckboxIndicator, {}, () => glyph('check', 12)))} />; }
 export function RekaHelp({ text }: { text: string }) { return <VueIsland render={() => v(R.PopoverRoot, {}, () => [v(R.PopoverTrigger, { class: 'p-help-trigger', 'aria-label': text }, () => h('svg', { width: 15, height: 15, viewBox: '2 2 20 20', 'aria-hidden': true }, [h('circle', { cx: 12, cy: 12, r: 10, fill: 'currentColor' }), h('path', { d: 'M12 11v6M12 7v1', stroke: '#fff', 'stroke-width': 2 })])), v(R.PopoverPortal, {}, () => v(R.PopoverContent, { class: 'p-help-content', sideOffset: 7, collisionPadding: 12 }, () => [h('p', {}, text), v(R.PopoverArrow)]))])} />; }
 export type MenuItem = { id: string; label?: ReactNode; text?: string; className?: string; select?: () => void; type?: 'separator' | 'label' };
+export function RekaModelName({ name }: { name: string }) {
+  return <VueIsland render={() => v(R.TooltipProvider, { delayDuration: 250 }, () => v(R.TooltipRoot, {}, () => [
+    v(R.TooltipTrigger, { as: 'span', tabindex: 0, class: 'p-model-ellipsis' }, () => name),
+    v(R.TooltipPortal, {}, () => v(R.TooltipContent, { class: 'p-model-tooltip', side: 'top', sideOffset: 6, collisionPadding: 12 }, () => name)),
+  ]))} />;
+}
 export function RekaResourceDisclosure({ title, children }: { title: ReactNode; children: ReactNode }) {
-  return <VueIsland slots={{ title, content: children }} render={slot => v(R.CollapsibleRoot, { class: 'p-resources', unmountOnHide: false }, () => [
-    h('div', { class: 'p-resource-heading' }, [slot('title'), v(R.CollapsibleTrigger, { class: 'p-resource-toggle' }, () => ['查看模型与并发上限', glyph('chevron', 14)])]),
+  const [open, setOpen] = useState(false);
+  return <VueIsland slots={{ title, content: children }} render={slot => v(R.CollapsibleRoot, { class: 'p-resources', open, 'onUpdate:open': setOpen, unmountOnHide: false }, () => [
+    h('div', { class: 'p-resource-heading' }, [slot('title'), v(R.CollapsibleTrigger, { class: 'p-resource-toggle', 'aria-label': `${open ? '收起' : '展开'}企业授权模型` }, () => [h('span', { class: 'p-resource-unit' }, '共享并发上限（路）'), glyph('chevron', 14)])]),
     v(R.CollapsibleContent, { class: 'p-resource-content' }, () => slot('content')),
   ])} />;
 }
@@ -87,14 +112,14 @@ const PersistentTabsContent = defineComponent({
     }, slots.default?.());
   },
 });
-export function RekaTabs({ value, onValueChange, items, children, toolbar, className = 'p-tabs', bodyClassName = '', toolbarClassName = 'p-tabs-toolbar', footer }: { value: string; onValueChange: (value: string) => void; items: { value: string; label: ReactNode }[]; children: ReactNode; toolbar?: ReactNode; className?: string; bodyClassName?: string; toolbarClassName?: string; footer?: ReactNode }) {
+export function RekaTabs({ value, onValueChange, items, children, toolbar, className = 'p-tabs', bodyClassName = '', toolbarClassName = 'p-tabs-toolbar', footer, preserveScroll = true }: { value: string; onValueChange: (value: string) => void; items: { value: string; label: ReactNode }[]; children: ReactNode; toolbar?: ReactNode; className?: string; bodyClassName?: string; toolbarClassName?: string; footer?: ReactNode; preserveScroll?: boolean }) {
   const panel = useRef<HTMLElement | null>(null);
   const [minHeight, setMinHeight] = useState(0);
   const changeTab = (next: string) => {
     if (next === value) return;
     // A shorter tab must still extend to the current viewport bottom, otherwise
     // the browser clamps scrollY even when the content host stays mounted.
-    const height = panel.current ? Math.max(0, Math.ceil(window.innerHeight - panel.current.getBoundingClientRect().top)) : 0;
+    const height = preserveScroll && panel.current ? Math.max(0, Math.ceil(window.innerHeight - panel.current.getBoundingClientRect().top)) : 0;
     if (panel.current) panel.current.style.minHeight = `${height}px`;
     setMinHeight(height);
     onValueChange(next);

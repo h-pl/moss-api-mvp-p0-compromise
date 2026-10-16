@@ -58,22 +58,23 @@ export function makeBillMockRequests(): RequestRecord[] {
   return result;
 }
 
-// Continue the same monthly token ledger after the approved first week.
-// October 1–7 already consumed 205 M tokens, so later requests use the >200 tier.
-// Calendar dates and per-request snapshots stay stable when filters change.
+// Daily usage is independent of the high-volume statement validation fixture.
+// This small monthly ledger stays below 100 M tokens; filtering never changes rates.
 export function makeRecentKimiMockRequests(through: string): RequestRecord[] {
   const result: RequestRecord[] = [];
-  const start = Date.parse('2026-10-08T00:00:00+08:00');
+  const start = Date.parse('2026-10-01T00:00:00+08:00');
   const end = Date.parse(`${through}T00:00:00+08:00`);
   const labels = ['输入-缓存命中', '输入-缓存未命中', '输出'];
-  const rates = [1.2, 12, 60];
+  const rates = [2, 20, 100];
   for (let day = start, index = 0; day <= end; day += 86_400_000, index++) {
-    const count = 1500 + index % 5 * 120;
+    // A few dozen daily requests keep recent Kimi spend comparable to voice models.
+    const weekday = new Date(day + 8 * 3_600_000).getUTCDay();
+    const count = [10, 22, 18, 26, 20, 24, 12][weekday] + Math.floor(index / 7) % 3 * 2;
     for (let i = 0; i < count; i++) {
-      const tokens = [9600 + (i % 13) * 100, 4400 + (i % 11) * 100, 1200 + (i % 7) * 100];
+      const tokens = [5400 + (i * 7 + index * 11) % 19 * 100, 2100 + (i * 3 + index * 5) % 13 * 100, 600 + (i * 5 + index * 3) % 9 * 100];
       const lines = tokens.map((tokens, category) => line(rates[category], tokens / 1_000_000, 'M tokens', undefined, labels[category]));
       const time = day + Math.floor(i * (86_400_000 - 60_000) / count);
-      result.push({ id: `req_kimi_calendar_${index}_${i}`, context: 'enterprise', keyId: 'ent-key-2', model: 'kimi-k3', start: time, end: time + 1000, status: '成功', units: tokens.reduce((sum, tokens) => sum + tokens, 0), cents: lines.reduce((sum, line) => sum + line.cents, 0), billing: { kind: 'LLM', threshold: '>200', lines } });
+      result.push({ id: `req_kimi_calendar_${index}_${i}`, context: 'enterprise', keyId: 'ent-key-2', model: 'kimi-k3', start: time, end: time + 1000, status: '成功', units: tokens.reduce((sum, tokens) => sum + tokens, 0), cents: lines.reduce((sum, line) => sum + line.cents, 0), billing: { kind: 'LLM', threshold: '≤100', lines } });
     }
   }
   return result;

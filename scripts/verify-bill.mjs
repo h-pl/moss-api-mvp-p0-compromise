@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { billGroups, billTotals, paginateBill } from '../app/platform/bill-data.ts';
+import { billGroups, billShowsTierThresholds, billTotals, paginateBill } from '../app/platform/bill-data.ts';
 import { makeRequests, makeUsageRequests, aggregate, filterRequests, rangeFor, dateKey } from '../app/platform/data.ts';
 import { mockBillGroups, makeBillMockRequests, BILL_MOCK_PERIOD } from '../app/platform/bill-fixture.ts';
 import { usageExport } from '../app/platform/export-data.ts';
@@ -20,6 +20,17 @@ assert.deepEqual(pages.map(p => p.length), [6, 3]);
 assert.equal(pages[0].at(-1).model, 'moss-transcribe-diarize-pro');
 assert.equal(pages[1][0].model, 'kimi-k3');
 assert.deepEqual(billTotals(pages.flat()), totals);
+// All three token tiers must move together when only the first tier would fit.
+const tierBoundaryGroups = [groups[0], groups[1], ...kimi];
+const tierBoundaryPages = paginateBill(tierBoundaryGroups);
+assert.deepEqual(tierBoundaryPages.map(page => page.length), [2, 3]);
+assert.deepEqual(tierBoundaryPages[1], kimi);
+assert.deepEqual(billTotals(tierBoundaryPages.flat()), billTotals(tierBoundaryGroups));
+for (const [index, page] of tierBoundaryPages.entries()) {
+  for (const group of page) assert.ok(tierBoundaryPages.every((other, otherIndex) => index === otherIndex || other.every(item => item.model !== group.model)), 'A model must never span print pages');
+}
+assert.deepEqual(paginateBill([]), [[]]);
+assert.deepEqual(paginateBill(kimi), [kimi], 'A filtered multi-tier model must remain together');
 const filters = { ...BILL_MOCK_PERIOD, model: 'all', key: 'all' };
 const mockRequests = makeBillMockRequests();
 assert.equal(mockRequests.length, 143300);
@@ -37,9 +48,8 @@ assert.equal(personal.cents, aggregate(personalRows).reduce((sum, r) => sum + r.
 assert.equal(personal.modelCount, 6);
 assert.equal(paginateBill(billGroups(personalRows, 'personal', filters)).length, 1);
 const calendar = makeUsageRequests(Date.parse('2026-10-08T12:00:00+08:00'));
-const approved = filterRequests(calendar, 'enterprise', filters);
-assert.equal(approved.length, 143300);
-assert.deepEqual(billTotals(billGroups(approved, 'enterprise', filters)), totals);
+const dailyFirstWeek = filterRequests(calendar, 'enterprise', filters);
+assert.ok(dailyFirstWeek.length < 3000, 'Daily dashboard must not include the high-volume statement fixture');
 for (const scope of [filters, { ...filters, model: 'kimi-k3' }, { ...filters, key: 'ent-key-2' }, { ...filters, from: '2026-10-03', to: '2026-10-04' }]) {
   const selected = filterRequests(calendar, 'enterprise', scope);
   const total = billTotals(billGroups(selected, 'enterprise', scope));
@@ -65,9 +75,10 @@ assert.equal(billTotals(monthGroups).cents, monthRows.reduce((sum, row) => sum +
 const recentScope = { ...filters, ...rangeFor('7', Date.parse('2026-10-15T12:00:00+08:00')), model: 'kimi-k3' };
 const recent = filterRequests(calendar, 'enterprise', recentScope);
 assert.equal(new Set(recent.map(row => dateKey(row.start))).size, 7);
-assert.ok(recent.length > 10000);
-assert.ok(recent.reduce((sum, row) => sum + row.units, 0) > 150_000_000);
-assert.ok(recent.every(row => row.billing.threshold === '>200'));
+assert.ok(recent.length >= 100 && recent.length <= 250);
+assert.ok(recent.reduce((sum, row) => sum + row.cents, 0) >= 10000);
+assert.ok(recent.reduce((sum, row) => sum + row.cents, 0) < 100000);
+assert.ok(recent.every(row => row.billing.threshold === '≤100'));
 assert.equal(new Set(calendar.map(row => row.id)).size, calendar.length);
 for (const scope of [monthScope, recentScope]) {
   const selected = filterRequests(calendar, 'enterprise', scope);
@@ -79,3 +90,50 @@ for (const scope of [monthScope, recentScope]) {
   }
 }
 console.log('Bill checks passed: shared token tiers, ASR, totals, pagination, filter isolation and personal fallback.');
+
+assert.equal(paginateBill([groups[0], kimi[0]]).length, 1, 'Mixed models that fit must share a page');
+const withScope = paginateBill([groups[0], kimi[0]], 100);
+assert.equal(withScope.length, 2, 'Reserve footer scope height beside the final model and total');
+assert.deepEqual(withScope.flat(), [groups[0], kimi[0]], 'Scope pagination must preserve every billing row');
+const multiScope = { ...filters, model: ['moss-transcribe', 'kimi-k3'], key: ['ent-key-1', 'ent-key-2'] };
+const multiRows = filterRequests(calendar, 'enterprise', multiScope);
+assert.ok(multiRows.length > 0);
+assert.ok(multiRows.every(row => multiScope.model.includes(row.model) && multiScope.key.includes(row.keyId)));
+assert.equal(billTotals(billGroups(calendar, 'enterprise', multiScope)).cents, multiRows.reduce((sum, row) => sum + row.cents, 0));
+for (const kind of ['keys', 'requests']) assert.equal(usageExport(kind, multiRows, [], '星河科技', multiScope).data.reduce((sum, row) => sum + Math.round(Number(row.at(-1)) * 10000), 0), multiRows.reduce((sum, row) => sum + row.cents, 0) * 5);
+
+// A month must not jump from a special high-volume fixture to daily-scale data.
+const dashboardMonth = filterRequests(calendar, 'enterprise', { ...filters, to: '2026-10-31' });
+const dailyPoints = new Map();
+for (const row of dashboardMonth) dailyPoints.set(dateKey(row.start), (dailyPoints.get(dateKey(row.start)) ?? 0) + row.cents / 100);
+assert.equal(dailyPoints.size, 31);
+assert.ok(Math.max(...dailyPoints.values()) / Math.min(...dailyPoints.values()) < 4, 'Daily usage should stay at a comparable scale');
+assert.ok(new Set([...dailyPoints.values()].map(Math.round)).size > 20, 'Daily usage should have natural variation');
+const dailyKimi = dashboardMonth.filter(row => row.model === 'kimi-k3');
+assert.ok(dailyKimi.reduce((sum, row) => sum + row.units, 0) < 100_000_000);
+assert.ok(dailyKimi.every(row => row.billing.threshold === '≤100'));
+console.log('Daily mock checks passed: stable monthly scale, varied days, and token tiers matching actual volume.');
+
+// Threshold visibility reflects whether progressive pricing actually applies.
+assert.equal(billShowsTierThresholds([kimi[0]]), false, 'First-tier Kimi should show only unit rates');
+assert.equal(billShowsTierThresholds(kimi), true, 'Full progressive Kimi must retain every threshold');
+assert.equal(billShowsTierThresholds([kimi[2]]), true, 'Filtering to a later tier must retain its threshold');
+assert.equal(billShowsTierThresholds([{ ...asr, lines: [asr.lines[0]] }]), false, 'First-tier ASR should show only its rate');
+assert.equal(billShowsTierThresholds([asr]), true, 'Progressive ASR must retain thresholds');
+assert.equal(billShowsTierThresholds(billGroups(recent, 'enterprise', recentScope)), false, 'Daily Kimi bill must hide the untriggered tier label');
+console.log('Tier display checks passed: first-tier only hidden, progressive and later-tier scopes retained.');
+
+// Real paper metrics, independent of the narrow modal's wrapped scope text.
+const filteredTiers = [{...asr,lines:asr.lines.slice(0,2)}, ...kimi.slice(0,2)];
+const paperMetrics = {first:299,continuation:445,modelHeights:[50.25,139],ending:107};
+assert.equal(paginateBill(filteredTiers,0,paperMetrics).length,1,'ASR and two Kimi tiers fit on one measured sheet');
+assert.equal(paginateBill(filteredTiers,0,{...paperMetrics,ending:180}).length,2,'A larger measured ending must still reserve real space');
+assert.deepEqual(paginateBill(filteredTiers,0,{...paperMetrics,ending:180}).flat(),filteredTiers);
+
+// Reported regression: flash + ASR (two rates) + Kimi (two shared tiers).
+// Keep the three-unit total and the full model/Key scope on the same sheet.
+const threeModelTiers = [groups[1], ...filteredTiers];
+const threeModelPaper = {first:331,continuation:458,modelHeights:[30.75,50,139],ending:109.25};
+assert.equal(paginateBill(threeModelTiers,0,threeModelPaper).length,1,'Three-model recent bill must fit one sheet');
+assert.equal(paginateBill(threeModelTiers,0,{...threeModelPaper,ending:123.25}).length,2,'An ending that exceeds paper capacity must move intact');
+assert.deepEqual(paginateBill(threeModelTiers,0,threeModelPaper).flat(),threeModelTiers);

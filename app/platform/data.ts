@@ -1,30 +1,43 @@
-import { BILL_MOCK_PERIOD, makeBillMockRequests, makeRecentKimiMockRequests } from './bill-fixture.ts';
+import { makeRecentKimiMockRequests } from './bill-fixture.ts';
 import type { BillGroup } from './bill-data.ts';
 import { chargeCents, rateFor, type RatePolicy } from './pricing-data.ts';
 /** Prototype repository. No production credentials or billing records are used. */
 export type Context = 'enterprise' | 'personal';
 export type Page = 'keys' | 'usage' | 'profile' | 'pricing';
-export type Model = { id: string; kind: 'TTS' | 'ASR'; limit: number; unit: string; color: string };
+export type Model = { id: string; kind: 'TTS' | 'ASR' | 'LLM'; limit: number; unit: string; color: string };
 export type KeyRecord = { id: string; context: Context; name: string; masked: string; note: string; policies: Record<string, number>; enabled: boolean; createdAt: number; deletedAt?: number };
 export type RequestRecord = { id: string; context: Context; keyId: string; model: string; start: number; end: number; status: '成功' | '失败'; units: number; cents: number; rate?: RatePolicy; billing?: Pick<BillGroup, 'kind' | 'threshold' | 'lines'> };
 export type Store = { version: 1; anchor: number; context: Context; keys: KeyRecord[] };
-export type Filters = { from: string; to: string; model: string; key: string };
+export type FilterSelection = string | string[];
+export const selectionValues = (value: FilterSelection): string[] => value === 'all' ? [] : Array.isArray(value) ? value : [value];
+export const matchesSelection = (value: FilterSelection, id: string) => value === 'all' || selectionValues(value).includes(id);
+export function isAllSelection(value: FilterSelection, availableIds: string[]) {
+  if (value === 'all') return true;
+  const selected = new Set(selectionValues(value));
+  const available = new Set(availableIds);
+  return available.size > 0 && selected.size === available.size && [...available].every(id => selected.has(id));
+}
+export function selectionLabel(value: FilterSelection, allLabel: string, labels: { id: string; name?: string }[] = []) {
+  return isAllSelection(value, labels.map(item => item.id)) ? allLabel : selectionValues(value).map(id => labels.find(item => item.id === id)?.name ?? id).join('、');
+}
+export type Filters = { from: string; to: string; model: FilterSelection; key: FilterSelection };
 export const MOCK_ENTERPRISE_CREDITS = 50_000_000; // 500,000 points, covering the approved high-volume fixture.
 export const STORAGE_KEY = 'moss-platform-owner-v1';
 export const DAY = 86_400_000;
 export const MOCK_USAGE_FROM = '2026-09-01';
-export const MOCK_USAGE_THROUGH = '2026-10-31';
+export const MOCK_USAGE_THROUGH = '2026-11-30';
 export const models: Model[] = [
-  { id: 'moss-tts-1.0-pro', kind: 'TTS', limit: 100, unit: '字符', color: '#f38b32' },
-  { id: 'moss-tts-1.5-flash', kind: 'TTS', limit: 80, unit: '字符', color: '#76ab8d' },
-  { id: 'moss-transcribe', kind: 'ASR', limit: 40, unit: '秒', color: '#789cc6' },
-  { id: 'moss-ttsd-1.0', kind: 'TTS', limit: 60, unit: '字符', color: '#b49acb' },
-  { id: 'moss-voice-generator-1.0', kind: 'TTS', limit: 40, unit: '字符', color: '#d4b46f' },
-  { id: 'moss-transcribe-diarize-pro', kind: 'ASR', limit: 30, unit: '秒', color: '#c9848f' },
+  { id: 'moss-tts-1.0-pro', kind: 'TTS', limit: 100, unit: '字符', color: '#dc9567' },
+  { id: 'moss-tts-1.5-flash', kind: 'TTS', limit: 80, unit: '字符', color: '#80aa94' },
+  { id: 'moss-transcribe', kind: 'ASR', limit: 40, unit: '秒', color: '#80a5c8' },
+  { id: 'moss-ttsd-1.0', kind: 'TTS', limit: 60, unit: '字符', color: '#b29cc5' },
+  { id: 'moss-voice-generator-1.0', kind: 'TTS', limit: 40, unit: '字符', color: '#c9b172' },
+  { id: 'moss-transcribe-diarize-pro', kind: 'ASR', limit: 30, unit: '秒', color: '#ca919e' },
 ];
-export const usageModels = [...models, { id: 'kimi-k3', kind: 'LLM', unit: 'tokens', color: '#82929e' }];
+export const kimiModel: Model = { id: 'kimi-k3', kind: 'LLM', limit: 20, unit: 'tokens', color: '#7b87c5' };
+export const usageModels = [...models, kimiModel];
 export const requestEndpoint = (model: string) => model === 'kimi-k3' ? '/v1/chat/completions' : '/api/v2/tasks';
-export function contextModels(context: Context) { return models.map(m => ({ ...m, limit: context === 'enterprise' ? m.limit : 5 })); }
+export function contextModels(context: Context) { return (context === 'enterprise' ? usageModels : models).map(m => ({ ...m, limit: context === 'enterprise' ? m.limit : 5 })); }
 export const points = (cents: number) => (cents / 100).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 export const dateKey = (time: number) => new Date(time + 8 * 3_600_000).toISOString().slice(0, 10);
 export const timeLabel = (time: number) => new Date(time + 8 * 3_600_000).toISOString().slice(0, 19).replace('T', ' ');
@@ -34,6 +47,7 @@ export function makeStore(now = Date.now()): Store {
   const limits = [{ 0: 80, 1: 60 }, { 0: 70, 1: 60 }, { 2: 30 }, { 0: 20, 1: 20, 2: 10 }, { 0: 50 }];
   const notes = ['语音产品 · 线上调用', '内容团队 · 短视频配音', '客服业务 · 语音转写', '开发测试使用', '批量配音任务，暂时停用'];
   const keys: KeyRecord[] = names.map((name, i) => ({ id: `ent-key-${i + 1}`, context: 'enterprise', name, masked: `sk-••••••${['a7f2', 'b3e8', 'c9d1', 'd2a6', 'e4b9'][i]}`, note: notes[i], policies: Object.fromEntries(Object.entries(limits[i]).map(([index, limit]) => [models[Number(index)].id, limit])), enabled: i !== 4, createdAt: anchor - (45 - i * 3) * DAY }));
+  keys.find(key => key.id === 'ent-key-2')!.policies[kimiModel.id] = kimiModel.limit;
   keys.push({ id: 'personal-key-1', context: 'personal', name: '个人项目', masked: 'sk-••••••f8c3', note: '', policies: Object.fromEntries(models.map(m => [m.id, 5])), enabled: true, createdAt: anchor - 40 * DAY });
   keys.push({ id: 'ent-key-six-model-preview', context: 'enterprise', name: '多模型语音服务', masked: 'sk-••••••f6a2', note: '双人对话、音色设计与说话人分离', policies: Object.fromEntries(models.slice(3).map(m => [m.id, m.limit])), enabled: true, createdAt: anchor - 31 * DAY });
   return { version: 1, anchor, context: 'enterprise', keys };
@@ -63,10 +77,10 @@ export function makeRequests(anchor: number, days = 30): RequestRecord[] {
   }
   return requests.sort((a, b) => b.start - a.start);
 }
-// Extend saved fixtures with a fixed calendar. The approved October 1–7
-// enterprise ledger replaces that week; other historical requests stay unchanged.
+// Daily dashboard data uses one consistent scale across the calendar.
+// Large progressive-billing fixtures remain isolated in bill-fixture.ts for validation.
 export function makeUsageRequests(anchor: number): RequestRecord[] {
-  const end = Date.parse(`${MOCK_USAGE_THROUGH}T00:00:00+08:00`) + DAY;
+  const end = Date.parse('2026-10-31T00:00:00+08:00') + DAY;
   const history = makeRequests(anchor).filter(request => request.start < end);
   const groupKey = (request: RequestRecord) => `${dateKey(request.start)}:${request.context}:${request.keyId}:${request.model}`;
   const existingGroups = new Set(history.map(groupKey));
@@ -74,27 +88,28 @@ export function makeUsageRequests(anchor: number): RequestRecord[] {
   const calendar = makeRequests(end - 6 * 3_600_000, days)
     .filter(request => !existingGroups.has(groupKey(request)))
     .map(request => ({ ...request, id: `req_calendar_${dateKey(request.start)}_${request.id.slice(4)}` }));
-  const legacy = [...history, ...calendar].filter(request => !(request.context === 'enterprise' && dateKey(request.start) >= BILL_MOCK_PERIOD.from && dateKey(request.start) <= BILL_MOCK_PERIOD.to));
-  return [...legacy, ...makeBillMockRequests(), ...makeRecentKimiMockRequests(MOCK_USAGE_THROUGH)].sort((a, b) => b.start - a.start);
+  const november = makeRequests(Date.parse('2026-11-30T18:00:00+08:00'), 30).map(row => ({ ...row, id: `req_nov_${row.id}` }));
+  return [...history, ...calendar, ...november, ...makeRecentKimiMockRequests(MOCK_USAGE_THROUGH)].sort((a, b) => b.start - a.start);
 }
-// Future dates are selectable only for the supplied mock calendar. Account
-// balances continue to use the actual Beijing settlement cutoff.
-export function mockUsageCutoff(to: string, now: number) {
-  const today = Date.parse(`${dateKey(now)}T00:00:00+08:00`);
-  return to >= dateKey(now) && to <= MOCK_USAGE_THROUGH
-    ? Date.parse(`${to}T00:00:00+08:00`) + DAY
-    : today;
+// Usage settles the next day, with a single Beijing midnight cutoff for every view.
+export function settledUsageCutoff(now: number) {
+  return Date.parse(`${dateKey(now)}T00:00:00+08:00`);
 }
 // Monitoring fixtures follow the preview clock, independently of immutable billing history.
 // Keep all four visual states available even when the saved store anchor is several days old.
+export function monitoringKeyLimit(key: KeyRecord, model: string) {
+  return key.policies[model];
+}
 export function makeConcurrencySamples(now: number): RequestRecord[] {
   const anchor = Math.floor(now / 60_000) * 60_000;
-  return makeRequests(anchor, 1).filter(r => r.context === 'enterprise' && r.model !== 'moss-ttsd-1.0');
+  const voice = makeRequests(anchor, 1).filter(r => r.context === 'enterprise' && r.model !== 'moss-ttsd-1.0');
+  const kimi: RequestRecord[] = Array.from({ length: 7 }, (_, index) => ({ id: `monitor_kimi_${index}`, context: 'enterprise', keyId: 'ent-key-2', model: 'kimi-k3', start: anchor - 3_600_000, end: anchor - 3_588_000, status: '成功', units: 0, cents: 0 }));
+  return [...voice, ...kimi];
 }
 export function filterRequests(requests: RequestRecord[], context: Context, filters: Filters, settledBefore?: number) {
   const start = new Date(`${filters.from}T00:00:00+08:00`).getTime();
   const end = new Date(`${filters.to}T00:00:00+08:00`).getTime() + DAY;
-  return requests.filter(r => r.context === context && r.start >= start && r.start < end && (settledBefore === undefined || r.start < settledBefore) && (filters.model === 'all' || r.model === filters.model) && (filters.key === 'all' || r.keyId === filters.key));
+  return requests.filter(r => r.context === context && r.start >= start && r.start < end && (settledBefore === undefined || r.start < settledBefore) && matchesSelection(filters.model, r.model) && matchesSelection(filters.key, r.keyId));
 }
 export type Aggregate = { model: string; keyId: string; count: number; billedCount: number; units: number; cents: number; rate?: RatePolicy };
 export function aggregate(requests: RequestRecord[], byKey = false): Aggregate[] {
@@ -106,10 +121,10 @@ export function aggregate(requests: RequestRecord[], byKey = false): Aggregate[]
   });
   return [...rows.values()].sort((a, b) => usageModels.findIndex(m => m.id === a.model) - usageModels.findIndex(m => m.id === b.model) || a.keyId.localeCompare(b.keyId));
 }
-export function concurrencyPeak(requests: RequestRecord[], context: Context, model: string, key: string, now: number) {
+export function concurrencyPeak(requests: RequestRecord[], context: Context, model: string, key: FilterSelection, now: number) {
   const from = now - DAY;
   const events: [number, number][] = [];
-  for (const r of requests) if (r.context === context && r.model === model && (key === 'all' || r.keyId === key) && r.end > from && r.start <= now) {
+  for (const r of requests) if (r.context === context && r.model === model && matchesSelection(key, r.keyId) && r.end > from && r.start <= now) {
     events.push([Math.max(r.start, from), 1], [r.end, -1]);
   }
   events.sort((a, b) => a[0] - b[0] || a[1] - b[1]);

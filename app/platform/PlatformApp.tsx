@@ -1,7 +1,8 @@
 'use client';
-import { useEffect, useMemo, useState } from 'react';
-import { Context, KeyRecord, Page, MOCK_ENTERPRISE_CREDITS, STORAGE_KEY, Store, contextModels, makeUsageRequests, makeStore, parseStore, points, validateKey, dateKey } from './data';
+import { useEffect, useState } from 'react';
+import { Context, KeyRecord, Page, MOCK_ENTERPRISE_CREDITS, STORAGE_KEY, Store, RequestRecord, contextModels, makeStore, parseStore, points, validateKey, dateKey } from './data';
 import { RekaMenu } from './reka';
+import { loadUsageLedger } from './usage-ledger';
 import Keys from './keys';
 import Usage from './usage';
 import Pricing from './pricing';
@@ -19,6 +20,7 @@ function currentPage(fallback: Page): Page {
 }
 export default function PlatformApp({ initialPage = 'keys' }: { initialPage?: Page }) {
   const [store, setStore] = useState<Store | null>(null);
+  const [requests, setRequests] = useState<RequestRecord[]>([]);
   const [clock, setClock] = useState<number | null>(null);
   const [loadError, setLoadError] = useState('');
   const [page, setPage] = useState<Page>(initialPage);
@@ -33,11 +35,15 @@ export default function PlatformApp({ initialPage = 'keys' }: { initialPage?: Pa
   /* Browser storage hydration requires one client render after the stable server loading state. */
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
+    let active = true;
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       const next = raw ? parseStore(raw) : makeStore();
       if (!raw) localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-      setStore(next);
+      void loadUsageLedger(next.anchor).then(rows => {
+        if (!active) return;
+        setRequests(rows); setStore(next);
+      }).catch(() => { if (active) setLoadError('账单数据读取或保存失败，请检查浏览器存储空间后重试；现有数据不会被覆盖。'); });
     } catch { setLoadError('本地数据读取失败。请允许此站点使用浏览器存储后重试；现有数据不会被覆盖。'); }
     setClock(Date.now());
     const timer = window.setInterval(() => setClock(Date.now()), 60_000);
@@ -45,13 +51,11 @@ export default function PlatformApp({ initialPage = 'keys' }: { initialPage?: Pa
     const pop = () => { setUsageVisit(value => value + 1); setPage(currentPage('keys')); setSelectedKey('all'); setAccountOpen(false); };
     const storage = (event: StorageEvent) => { if (event.key === STORAGE_KEY && event.newValue) { try { setStore(parseStore(event.newValue)); setSelectedKey('all'); } catch { setLoadError('其他窗口的数据更新无法读取，请刷新重试。'); } } };
     window.addEventListener('popstate', pop); window.addEventListener('storage', storage);
-    return () => { window.clearInterval(timer); window.removeEventListener('popstate', pop); window.removeEventListener('storage', storage); };
+    return () => { active = false; window.clearInterval(timer); window.removeEventListener('popstate', pop); window.removeEventListener('storage', storage); };
   }, [initialPage]);
   /* eslint-enable react-hooks/set-state-in-effect */
   useEffect(() => { document.title = `${page === 'keys' ? 'API Key' : page === 'usage' ? '用量与积分' : page === 'pricing' ? '计费标准' : '个人信息'} — Moss API`; }, [page]);
   useEffect(() => { if (!toast) return; const timer = window.setTimeout(() => setToast(''), 4000); return () => window.clearTimeout(timer); }, [toast]);
-  const anchor = store?.anchor;
-  const requests = useMemo(() => anchor ? makeUsageRequests(anchor) : [], [anchor]);
   const context = store?.context ?? 'enterprise';
   const keys = store?.keys.filter(k => k.context === context) ?? [];
   const settledBefore = new Date(`${dateKey(clock ?? 0)}T00:00:00+08:00`).getTime();

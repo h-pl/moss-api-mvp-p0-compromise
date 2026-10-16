@@ -48,6 +48,13 @@ export function billGroups(rows: RequestRecord[], context: Context, filters: Fil
   }
   return [...settled.values()].sort((a, b) => rank(a) - rank(b) || tierOrder(a.threshold) - tierOrder(b.threshold));
 }
+// A first-tier-only bill reads like ordinary unit pricing. Keep thresholds once
+// a higher segment applies, including a date filter containing only that segment.
+export function billShowsTierThresholds(groups: BillGroup[]) {
+  const thresholds = groups.flatMap(group => [group.threshold, ...group.lines.map(line => line.threshold)]).filter((value): value is string => Boolean(value));
+  return new Set(thresholds).size > 1 || thresholds.some(value => value.trim().startsWith('>'));
+}
+
 export function billTotals(groups: BillGroup[]) {
   const units = new Map<BillUnit, number>();
   let cents = 0;
@@ -58,18 +65,30 @@ export function billTotals(groups: BillGroup[]) {
   return { modelCount: new Set(groups.map(group => group.model)).size, billedCount: groups.reduce((sum, group) => sum + group.billedCount, 0), cents, units: [...units].map(([unit, value]) => billUnits(value, unit)) };
 }
 
-// Heights in template units; keep each multi-line group intact across pages.
-export function paginateBill(groups: BillGroup[]) {
+// Keep every tier of a model together, in first-appearance order.
+export function billModelGroups(groups: BillGroup[]): BillGroup[][] {
+  const models = new Map<string, BillGroup[]>();
+  for (const group of groups) {
+    const entries = models.get(group.model) ?? [];
+    entries.push(group);
+    models.set(group.model, entries);
+  }
+  return [...models.values()];
+}
+
+// Heights in template units; reserve the total beside the final model.
+export function paginateBill(groups: BillGroup[], finalScopeHeight = 0, measured?: { first: number; continuation: number; modelHeights: number[]; ending: number }) {
   const pages: BillGroup[][] = [[]];
+  const modelGroups = billModelGroups(groups);
   let used = 0;
-  for (const [index, group] of groups.entries()) {
-    const height = 15 + group.lines.reduce((sum, line) => sum + Math.max(1, line.rates.length) * 15, 0) + (group.lines.length - 1) * 4.5;
+  for (const [index, model] of modelGroups.entries()) {
+    const height = measured?.modelHeights[index] ?? model.reduce((total, group) => total + 15 + group.lines.reduce((sum, line) => sum + Math.max(1, line.rates.length) * 15, 0) + (group.lines.length - 1) * 4.5, 0);
     const lastPage = pages[pages.length - 1];
-    const capacity = pages.length === 1 ? 240 : 420;
-    if (lastPage.length && (used + height + (index === groups.length - 1 ? 48 : 0) > capacity || group.kind === 'LLM' && lastPage.some(row => row.kind !== 'LLM'))) {
+    const capacity = pages.length === 1 ? measured?.first ?? 240 : measured?.continuation ?? 420;
+    if (lastPage.length && (used + height + (index === modelGroups.length - 1 ? measured?.ending ?? 48 + finalScopeHeight : 0) > capacity)) {
       pages.push([]); used = 0;
     }
-    pages[pages.length - 1].push(group); used += height;
+    pages[pages.length - 1].push(...model); used += height;
   }
   return pages;
 }

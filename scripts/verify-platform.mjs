@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { aggregate, concurrencyPeak, contextModels, csv, dateKey, filterRequests, makeConcurrencySamples, makeRequests, makeUsageRequests, makeStore, mockUsageCutoff, MOCK_USAGE_FROM, MOCK_USAGE_THROUGH, models, parseStore, rangeFor, validateKey, DAY } from '../app/platform/data.ts';
+import { selectionLabel, isAllSelection, aggregate, concurrencyPeak, contextModels, csv, dateKey, filterRequests, makeConcurrencySamples, makeRequests, makeUsageRequests, makeStore, settledUsageCutoff, MOCK_USAGE_FROM, MOCK_USAGE_THROUGH, models, parseStore, rangeFor, validateKey, DAY } from '../app/platform/data.ts';
 import { rateFor, ratePoints, chargeCents, estimateYuan } from '../app/platform/pricing-data.ts';
 import { usageExport } from '../app/platform/export-data.ts';
 import { readUsageQuery, writeUsageQuery } from '../app/platform/usage-url.ts';
@@ -129,7 +129,7 @@ check('旧缓存补齐九月至十月语音数据，十月企业每天包含 Kim
   for (let day = start; day < end; day += DAY) {
     const dayRequests = extendedRequests.filter(r => r.start >= day && r.start < day + DAY && r.cents > 0);
     for (const context of ['enterprise', 'personal']) {
-      assert.deepEqual(new Set(dayRequests.filter(r => r.context === context).map(r => r.model)), new Set([...models.map(m => m.id), ...(context === 'enterprise' && dateKey(day) >= '2026-10-01' && dateKey(day) <= '2026-10-31' ? ['kimi-k3'] : [])]));
+      assert.deepEqual(new Set(dayRequests.filter(r => r.context === context).map(r => r.model)), new Set([...models.map(m => m.id), ...(context === 'enterprise' && dateKey(day) >= '2026-10-01' && dateKey(day) <= MOCK_USAGE_THROUGH ? ['kimi-k3'] : [])]));
     }
   }
   assert.ok(extendedRequests.every(r => r.end < end));
@@ -149,31 +149,92 @@ check('凌晨建立的旧缓存只覆盖部分模型时仍补齐当日六模型'
 check('最近七天有已同步数据，十月未来数据不进入当前已结算累计', () => {
   const today = Date.parse('2026-09-30T00:00:00+08:00');
   const recent = { ...rangeFor('7', previewNow), model: 'all', key: 'all' };
-  const recentRows = filterRequests(extendedRequests, 'enterprise', recent, mockUsageCutoff(recent.to, previewNow));
+  const recentRows = filterRequests(extendedRequests, 'enterprise', recent, settledUsageCutoff(previewNow));
   assert.ok(recentRows.length > 0);
   assert.ok(recentRows.every(r => r.start < today));
-  assert.equal(mockUsageCutoff(recent.to, previewNow), today);
+  assert.equal(settledUsageCutoff(previewNow), today);
   const futureRows = filterRequests(extendedRequests, 'enterprise', { from: '2026-10-01', to: '2026-10-31', model: 'all', key: 'all' }, today);
   assert.equal(futureRows.length, 0);
 });
-check('未来账期可预览并导出，十月三十一日完整计入且模型 Key 汇总一致', () => {
-  const futureFilters = { from: '2026-10-01', to: '2026-10-31', model: 'all', key: 'all' };
-  const cutoff = mockUsageCutoff(futureFilters.to, previewNow);
-  assert.equal(cutoff, Date.parse('2026-11-01T00:00:00+08:00'));
-  for (const context of ['enterprise', 'personal']) {
-    const futureRows = filterRequests(extendedRequests, context, futureFilters, cutoff).filter(r => r.cents > 0);
-    assert.ok(futureRows.some(r => dateKey(r.start) === '2026-10-31'));
-    assert.ok(futureRows.every(r => dateKey(r.start) >= futureFilters.from && dateKey(r.start) <= futureFilters.to));
-    const total = futureRows.reduce((sum, r) => sum + r.cents, 0);
-    for (const byKey of [false, true]) assert.equal(aggregate(futureRows, byKey).reduce((sum, r) => sum + r.cents, 0), total);
-    const exported = usageExport('requests', futureRows, store.keys, '测试账户', futureFilters);
-    assert.equal(exported.data.length, futureRows.length);
-    assert.equal(exported.data.reduce((sum, r) => sum + Math.round(Number(r.at(-1)) * 10000), 0), total * 5);
+check('数据仅显示北京时间昨日及以前，未来持久化记录不进入汇总和导出', () => {
+  for (const [clock, from, to, last] of [
+    ['2026-10-16T12:00:00+08:00','2026-10-01','2026-11-30','2026-10-15'],
+    ['2026-11-01T00:00:00+08:00','2026-10-01','2026-10-31','2026-10-31'],
+    ['2026-12-01T00:00:00+08:00','2026-11-01','2026-11-30','2026-11-30'],
+  ]) {
+    const scope = {from, to, model:'all', key:'all'};
+    const cutoff = settledUsageCutoff(Date.parse(clock));
+    for (const context of ['enterprise', 'personal']) {
+      const visible = filterRequests(extendedRequests, context, scope, cutoff).filter(r => r.cents > 0);
+      assert.ok(visible.some(r => dateKey(r.start) === last));
+      assert.ok(visible.every(r => dateKey(r.start) <= last));
+      const total = visible.reduce((sum,r) => sum+r.cents,0);
+      for (const byKey of [false,true]) assert.equal(aggregate(visible,byKey).reduce((sum,r)=>sum+r.cents,0),total);
+      const exported = usageExport('requests',visible,store.keys,'测试账户',{...scope,to:last});
+      assert.equal(exported.data.length,visible.length);
+      assert.equal(exported.data.reduce((sum,r)=>sum+Math.round(Number(r.at(-1))*10000),0),total*5);
+    }
   }
-  assert.equal(mockUsageCutoff('2026-11-01', previewNow), Date.parse('2026-09-30T00:00:00+08:00'));
 });
-check('未来日期筛选和请求页签可通过 URL 刷新恢复', () => {
-  const state = { range: 'custom', custom: { from: '2026-10-01', to: '2026-10-31' }, model: 'all', key: 'all', tab: 'requests', page: 1, pageSize: 10 };
-  assert.deepEqual(readUsageQuery(writeUsageQuery('', state), store.keys, previewNow), state);
+check('T−1 在北京时间零点切换，不依赖浏览器时区', () => {
+  assert.equal(settledUsageCutoff(Date.parse('2026-10-15T15:59:59Z')),Date.parse('2026-10-15T00:00:00+08:00'));
+  assert.equal(settledUsageCutoff(Date.parse('2026-10-15T16:00:00Z')),Date.parse('2026-10-16T00:00:00+08:00'));
+});
+check('旧链接的未来结束日期截到昨日，纯未来区间恢复近七天', () => {
+  const clock = Date.parse('2026-10-16T12:00:00+08:00');
+  const state = {range:'custom',custom:{from:'2026-09-09',to:'2026-10-28'},model:'all',key:'all',tab:'requests',page:1,pageSize:10};
+  assert.deepEqual(readUsageQuery(writeUsageQuery('',state),store.keys,clock),{...state,custom:{from:'2026-09-09',to:'2026-10-15'}});
+  const future = readUsageQuery('?range=custom&from=2026-11-01&to=2026-11-30',store.keys,clock);
+  assert.equal(future.range,'7');
+  assert.deepEqual(future.custom,rangeFor('7',clock));
+});
+
+check('多选筛选按同类并集、模型与 Key 交集，并保持 URL 刷新', () => {
+  const selected = { ...filters, model: [models[0].id, models[1].id], key: ['ent-key-1', 'ent-key-2'] };
+  const result = filterRequests(requests, 'enterprise', selected);
+  assert.ok(result.length > 0);
+  assert.deepEqual(result, requests.filter(row => filterRequests([row], 'enterprise', filters).length && selected.model.includes(row.model) && selected.key.includes(row.keyId)));
+  const state = { range: '7', custom: rangeFor('7', now), model: selected.model, key: selected.key, tab: 'overview', page: 1, pageSize: 10 };
+  assert.deepEqual(readUsageQuery(writeUsageQuery('', state), store.keys, now), state);
+  assert.deepEqual(readUsageQuery('?model=unknown&model=moss-transcribe&model=moss-transcribe&key=ent-key-1&key=unknown', store.keys, now).model, 'moss-transcribe');
+});
+check('全量筛选摘要按当前可选范围显示全部，部分选择保留名称', () => {
+  const enterprise = contextModels('enterprise'), personal = contextModels('personal');
+  const allModels = enterprise.map(model => model.id).reverse();
+  assert.equal(selectionLabel('all', '全部模型', enterprise), '全部模型');
+  assert.equal(selectionLabel(allModels, '全部模型', enterprise), '全部模型');
+  assert.equal(selectionLabel(personal.map(model => model.id), '全部模型', personal), '全部模型');
+  assert.notEqual(selectionLabel(personal.map(model => model.id), '全部模型', enterprise), '全部模型');
+  assert.equal(selectionLabel(allModels.slice(0, 2), '全部模型', enterprise), allModels.slice(0, 2).join('、'));
+  const choices = store.keys.filter(key => key.context === 'enterprise').slice(0, 2);
+  assert.equal(selectionLabel(choices.map(key => key.id).reverse(), '全部 API Key', choices), '全部 API Key');
+  assert.equal(selectionLabel(choices[0].id, '全部 API Key', choices), choices[0].name);
+  assert.equal(selectionLabel(choices[0].id, '全部 API Key', choices.slice(0, 1)), '全部 API Key');
+  assert.equal(isAllSelection(['a', 'a'], ['a', 'b']), false);
+  assert.equal(isAllSelection(['a', 'unknown'], ['a', 'b']), false);
+  assert.equal(isAllSelection(['a', 'b', 'unknown'], ['a', 'b']), false);
+  assert.equal(isAllSelection([], []), false);
+  assert.equal(isAllSelection(['a'], []), false);
+  assert.equal(isAllSelection('all', []), true);
+});
+check('Kimi 并发样例按 Key 归属，多个 Key 使用同一时间线汇总峰值', () => {
+  const samples = makeConcurrencySamples(now);
+  assert.equal(concurrencyPeak(samples, 'enterprise', 'kimi-k3', 'all', now).peak, 7);
+  assert.equal(concurrencyPeak(samples, 'enterprise', 'kimi-k3', 'ent-key-2', now).peak, 7);
+  assert.equal(concurrencyPeak(samples, 'enterprise', 'kimi-k3', 'ent-key-1', now).peak, 0);
+  assert.deepEqual(concurrencyPeak(samples, 'enterprise', models[0].id, ['ent-key-1', 'ent-key-2'], now), concurrencyPeak(samples.filter(row => ['ent-key-1', 'ent-key-2'].includes(row.keyId)), 'enterprise', models[0].id, 'all', now));
+});
+
+check('企业 Kimi 授权可创建编辑并持久化，个人不扩充权限', () => {
+  const available = contextModels('enterprise');
+  assert.equal(available.find(model => model.id === 'kimi-k3').limit, 20);
+  assert.equal(validateKey('Kimi service', '', { 'kimi-k3': 20 }, available), null);
+  assert.ok(validateKey('Kimi service', '', { 'kimi-k3': 21 }, available));
+  const saved = makeStore(now);
+  saved.keys[0].policies['kimi-k3'] = 10;
+  assert.equal(parseStore(JSON.stringify(saved)).keys[0].policies['kimi-k3'], 10);
+  delete saved.keys[0].policies['kimi-k3'];
+  assert.equal(parseStore(JSON.stringify(saved)).keys[0].policies['kimi-k3'], undefined);
+  assert.ok(!contextModels('personal').some(model => model.id === 'kimi-k3'));
 });
 console.log(`\n${checks} platform business checks passed.`);
