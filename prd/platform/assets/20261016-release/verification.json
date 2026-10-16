@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-16",
+  "productionUrl": "https://moss-api-mvp-p0-compromise.vercel.app/app/usage?range=7",
+  "featureCommit": "3fe0f3fb07c7ee0c807656d114bcd9772480d684",
+  "feishuRevision": 337,
+  "screenshots": [
+    "key-create.jpg",
+    "model-all.jpg",
+    "usage.jpg",
+    "kimi-recent.jpg",
+    "bill-top.jpg",
+    "bill-tiers.jpg",
+    "export.jpg",
+    "enterprise-payment.jpg"
+  ],
+  "checks": [
+    "51 platform checks",
+    "bill checks",
+    "ledger checks",
+    "TypeScript",
+    "ESLint",
+    "Next production build",
+    "production browser smoke checks"
+  ],
+  "pdfStatus": "Awaiting user-saved PDF; no actual PDF file verified in this release"
+}
