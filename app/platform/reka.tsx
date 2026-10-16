@@ -59,20 +59,31 @@ export function RekaSelect({ value, onValueChange, options, className = '', labe
     v(R.SelectPortal, {}, () => v(R.SelectContent, { class: 'p-select-content', position: 'popper', sideOffset: 5, collisionPadding: 12 }, () => [v(R.SelectScrollUpButton, { class: 'p-select-scroll' }, () => '⌃'), v(R.SelectViewport, {}, () => options.map(o => v(R.SelectItem, { key: o.value, value: o.value, class: 'p-select-item' }, () => [v(R.SelectItemText, {}, () => o.label), v(R.SelectItemIndicator, {}, () => glyph('check', 14))]))), v(R.SelectScrollDownButton, { class: 'p-select-scroll' }, () => '⌄')])),
   ])} />;
 }
-export function RekaMultiSelect({ value, onValueChange, options, allLabel, itemLabel, label, className = '' }: { value: string | string[]; onValueChange: (value: string | string[]) => void; options: { value: string; label: string }[]; allLabel: string; itemLabel: string; label: string; className?: string }) {
-  const unrestricted = isAllSelection(value, options.map(option => option.value));
-  const selected = unrestricted ? options.map(option => option.value) : Array.isArray(value) ? value : [value];
+type MultiSelectOption = { value: string; label: string; displayName?: string; suffix?: string };
+export function RekaMultiSelect({ value, onValueChange, options, allLabel, itemLabel, label, className = '', menuClassName = '' }: { value: string | string[]; onValueChange: (value: string | string[]) => void; options: MultiSelectOption[]; allLabel: string; itemLabel: string; label: string; className?: string; menuClassName?: string }) {
+  const unrestricted = value === 'all';
+  const selected = unrestricted ? [] : Array.isArray(value) ? value : [value];
   const title = unrestricted || isAllSelection(value, options.map(option => option.value)) ? allLabel : selected.length === 1 ? options.find(option => option.value === selected[0])?.label ?? selected[0] : `已选 ${selected.length} 个${itemLabel}`;
   const toggle = (id: string, checked: boolean) => {
     const next = checked ? [...new Set([...selected, id])] : selected.filter(value => value !== id);
     // No explicit selection means unrestricted; selecting every item stays explicit.
     onValueChange(next.length === 0 ? 'all' : next.length > 1 ? next : next[0]);
   };
+  const optionLabel = (option: MultiSelectOption) => {
+    if (option.displayName === undefined) return h('span', {}, option.label);
+    const characters = Array.from(option.displayName);
+    const tailLength = Math.min(4, Math.floor(characters.length / 2));
+    const split = characters.length - tailLength;
+    return h('span', { class: 'p-key-option-label', title: option.label, 'aria-hidden': true }, [
+      h('span', { class: 'p-key-name-start' }, characters.slice(0, split).join('')),
+      h('span', { class: 'p-key-name-end' }, characters.slice(split).join('') + (option.suffix ?? '')),
+    ]);
+  };
   return <VueIsland render={() => v(R.DropdownMenuRoot, { modal: false }, () => [
     v(R.DropdownMenuTrigger, { class: `p-select-trigger ${className}`, 'aria-label': label }, () => [h('span', {}, title), glyph('chevron', 14)]),
-    v(R.DropdownMenuPortal, {}, () => v(R.DropdownMenuContent, { class: 'p-select-content p-multi-select-content', align: 'start', sideOffset: 5, collisionPadding: 12, 'aria-label': label }, () => [
+    v(R.DropdownMenuPortal, {}, () => v(R.DropdownMenuContent, { class: `p-select-content p-multi-select-content ${menuClassName}`, align: 'start', sideOffset: 5, collisionPadding: 12, 'aria-label': label }, () => [
       v(R.DropdownMenuCheckboxItem, { class: 'p-select-item p-multi-select-item', modelValue: unrestricted, onSelect: (event: Event) => { event.preventDefault(); onValueChange('all'); } }, () => [h('span', {}, allLabel), h('span', { class: 'p-multi-select-indicator', 'aria-hidden': true }, unrestricted ? [glyph('check', 14)] : [])]),
-      ...options.map(option => v(R.DropdownMenuCheckboxItem, { key: option.value, modelValue: selected.includes(option.value), 'onUpdate:modelValue': (checked: boolean) => toggle(option.value, checked), onSelect: (event: Event) => event.preventDefault(), class: 'p-select-item p-multi-select-item', textValue: option.label }, () => [h('span', {}, option.label), h('span', { class: 'p-multi-select-indicator', 'aria-hidden': true }, selected.includes(option.value) ? [glyph('check', 14)] : [])])),
+      ...options.map(option => v(R.DropdownMenuCheckboxItem, { key: option.value, modelValue: selected.includes(option.value), 'onUpdate:modelValue': (checked: boolean) => toggle(option.value, checked), onSelect: (event: Event) => event.preventDefault(), class: 'p-select-item p-multi-select-item', textValue: option.label, 'aria-label': option.label, title: option.label }, () => [optionLabel(option), h('span', { class: 'p-multi-select-indicator', 'aria-hidden': true }, selected.includes(option.value) ? [glyph('check', 14)] : [])])),
     ])),
   ])} />;
 }

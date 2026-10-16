@@ -39,7 +39,8 @@ export default function PlatformApp({ initialPage = 'keys' }: { initialPage?: Pa
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       const next = raw ? parseStore(raw) : makeStore();
-      if (!raw) localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      const serialized = JSON.stringify(next);
+      if (raw !== serialized) localStorage.setItem(STORAGE_KEY, serialized);
       void loadUsageLedger(next.anchor).then(rows => {
         if (!active) return;
         setRequests(rows); setStore(next);

@@ -41,6 +41,18 @@ export function contextModels(context: Context) { return (context === 'enterpris
 export const points = (cents: number) => (cents / 100).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 export const dateKey = (time: number) => new Date(time + 8 * 3_600_000).toISOString().slice(0, 10);
 export const timeLabel = (time: number) => new Date(time + 8 * 3_600_000).toISOString().slice(0, 19).replace('T', ' ');
+const MOCK_KEY_PREFIX = 'ent-key-list-mock-';
+function makeAdditionalMockKeys(anchor: number): KeyRecord[] {
+  const teams = ['客户服务', '内容创作', '教育培训', '智能硬件', '海外业务', '企业协作'];
+  const scenes = ['生产主服务', '灰度发布环境', '离线任务处理', '研发联调环境', '长文本语音与多说话人转写服务'];
+  return Array.from({ length: 30 }, (_, index) => ({
+    id: `${MOCK_KEY_PREFIX}${index + 1}`, context: 'enterprise',
+    name: `${teams[Math.floor(index / scenes.length)]} · ${scenes[index % scenes.length]}`,
+    masked: `sk-••••••${(0xa000 + index).toString(16)}`, note: '模拟业务 Key，暂无历史请求',
+    policies: Object.fromEntries(usageModels.map(model => [model.id, Math.min(5, model.limit)])),
+    enabled: index % 10 !== 9, createdAt: anchor - (30 - index) * DAY,
+  }));
+}
 export function makeStore(now = Date.now()): Store {
   const anchor = Math.floor(now / 60_000) * 60_000;
   const names = ['语音产品生产环境', '内容生成服务', '实时转写服务', '研发联调', '离线批处理'];
@@ -50,12 +62,12 @@ export function makeStore(now = Date.now()): Store {
   keys.find(key => key.id === 'ent-key-2')!.policies[kimiModel.id] = kimiModel.limit;
   keys.push({ id: 'personal-key-1', context: 'personal', name: '个人项目', masked: 'sk-••••••f8c3', note: '', policies: Object.fromEntries(models.map(m => [m.id, 5])), enabled: true, createdAt: anchor - 40 * DAY });
   keys.push({ id: 'ent-key-six-model-preview', context: 'enterprise', name: '多模型语音服务', masked: 'sk-••••••f6a2', note: '双人对话、音色设计与说话人分离', policies: Object.fromEntries(models.slice(3).map(m => [m.id, m.limit])), enabled: true, createdAt: anchor - 31 * DAY });
-  return { version: 1, anchor, context: 'enterprise', keys };
+  return { version: 1, anchor, context: 'enterprise', keys: [...keys, ...makeAdditionalMockKeys(anchor)] };
 }
 // An immutable request fixture is independent of current key policy, deletion or status.
 // Shared-pool peaks are computed from overlapping accepted request intervals.
 export function makeRequests(anchor: number, days = 30): RequestRecord[] {
-  const original = makeStore(anchor).keys;
+  const original = makeStore(anchor).keys.filter(key => !key.id.startsWith(MOCK_KEY_PREFIX));
   const requests: RequestRecord[] = [];
   for (let day = 0; day < days; day++) {
     for (let modelIndex = 0; modelIndex < models.length; modelIndex++) {
@@ -148,6 +160,8 @@ export function parseStore(raw: string): Store {
   for (const k of s.keys) { if (k.policies && 'moss-asr-1.0' in k.policies) { k.policies['moss-transcribe'] = k.policies['moss-asr-1.0']; delete k.policies['moss-asr-1.0']; } }
   for (const k of s.keys) if (!k.id || !['enterprise', 'personal'].includes(k.context) || typeof k.masked !== 'string' || typeof k.enabled !== 'boolean' || !Number.isFinite(k.createdAt) || validateKey(k.name, k.note, k.policies, contextModels(k.context))) throw new Error('Key 数据不完整');
   if (!s.keys.some(k => k.id === 'ent-key-six-model-preview')) s.keys.push(makeStore(s.anchor).keys.find(k => k.id === 'ent-key-six-model-preview')!);
+  const existingIds = new Set(s.keys.map(key => key.id));
+  s.keys.push(...makeAdditionalMockKeys(s.anchor).filter(key => !existingIds.has(key.id)));
   return s;
 }
 export function csv(headers: string[], rows: (string | number)[][]) {

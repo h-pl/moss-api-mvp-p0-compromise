@@ -1,9 +1,11 @@
 'use client';
 import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { contextModels, selectionLabel, type Context, type Filters, type KeyRecord, points, type RequestRecord, timeLabel } from './data';
+import { isAllSelection, selectionLabel, selectionValues, type Context, type Filters, type KeyRecord, points, type RequestRecord } from './data';
 import { billAmount, billGroups, billModelGroups, billShowsTierThresholds, billTotals, billUnits, paginateBill, type BillGroup } from './bill-data';
 import { Dialog, Icon } from './ui';
+import FilterScopeSummary, { type FilterScope } from './filter-scope';
+import { UsageDocumentHeading, UsageDocumentSummary, UsageDocumentFooter } from './usage-document';
 
 function BillRows({ groups }: { groups: BillGroup[] }) {
   const showThresholds = billShowsTierThresholds(groups);
@@ -22,7 +24,7 @@ function BillRows({ groups }: { groups: BillGroup[] }) {
   })}</tbody>;
 }
 
-export default function BillPreview({ rows, filters, context, keys, scope: filterScope, close }: { rows: RequestRecord[]; filters: Filters; context: Context; keys: KeyRecord[]; scope?: { model: string; key: string }; close: () => void }) {
+export default function BillPreview({ rows, filters, context, keys, scope: filterScope, close }: { rows: RequestRecord[]; filters: Filters; context: Context; keys: KeyRecord[]; scope?: FilterScope; close: () => void }) {
   const [generatedAt] = useState(() => Date.now());
   const [printing, setPrinting] = useState(false);
   const [error, setError] = useState('');
@@ -30,7 +32,7 @@ export default function BillPreview({ rows, filters, context, keys, scope: filte
   const totals = billTotals(groups);
   const account = context === 'enterprise' ? '星河科技' : '林晓 · 2090649342695182666';
   const period = `${filters.from} 至 ${filters.to}`;
-  const scope = filterScope ?? { model: selectionLabel(filters.model, '全部模型', contextModels(context)), key: selectionLabel(filters.key, '全部 API Key', keys) };
+  const scope = filterScope ?? { key: selectionLabel(filters.key, '全部 API Key', keys), allKeys: isAllSelection(filters.key, keys.map(key => key.id)), keyCount: new Set(selectionValues(filters.key)).size };
   const [measureElement, setMeasureElement] = useState<HTMLDivElement | null>(null);
   const [printLayout, setPrintLayout] = useState<Parameters<typeof paginateBill>[2]>();
   useLayoutEffect(() => {
@@ -43,17 +45,16 @@ export default function BillPreview({ rows, filters, context, keys, scope: filte
       const groupElements = [...table.querySelectorAll<HTMLElement>('tbody')];
       const heights = groupElements.map(element => element.getBoundingClientRect().height);
       const total = table.querySelector('tfoot')!.getBoundingClientRect().height;
-      const scope = article.querySelector('.p-bill-scope')!.getBoundingClientRect().height;
       const gap = parseFloat(getComputedStyle(content).rowGap);
       const style = getComputedStyle(article);
       const pageHeight = 594; // Leave one template unit for print rounding.
       const footer = article.querySelector('.p-bill-page-footer')!.getBoundingClientRect().height;
       const available = pageHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom) - parseFloat(style.rowGap) - footer;
-      const overhead = content.getBoundingClientRect().height - heights.reduce((sum, height) => sum + height, 0) - total - scope - gap;
+      const overhead = content.getBoundingClientRect().height - heights.reduce((sum, height) => sum + height, 0) - total;
       const brand = article.querySelector('.p-bill-brand-row')!.getBoundingClientRect().height;
       const sectionHeading = article.querySelector('.p-bill-section-heading')!;
       const continuationOverhead = brand + gap + sectionHeading.getBoundingClientRect().height + parseFloat(getComputedStyle(sectionHeading).marginBottom) + table.querySelector('thead')!.getBoundingClientRect().height;
-      const layout = { first: available - overhead, continuation: available - continuationOverhead, modelHeights: heights, ending: total + gap + scope };
+      const layout = { first: available - overhead, continuation: available - continuationOverhead, modelHeights: heights, ending: total };
       setPrintLayout(previous => JSON.stringify(previous) === JSON.stringify(layout) ? previous : layout);
     };
     const observer = new ResizeObserver(measure);
@@ -61,7 +62,7 @@ export default function BillPreview({ rows, filters, context, keys, scope: filte
     measure();
     void document.fonts.ready.then(measure);
     return () => observer.disconnect();
-  }, [measureElement, groups, scope.model, scope.key]);
+  }, [measureElement, groups, scope.allKeys, scope.key, scope.keyCount]);
   const sameMonth = filters.from.slice(0, 7) === filters.to.slice(0, 7);
   const filePeriod = sameMonth ? `${filters.from.slice(0, 4)}年${Number(filters.from.slice(5, 7))}月` : period;
   const month = sameMonth ? `${filePeriod}账单` : '用量账单';
@@ -85,33 +86,18 @@ export default function BillPreview({ rows, filters, context, keys, scope: filte
   };
   const renderDocument = (pages: BillGroup[][], paginated: boolean) => <div className="p-bill-pages">{pages.map((page, index) => <div className="p-bill-page" key={index}><article className="p-bill-document" aria-label={`${account}用量账单${paginated ? ` 第${index + 1}页` : ''}`}>
     <div className="p-bill-content">
-      <header className="p-bill-heading">
-        <div className="p-bill-brand-row"><strong>MOSS API</strong><span>{month}</span></div>
-        {index === 0 ? <div className="p-bill-title-row">
-          <div><h1>用量账单</h1><p className="p-bill-company">{account}</p></div>
-          <div className="p-bill-period"><span>账单周期（北京时间）</span><p>{period}</p></div>
-        </div> : null}
-      </header>
-      {index === 0 ? <dl className="p-bill-summary">
-        <div><dt>计费模型</dt><dd>{totals.modelCount}<small>个</small></dd></div>
-        <div><dt>计费请求次数</dt><dd>{totals.billedCount.toLocaleString('zh-CN')}<small>次</small></dd></div>
-        <div><dt>消耗积分</dt><dd>{points(totals.cents)}<small>积分</small></dd></div>
-        <div className="p-bill-amount"><dt>折后金额</dt><dd>{billAmount(totals.cents)}</dd></div>
-      </dl> : null}
+      <UsageDocumentHeading title="用量账单" account={account} month={month} period={period} periodLabel="账单周期" continuation={index > 0} />
+      {index === 0 ? <UsageDocumentSummary primaryLabel="计费模型" primaryValue={totals.modelCount} primaryUnit="个" billedCount={totals.billedCount} cents={totals.cents} /> : null}
       <section className="p-bill-details" aria-label={index ? '计费明细（续）' : '计费明细'}>
-        <div className="p-bill-section-heading"><h2>{index ? '计费明细（续）' : '计费明细'}</h2></div>
+        <div className="p-bill-section-heading"><h2>{index ? '计费明细（续）' : '计费明细'}</h2><FilterScopeSummary scope={scope} /></div>
         <div className={`p-bill-table${index < pages.length - 1 ? ' p-bill-table-continued' : ''}`}><table>
           <thead><tr><th scope="col">计费模型</th><th scope="col">计费规则</th><th scope="col" className="p-number">计费请求次数</th><th scope="col" className="p-number">计费用量</th><th scope="col" className="p-number">消耗积分</th><th scope="col" className="p-number">折后金额</th></tr></thead>
           {billModelGroups(page).map(model => <BillRows key={model[0].model} groups={model} />)}
           {index === pages.length - 1 ? <tfoot><tr><th colSpan={2} scope="row">合计</th><td className="p-number">{totals.billedCount.toLocaleString('zh-CN')}</td><td className="p-number">{totals.units.map(unit => <div key={unit}>{unit}</div>)}</td><td className="p-number">{points(totals.cents)} 积分</td><td className="p-number">{billAmount(totals.cents)}</td></tr></tfoot> : null}
         </table></div>
       </section>
-      {index === pages.length - 1 ? <section className="p-bill-scope" aria-label="筛选范围">
-        <h3>筛选范围</h3>
-        <dl><div><dt>模型</dt><dd title={scope.model}>{scope.model}</dd></div><div><dt>API Key</dt><dd title={scope.key}>{scope.key}</dd></div></dl>
-      </section> : null}
     </div>
-    <div className="p-bill-page-footer"><span>生成时间 {timeLabel(generatedAt)}（UTC+8）</span>{paginated ? <span>{index + 1} / {pages.length}</span> : null}</div>
+    <UsageDocumentFooter generatedAt={generatedAt} page={paginated ? index + 1 : undefined} pages={paginated ? pages.length : undefined} />
   </article></div>)}</div>;
   return <><Dialog title="账单预览" close={close} className="p-bill-dialog"><div className="p-dialog-body">{renderDocument([groups], false)}{error ? <p role="alert" className="p-error">{error}</p> : null}</div><footer><button className="p-button p-primary" onClick={print} disabled={printing || !printLayout}><Icon name="print" />{printing ? '正在打开打印…' : '打印账单'}</button></footer></Dialog>{createPortal(<div className="p-bill-print-sheet p-bill-paper">{renderDocument(paginateBill(groups, 0, printLayout), true)}</div>, document.body)}{createPortal(<div className="p-bill-measure p-bill-paper" ref={setMeasureElement} aria-hidden="true">{renderDocument([groups], true)}</div>, document.body)}</>;
 }
