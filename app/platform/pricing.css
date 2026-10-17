@@ -1,0 +1,27 @@
+/* Match the platform pricing page while keeping contract-specific model rows. */
+.p-contract-pricing{color:rgba(0,0,0,.85)}
+.p-contract-rates{display:grid;gap:48px}
+.p-contract-heading h1{margin:0;font-size:28px;line-height:40px;font-weight:500;letter-spacing:normal}
+.p-contract-heading p{margin:8px 0 0;color:rgba(0,0,0,.67);font-size:14px;line-height:22px}
+.p-contract-group{display:grid;gap:16px;min-width:0}
+.p-contract-group>header{display:flex;align-items:flex-end;justify-content:space-between;gap:20px}
+.p-contract-group h2,.p-contract-contact h2{margin:0;font-size:16px;line-height:24px;font-weight:500}
+.p-contract-group>header p{margin:0;color:rgba(0,0,0,.45);font-size:12px;line-height:20px;text-align:right;overflow-wrap:anywhere}
+.p-contract-table-wrap{max-width:100%;overflow-x:auto}
+.p-contract-table-wrap:focus-visible{outline:2px solid #808080;outline-offset:3px}
+.p-contract-group table{table-layout:fixed;width:100%;min-width:1040px;border-collapse:collapse;font-size:14px;line-height:22px;font-variant-numeric:tabular-nums;color:rgba(0,0,0,.67)}
+.p-contract-group th,.p-contract-group td{text-align:left;padding:20px 16px;border-bottom:1px solid rgba(0,0,0,.08);font-size:inherit;line-height:inherit;white-space:nowrap}
+.p-contract-group thead th{background:#f3f4f5;border-bottom:0;padding:12px 16px;color:rgba(0,0,0,.45);font-size:12px;line-height:20px;font-weight:500}
+.p-contract-group thead th:first-child{border-radius:8px 0 0 8px}
+.p-contract-group thead th:last-child{border-radius:0 8px 8px 0}
+.p-contract-group tbody th,.p-contract-group strong{color:rgba(0,0,0,.85);font-weight:500}
+.p-contract-group tbody tr:last-child td{border-bottom:1px solid rgba(0,0,0,.08)}
+.p-contract-group tbody tr:hover{background:transparent}
+.p-contract-note{margin:0;color:rgba(0,0,0,.67);font-size:12px;line-height:20px}
+.p-contract-contact{display:flex;align-items:center;flex-wrap:wrap;gap:8px 24px;margin-top:48px;padding-top:20px;border-top:1px solid rgba(0,0,0,.1)}
+.p-contract-contact>div{flex:1;min-width:min(280px,100%)}
+.p-contract-contact p{margin:4px 0 0;color:rgba(0,0,0,.67);font-size:14px;line-height:22px}
+.p-contract-contact button{margin-left:auto;padding:0;background:transparent;border:0;font-size:14px;line-height:22px;font-weight:500;text-decoration:underline;text-underline-offset:4px;white-space:nowrap}
+.p-contract-contact button:hover{color:rgba(0,0,0,.67)}
+.p-contract-contact button:focus-visible{outline:2px solid #808080;outline-offset:4px}
+@media(max-width:680px){.p-contract-group>header{align-items:flex-start;flex-direction:column;gap:8px}.p-contract-group>header p{text-align:left}.p-contract-group table{min-width:940px;font-size:12px;line-height:20px}.p-contract-group th,.p-contract-group td,.p-contract-group thead th{padding:8px}}
