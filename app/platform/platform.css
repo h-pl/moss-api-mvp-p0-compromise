@@ -538,12 +538,12 @@ input:focus,textarea:focus,select:focus{outline:none;box-shadow:none}
 
 /* Keep native scrolling and thumb dragging; only visibility is application-controlled.
    Width stays constant while fading, so content never shifts on scroll. */
-*{--p-scrollbar-opacity:0;scrollbar-width:thin;scrollbar-color:rgb(128 128 128 / var(--p-scrollbar-opacity)) transparent}
+*{--p-scrollbar-opacity:0;scrollbar-width:auto;scrollbar-color:rgb(128 128 128 / var(--p-scrollbar-opacity)) transparent}
 @supports selector(::-webkit-scrollbar){
   *{scrollbar-width:auto;scrollbar-color:auto}
-  *::-webkit-scrollbar{width:8px;height:8px}
+  *::-webkit-scrollbar{width:10px;height:10px}
   *::-webkit-scrollbar-track,*::-webkit-scrollbar-corner{background:transparent;border:0}
-  *::-webkit-scrollbar-thumb{background:rgb(128 128 128 / var(--p-scrollbar-opacity));border-radius:8px;border:2px solid transparent;background-clip:padding-box}
+  *::-webkit-scrollbar-thumb{background:rgb(128 128 128 / var(--p-scrollbar-opacity));border-radius:10px;border:1px solid transparent;background-clip:padding-box}
   *::-webkit-scrollbar-thumb:hover,*::-webkit-scrollbar-thumb:active{background-color:#808080}
 }
 /* Preserve system contrast and discoverability in accessibility contrast modes. */
