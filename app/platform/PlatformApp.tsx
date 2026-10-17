@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { useAutoHideScrollbars } from './scrollbars';
 import { Context, KeyRecord, Page, MOCK_ENTERPRISE_CREDITS, STORAGE_KEY, Store, RequestRecord, contextModels, makeStore, parseStore, points, validateKey, dateKey } from './data';
 import { RekaMenu } from './reka';
 import { loadUsageLedger } from './usage-ledger';
@@ -19,6 +20,7 @@ function currentPage(fallback: Page): Page {
   return fallback;
 }
 export default function PlatformApp({ initialPage = 'keys' }: { initialPage?: Page }) {
+  useAutoHideScrollbars();
   const [store, setStore] = useState<Store | null>(null);
   const [requests, setRequests] = useState<RequestRecord[]>([]);
   const [clock, setClock] = useState<number | null>(null);
