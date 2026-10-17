@@ -1,13 +1,13 @@
 'use client';
 import { contextModels, points } from './data';
-import { enterpriseContract, estimateYuan, rateFor, ratePoints, kimiContractCategories, kimiContractTiers } from './pricing-data';
+import { enterpriseContract, estimateYuan, rateFor, ratePoints, asrContractTiers, kimiContractCategories, kimiContractTiers } from './pricing-data';
 import { Help } from './ui';
 import './pricing.css';
 
 const groups = [
-  { id: 'speech', title: '语音生成', models: ['moss-tts-1.0-pro', 'moss-tts-1.5-flash', 'moss-ttsd-1.0'] },
-  { id: 'voice', title: '音色设计', models: ['moss-voice-generator-1.0'] },
-  { id: 'transcription', title: '语音转写', models: ['moss-transcribe', 'moss-transcribe-diarize-pro'] },
+  { id: 'speech', title: '语音生成', method: '按输入字符计费', models: ['moss-tts-1.0-pro', 'moss-tts-1.5-flash', 'moss-ttsd-1.0'] },
+  { id: 'voice', title: '音色设计', method: '按输入字符计费', models: ['moss-voice-generator-1.0'] },
+  { id: 'transcription', title: '语音转写', method: '按输入音视频时长计费', models: ['moss-transcribe', 'moss-transcribe-diarize-pro'] },
 ];
 
 export default function Pricing({ contact }: { contact: () => void }) {
@@ -22,41 +22,48 @@ export default function Pricing({ contact }: { contact: () => void }) {
         const models = available.filter(model => group.models.includes(model.id));
         if (!models.length) return null;
         return <section className="p-contract-group" key={group.id} aria-labelledby={`pricing-${group.id}`}>
-          <header><h2 id={`pricing-${group.id}`}>{group.title}</h2></header>
+          <header><h2 id={`pricing-${group.id}`}>{group.title}</h2><p>{group.method}</p></header>
           <div className="p-contract-table-wrap" role="region" aria-labelledby={`pricing-${group.id}`} tabIndex={0}>
             <table aria-label={`${group.title}合同计费标准`}>
-              <colgroup>{[30, 19, 20, 19, 12].map((width, index) => <col key={index} style={{ width: `${width}%` }} />)}</colgroup>
-              <thead><tr><th scope="col">模型</th><th scope="col">计费方式</th><th scope="col">合同单价（人民币）</th><th scope="col">实际扣除</th><th scope="col">最低扣费</th></tr></thead>
-              <tbody>{models.map(model => {
+              <colgroup>{(group.id === 'transcription' ? [30, 19, 20, 19, 12] : [49, 20, 19, 12]).map((width, index) => <col key={index} style={{ width: `${width}%` }} />)}</colgroup>
+              <thead><tr><th scope="col">模型</th>{group.id === 'transcription' ? <th scope="col">月累计用量（小时） <Help text="基础语音转写按企业自然月累计音视频时长分段累进计费，≤500 小时、超过 500 至 1,000 小时、超过 1,000 小时部分分别使用对应单价；每月重新累计。说话人分离转写按固定单价计费。" /></th> : null}<th scope="col">合同单价（人民币）</th><th scope="col">实际扣除</th><th scope="col">最低扣费</th></tr></thead>
+              {models.map(model => {
                 const rate = rateFor('enterprise', model.id);
                 const unitPoints = ratePoints(rate);
-                return <tr key={model.id}>
+                if (model.id === 'moss-transcribe') return <tbody key={model.id}>{asrContractTiers.map((tier, index) => <tr key={tier.threshold}>
+                  {index === 0 ? <th scope="rowgroup" rowSpan={asrContractTiers.length} translate="no">{model.id}</th> : null}
+                  <td>{tier.threshold}</td>
+                  <td><strong>¥{tier.yuan.toFixed(3)} / 小时</strong></td>
+                  <td>{points(tier.yuan * 2000)} 积分 / 小时</td>
+                  {index === 0 ? <td rowSpan={asrContractTiers.length}>{points(rate.minimumCents)} 积分 / 次</td> : null}
+                </tr>)}</tbody>;
+                return <tbody key={model.id}><tr>
                   <th scope="row" translate="no">{model.id}</th>
-                  <td>{model.kind === 'TTS' ? '按输入字符' : '按输入音视频时长'}</td>
+                  {group.id === 'transcription' ? <td>不限</td> : null}
                   <td><strong>¥{estimateYuan(unitPoints * 100).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 4 })} / {rate.basisLabel}</strong></td>
                   <td>{points(unitPoints * 100)} 积分 / {rate.basisLabel}</td>
                   <td>{points(rate.minimumCents)} 积分 / 次</td>
-                </tr>;
-              })}</tbody>
+                </tr></tbody>;
+              })}
             </table>
           </div>
         </section>;
       })}
       <section className="p-contract-group" aria-labelledby="pricing-language">
-        <header><h2 id="pricing-language">文本生成</h2></header>
+        <header><h2 id="pricing-language">文本生成</h2><p>按输入 / 输出 tokens 计费</p></header>
         <div className="p-contract-table-wrap" role="region" aria-labelledby="pricing-language" tabIndex={0}>
           <table aria-label="Kimi K3 合同计费标准">
             <colgroup>{[17, 25, 19, 20, 19].map((width, index) => <col key={index} style={{ width: `${width}%` }} />)}</colgroup>
             <thead><tr><th scope="col">模型</th><th scope="col">月累计用量（M tokens） <Help text="按企业自然月累计输入与输出 tokens 之和分段累进计费，各档内分别按缓存命中输入、未命中输入及输出单价扣费；每月重新累计。" /></th><th scope="col">计费项目</th><th scope="col">合同单价（人民币）</th><th scope="col">实际扣除</th></tr></thead>
-            {kimiContractTiers.map(tier => <tbody key={tier.threshold}>
-              {kimiContractCategories.map((category, index) => <tr key={category}>
-                {index === 0 ? <th scope="rowgroup" rowSpan={3} translate="no">kimi-k3</th> : null}
-                {index === 0 ? <td rowSpan={3}>{tier.range}</td> : null}
+            <tbody>{kimiContractTiers.flatMap((tier, tierIndex) =>
+              kimiContractCategories.map((category, index) => <tr key={`${tier.threshold}-${category}`} className={`p-contract-tier-row${index === 0 ? ' p-contract-tier-start' : ''}${index === kimiContractCategories.length - 1 ? ' p-contract-tier-end' : ''}`}>
+                {tierIndex === 0 && index === 0 ? <th scope="rowgroup" rowSpan={kimiContractTiers.length * kimiContractCategories.length} translate="no">kimi-k3</th> : null}
+                {index === 0 ? <td rowSpan={kimiContractCategories.length}>{tier.threshold}</td> : null}
                 <td>{category}</td>
                 <td><strong>¥{tier.yuan[index].toFixed(2)} / M tokens</strong></td>
                 <td>{points(tier.yuan[index] * 2000)} 积分 / M tokens</td>
-              </tr>)}
-            </tbody>)}
+              </tr>)
+            )}</tbody>
           </table>
         </div>
       </section>

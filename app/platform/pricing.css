@@ -16,6 +16,8 @@
 .p-contract-group thead th:last-child{border-radius:0 8px 8px 0}
 .p-contract-group tbody th,.p-contract-group strong{color:rgba(0,0,0,.85);font-weight:500}
 .p-contract-group tbody tr:last-child td{border-bottom:1px solid rgba(0,0,0,.08)}
+.p-contract-group .p-contract-tier-row:not(.p-contract-tier-end) td:not([rowspan]){border-bottom:0;padding-bottom:8px}
+.p-contract-group .p-contract-tier-row:not(.p-contract-tier-start) td:not([rowspan]){padding-top:8px}
 .p-contract-group tbody tr:hover{background:transparent}
 .p-contract-note{margin:0;color:rgba(0,0,0,.67);font-size:12px;line-height:20px}
 .p-contract-contact{display:flex;align-items:center;flex-wrap:wrap;gap:8px 24px;margin-top:48px;padding-top:20px;border-top:1px solid rgba(0,0,0,.1)}

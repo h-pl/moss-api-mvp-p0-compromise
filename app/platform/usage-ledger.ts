@@ -1,5 +1,6 @@
 import { applyRecentTierFixture } from './recent-tier-fixture.ts';
 import { extendUsageCalendar } from './usage-calendar.ts';
+import { spreadOctoberUsage } from './spread-usage-fixture.ts';
 import { BILL_MOCK_PERIOD, makeBillMockRequests } from './bill-fixture.ts';
 import { chargeCents, rateFor } from './pricing-data.ts';
 import { dateKey, distributeMockUsageKeys, makeUsageRequests, type RequestRecord } from './data.ts';
@@ -9,7 +10,7 @@ const DATABASE = 'moss-platform-usage';
 const TABLE = 'ledgers';
 const LEDGER_KEY = 'account-usage-v1';
 
-export type UsageLedger = { version: 1 | 2 | 3 | 4 | 5 | 6; createdAt: number; rows: RequestRecord[] };
+export type UsageLedger = { version: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8; createdAt: number; rows: RequestRecord[] };
 
 // Seed once, then read the saved requests and their settlement snapshots.
 // The earlier billing period keeps the current month and recent trend unchanged.
@@ -21,7 +22,8 @@ export function makeInitialUsageLedger(anchor: number): RequestRecord[] {
 }
 
 export function migrateUsageLedger(ledger: UsageLedger, anchor: number): UsageLedger {
-  if (ledger.version === 6) return ledger;
+  if (ledger.version === 8) return ledger;
+  if (ledger.version === 7) return { ...ledger, version: 8, rows: spreadOctoberUsage(ledger.rows, anchor) };
   // Version 2 accidentally backfilled daily seeds into the historical tier period.
   const rows = ledger.version === 2 ? ledger.rows.filter(row => row.context !== 'enterprise' || dateKey(row.start) < HISTORICAL_BILL_PERIOD.from || dateKey(row.start) > HISTORICAL_BILL_PERIOD.to || row.id.startsWith('req_ledger_sep_')) : ledger.rows;
   const calendar = ledger.version >= 4 ? rows : extendUsageCalendar(applyRecentTierFixture(rows), anchor);
@@ -32,7 +34,13 @@ export function migrateUsageLedger(ledger: UsageLedger, anchor: number): UsageLe
     const rate = rateFor('personal', row.model);
     return { ...row, rate, cents: chargeCents(row.units, rate) };
   });
-  return { ...ledger, version: 6, rows: distributeMockUsageKeys(corrected, anchor) };
+  // Upgrade only the generated October Kimi/ASR fixtures in existing caches.
+  // Keep September history, personal data, other models and November snapshots.
+  const octoberFixture = (row: RequestRecord) => row.context === 'enterprise' && ['kimi-k3', 'moss-transcribe'].includes(row.model) && row.id.startsWith('req_ledger_2026-10-');
+  const completed = ledger.version >= 4 && corrected.some(octoberFixture)
+    ? [...corrected.filter(row => !octoberFixture(row)), ...extendUsageCalendar(corrected, anchor).filter(octoberFixture)].sort((a, b) => b.start - a.start)
+    : corrected;
+  return { ...ledger, version: 8, rows: spreadOctoberUsage(distributeMockUsageKeys(completed, anchor), anchor) };
 }
 
 function openDatabase(): Promise<IDBDatabase> {
@@ -59,8 +67,8 @@ export async function loadUsageLedger(anchor: number): Promise<RequestRecord[]> 
         try {
           if (request.result !== undefined) {
             ledger = request.result as UsageLedger;
-            if (![1, 2, 3, 4, 5, 6].includes(ledger.version) || !Array.isArray(ledger.rows) || !ledger.rows.length) throw new Error('账单数据格式不兼容，已保留原数据。');
-            if (ledger.version !== 6) {
+            if (![1, 2, 3, 4, 5, 6, 7, 8].includes(ledger.version) || !Array.isArray(ledger.rows) || !ledger.rows.length) throw new Error('账单数据格式不兼容，已保留原数据。');
+            if (ledger.version !== 8) {
               ledger = migrateUsageLedger(ledger, anchor);
               table.put(ledger, LEDGER_KEY);
             }

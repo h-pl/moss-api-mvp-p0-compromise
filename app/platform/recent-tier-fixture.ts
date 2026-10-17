@@ -1,4 +1,4 @@
-import { kimiContractCategories, kimiContractTiers } from './pricing-data.ts';
+import { asrContractTiers, kimiContractCategories, kimiContractTiers } from './pricing-data.ts';
 import { dateKey, type RequestRecord } from './data.ts';
 import type { BillLine } from './bill-data.ts';
 
@@ -24,7 +24,7 @@ export function applyRecentTierFixture(saved: RequestRecord[]): RequestRecord[] 
       const total = remaining;
       let segment = 0;
       while (remaining > 0) {
-        const limits = token ? kimiContractTiers.map(tier => tier.upperTokens) : [500 * 3600, 1000 * 3600, Infinity];
+        const limits = token ? kimiContractTiers.map(tier => tier.upperTokens) : asrContractTiers.map(tier => tier.upperHours * 3600);
         const tier = limits.findIndex(limit => cumulative < limit);
         const units = Math.min(remaining, limits[tier] - cumulative);
         const labels = kimiContractCategories;
@@ -36,8 +36,8 @@ export function applyRecentTierFixture(saved: RequestRecord[]): RequestRecord[] 
           const rates = kimiContractTiers[tier].yuan;
           lines = [hit, miss, units - hit - miss].map((quantity, category) => ({ label: labels[category], units: quantity / 1_000_000, unit: 'M tokens', rates: [`${rates[category].toFixed(3)} 元 / M tokens`], cents: Math.round(quantity * rates[category] * 2000 / 1_000_000) }));
         } else {
-          const rate = [.553, .45, .35][tier];
-          lines = [{ units: units / 3600, unit: '小时', rates: [`${rate.toFixed(3)} 元 / 小时`], threshold: ['≤500', '>500', '>1,000'][tier], cents: Math.round(units * rate * 2000 / 3600) }];
+          const rate = asrContractTiers[tier].yuan;
+          lines = [{ units: units / 3600, unit: '小时', rates: [`${rate.toFixed(3)} 元 / 小时`], threshold: asrContractTiers[tier].threshold, cents: Math.round(units * rate * 2000 / 3600) }];
         }
         const start = row.start + segment;
         result.push({ ...row, id: segment ? `${row.id}_tier_${segment}` : row.id, start, end: Math.max(row.end, start + 1), units, cents: lines.reduce((sum, line) => sum + line.cents, 0), billing: { kind: token ? 'LLM' : 'ASR', threshold: token ? kimiContractTiers[tier].threshold : undefined, lines } });

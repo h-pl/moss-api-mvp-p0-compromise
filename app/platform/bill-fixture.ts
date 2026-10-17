@@ -1,4 +1,4 @@
-import { kimiContractCategories, kimiContractTiers } from './pricing-data.ts';
+import { asrContractTiers, kimiContractCategories, kimiContractTiers } from './pricing-data.ts';
 import type { BillGroup, BillLine, BillUnit } from './bill-data.ts';
 import type { RequestRecord } from './data.ts';
 export const BILL_MOCK_PERIOD = { from: '2026-10-01', to: '2026-10-07' };
@@ -11,7 +11,7 @@ export function mockBillGroups(): BillGroup[] {
   const voice: BillGroup[] = [
     { model: 'moss-tts-1.0-pro', kind: 'TTS', billedCount: 36400, lines: [line(.8, 26725500, '字符')] },
     { model: 'moss-tts-1.5-flash', kind: 'TTS', billedCount: 35600, lines: [line(.9, 26231000, '字符')] },
-    { model: 'moss-transcribe', kind: 'ASR', billedCount: 19200, lines: [line(.553, 500, '小时', '≤500'), line(.45, 500, '小时', '>500'), line(.35, 250, '小时', '>1,000')] },
+    { model: 'moss-transcribe', kind: 'ASR', billedCount: 19200, lines: asrContractTiers.map((tier, index) => line(tier.yuan, [500, 500, 250][index], '小时', tier.threshold)) },
     { model: 'moss-ttsd-1.0', kind: 'TTS', billedCount: 11800, lines: [line(.9, 8669000, '字符')] },
     { model: 'moss-voice-generator-1.0', kind: 'TTS', billedCount: 13900, lines: [line(.85, 10128000, '字符')] },
     { model: 'moss-transcribe-diarize-pro', kind: 'ASR', billedCount: 13600, lines: [line(.68, 970, '小时')] },

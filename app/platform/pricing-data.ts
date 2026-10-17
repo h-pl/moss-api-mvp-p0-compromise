@@ -34,6 +34,11 @@ export function chargeCents(units: number, rate: RatePolicy) {
 export const estimateYuan = (pointCents: number) => pointCents / 100 * 0.05;
 
 // Shared with the enterprise ledger so the price page and mock bills cannot drift.
+export const asrContractTiers = [
+  { upperHours: 500, threshold: '≤500', yuan: .553 },
+  { upperHours: 1000, threshold: '>500', yuan: .45 },
+  { upperHours: Infinity, threshold: '>1,000', yuan: .35 },
+] as const;
 export const kimiContractCategories = ['输入-缓存命中', '输入-缓存未命中', '输出'] as const;
 export const kimiContractTiers = [
   { upperTokens: 100_000_000, threshold: '≤100', range: '≤100', yuan: [2, 20, 100] },

@@ -1,4 +1,4 @@
-import { kimiContractCategories, kimiContractTiers } from './pricing-data.ts';
+import { asrContractTiers, kimiContractCategories, kimiContractTiers } from './pricing-data.ts';
 import { DAY, dateKey, makeUsageRequests, type RequestRecord } from './data.ts';
 import type { BillLine } from './bill-data.ts';
 
@@ -8,9 +8,9 @@ const labels = kimiContractCategories;
 const tokenLimits = kimiContractTiers.map(tier => tier.upperTokens);
 const tokenRates = kimiContractTiers.map(tier => tier.yuan);
 const tokenLabels = kimiContractTiers.map(tier => tier.threshold);
-const asrLimits = [500 * 3600, 1000 * 3600, Infinity];
-const asrRates = [.553, .45, .35];
-const asrLabels = ['≤500', '>500', '>1,000'];
+const asrLimits = asrContractTiers.map(tier => tier.upperHours * 3600);
+const asrRates = asrContractTiers.map(tier => tier.yuan);
+const asrLabels = asrContractTiers.map(tier => tier.threshold);
 const tierFor = (total: number, limits: number[]) => limits.findIndex(limit => total < limit);
 
 // One-time ledger migration: retain settled requests, extend the calendar and
@@ -40,6 +40,13 @@ export function extendUsageCalendar(saved: RequestRecord[], anchor: number): Req
       'kimi-k3': Math.round((month === '2026-10' ? .8 + index * 1.7 : 17 + dayOfMonth % 5) * factor * 1_000_000),
       'moss-transcribe': Math.round((month === '2026-10' ? 4 + index * 10 : 115 + dayOfMonth % 5 * 5) * factor * 3600),
     };
+    // Build the required monthly volume and tier snapshots. Before persistence,
+    // spreadOctoberUsage distributes these requests across October 1–16 while
+    // retaining every charge and the progressive tier order.
+    if (date === '2026-10-16') {
+      budgets['kimi-k3'] = 105_000_000;
+      budgets['moss-transcribe'] = 510 * 3600;
+    }
     for (const model of ['kimi-k3', 'moss-transcribe'] as const) {
       const token = model === 'kimi-k3', key = `${month}:${model}`, limits = token ? tokenLimits : asrLimits;
       let remaining = budgets[model], ordinal = 0;
