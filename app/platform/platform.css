@@ -477,9 +477,15 @@
 .p-request-table .p-table-scroll:focus-visible{outline:none}
 
 /* Multi-select filters retain the select menu appearance and stay open after selection. */
-/* Exchange padding for a transparent inset without widening the menu or its rows. */
-.p-multi-select-content{min-width:var(--reka-dropdown-menu-trigger-width);max-height:min(380px,var(--reka-dropdown-menu-content-available-height));overflow-y:auto;border:4px solid transparent;padding:1px}
-.p-multi-select-content::-webkit-scrollbar-track{margin-block:4px}
+/* The menu scrollbar overlays the existing row padding; it consumes no column. */
+.p-multi-select-content{min-width:var(--reka-dropdown-menu-trigger-width);max-height:min(380px,var(--reka-dropdown-menu-content-available-height));overflow:hidden;border:0;padding:5px}
+.p-menu-scroll-area{width:100%;min-width:0}
+.p-menu-scroll-viewport{width:100%;max-height:calc(min(380px,var(--reka-dropdown-menu-content-available-height)) - 10px);overscroll-behavior:contain;outline:none}
+.p-menu-scrollbar{--p-scrollbar-opacity:inherit;width:8px;margin:3px 0;background:transparent;opacity:var(--p-scrollbar-opacity);user-select:none;touch-action:none;z-index:1}
+.p-menu-scrollbar:hover,.p-menu-scrollbar:active{opacity:1}
+.p-menu-scroll-thumb{width:100%;border-radius:8px;background:#808080}
+.p-menu-scroll-thumb[data-state=hidden]{display:none}
+@media(forced-colors:active){.p-menu-scrollbar{opacity:1}.p-menu-scroll-thumb{background:ButtonText}}
 .p-multi-select-item{justify-content:space-between;gap:20px}
 .p-multi-select-indicator{display:inline-flex;align-items:center;justify-content:center;flex:0 0 14px;width:14px;height:14px}
 .p-key-multi-select-content{width:300px;min-width:0;max-width:calc(100vw - 24px);overflow-x:hidden}

@@ -39,13 +39,15 @@ export function useAutoHideScrollbars() {
     };
     const scroll = (event: Event) => {
       const target = event.target === document ? document.scrollingElement : event.target;
-      if (target instanceof HTMLElement) show(target);
+      if (target instanceof HTMLElement) show(target.closest<HTMLElement>('.p-menu-scroll-area') ?? target);
     };
     // Native scrollbar dragging can suppress DOM pointer events in Chromium/WebKit;
     // thumb :active handles that case. These listeners cover browsers that deliver them.
     const pointerDown = (event: PointerEvent) => {
       if (!(event.target instanceof HTMLElement)) return;
       const element = event.target;
+      const overlay = element.closest<HTMLElement>('.p-menu-scrollbar');
+      if (overlay?.parentElement) { show(overlay.parentElement, true); return; }
       const rect = element.getBoundingClientRect();
       const x = event.clientX - rect.left - element.clientLeft;
       const y = event.clientY - rect.top - element.clientTop;

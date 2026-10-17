@@ -81,10 +81,13 @@ export function RekaMultiSelect({ value, onValueChange, options, allLabel, itemL
   };
   return <VueIsland render={() => v(R.DropdownMenuRoot, { modal: false }, () => [
     v(R.DropdownMenuTrigger, { class: `p-select-trigger ${className}`, 'aria-label': label }, () => [h('span', {}, title), glyph('chevron', 14)]),
-    v(R.DropdownMenuPortal, {}, () => v(R.DropdownMenuContent, { class: `p-select-content p-multi-select-content ${menuClassName}`, align: 'start', sideOffset: 5, collisionPadding: 12, 'aria-label': label }, () => [
+    v(R.DropdownMenuPortal, {}, () => v(R.DropdownMenuContent, { class: `p-select-content p-multi-select-content ${menuClassName}`, align: 'start', sideOffset: 5, collisionPadding: 12, 'aria-label': label }, () => v(R.ScrollAreaRoot, { class: 'p-menu-scroll-area', type: 'auto' }, () => [
+      v(R.ScrollAreaViewport, { class: 'p-menu-scroll-viewport' }, () => [
       v(R.DropdownMenuCheckboxItem, { class: 'p-select-item p-multi-select-item', modelValue: unrestricted, onSelect: (event: Event) => { event.preventDefault(); onValueChange('all'); } }, () => [h('span', {}, allLabel), h('span', { class: 'p-multi-select-indicator', 'aria-hidden': true }, unrestricted ? [glyph('check', 14)] : [])]),
       ...options.map(option => v(R.DropdownMenuCheckboxItem, { key: option.value, modelValue: selected.includes(option.value), 'onUpdate:modelValue': (checked: boolean) => toggle(option.value, checked), onSelect: (event: Event) => event.preventDefault(), class: 'p-select-item p-multi-select-item', textValue: option.label, 'aria-label': option.label, title: option.label }, () => [optionLabel(option), h('span', { class: 'p-multi-select-indicator', 'aria-hidden': true }, selected.includes(option.value) ? [glyph('check', 14)] : [])])),
-    ])),
+      ]),
+      v(R.ScrollAreaScrollbar, { class: 'p-menu-scrollbar', orientation: 'vertical' }, () => v(R.ScrollAreaThumb, { class: 'p-menu-scroll-thumb' })),
+    ]))),
   ])} />;
 }
 export function RekaSwitch({ checked, label, onCheckedChange }: { checked: boolean; label: string; onCheckedChange: (value: boolean) => void }) { return <VueIsland render={() => v(R.SwitchRoot, { modelValue: checked, 'onUpdate:modelValue': onCheckedChange, class: `p-switch ${checked ? 'p-switch-on' : ''}`, 'aria-label': label }, () => v(R.SwitchThumb))} />; }
