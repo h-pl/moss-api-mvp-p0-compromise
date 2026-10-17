@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { makeInitialUsageLedger, migrateUsageLedger, HISTORICAL_BILL_PERIOD } from '../app/platform/usage-ledger.ts';
 import { chargeCents, rateFor } from '../app/platform/pricing-data.ts';
-import { makeUsageRequests, filterRequests } from '../app/platform/data.ts';
+import { makeUsageRequests, filterRequests, makeStore, aggregate, distributeMockUsageKeys } from '../app/platform/data.ts';
 import { billGroups, billTotals } from '../app/platform/bill-data.ts';
 import { mockBillGroups } from '../app/platform/bill-fixture.ts';
 const anchor = Date.parse('2026-09-14T18:07:00+08:00');
@@ -22,12 +22,12 @@ assert.deepEqual(restored, rows);
 console.log(`Ledger checks passed: ${rows.length} durable requests; historical tiers; daily/monthly isolation; personal history preserved.`);
 
 const migrated = migrateUsageLedger({ version: 1, createdAt: anchor, rows }, anchor);
-assert.equal(migrated.version, 5);
+assert.equal(migrated.version, 6);
 assert.deepEqual(billTotals(billGroups(migrated.rows, 'enterprise', historical)), billTotals(mockBillGroups()));
 assert.equal(migrateUsageLedger(migrated, anchor), migrated, 'Migration must not recreate saved data on refresh');
 assert.equal(new Set(migrated.rows.map(row => row.id)).size, migrated.rows.length);
 const recentScope = { from: '2026-10-01', to: '2026-10-15', key: 'all', model: 'all' };
-const financial = selected => selected.map(row => { const copy = {...row}; delete copy.billing; return copy; });
+const financial = selected => selected.map(row => { const copy = {...row}; delete copy.billing; delete copy.keyId; return copy; });
 assert.deepEqual(financial(filterRequests(migrated.rows, 'enterprise', recentScope).filter(row => !['kimi-k3','moss-transcribe'].includes(row.model))), financial(filterRequests(rows, 'enterprise', recentScope).filter(row => !['kimi-k3','moss-transcribe'].includes(row.model))));
 assert.deepEqual(rows, restored, 'Migration must not mutate source records before committing');
 for (const month of ['2026-10', '2026-11']) {
@@ -78,10 +78,10 @@ const legacyPersonal = rows.map(row => {
 const saved = {version:4, createdAt:anchor, rows:legacyPersonal};
 const savedCopy = structuredClone(saved);
 const fixed = migrateUsageLedger(saved, anchor);
-assert.equal(fixed.version, 5);
+assert.equal(fixed.version, 6);
 assert.equal(fixed.rows.length, saved.rows.length);
 assert.deepEqual(saved, savedCopy);
-assert.deepEqual(fixed.rows.filter(row=>row.context==='enterprise'), saved.rows.filter(row=>row.context==='enterprise'));
+assert.deepEqual(financial(fixed.rows.filter(row=>row.context==='enterprise')), financial(saved.rows.filter(row=>row.context==='enterprise')));
 for (const [index, row] of fixed.rows.entries()) {
   const before = saved.rows[index];
   assert.equal(row.id, before.id);
@@ -97,3 +97,34 @@ const personalBill = billGroups(fixed.rows, 'personal', {...historical});
 for (const group of personalBill) assert.deepEqual(group.lines[0].rates, [group.model==='moss-transcribe'?'0.800 元 / 小时':group.kind==='ASR'?'2.000 元 / 小时':'2.000 元 / 万字符']);
 assert.equal(billTotals(personalBill).cents, filterRequests(fixed.rows,'personal',historical).reduce((sum,row)=>sum+row.cents,0));
 console.log('Personal pricing verified against official rates; v4 snapshots repaired once, enterprise history unchanged.');
+
+// Expanded Key fixtures have actual detail rows, while global bill totals remain exact.
+const keyAnchor = Date.parse('2026-10-17T12:00:00+08:00');
+const keyStore = makeStore(keyAnchor);
+const keySource = makeUsageRequests(keyAnchor);
+const distributed = distributeMockUsageKeys(keySource, keyAnchor);
+const keyMap = new Map(keyStore.keys.map(key=>[key.id,key]));
+assert.equal(distributed.length,keySource.length);
+for (let i=0;i<distributed.length;i++) {
+  const row=distributed[i], before=keySource[i];
+  assert.deepEqual({...row,keyId:before.keyId},before);
+  if(row.keyId!==before.keyId) {
+    assert.ok(keyMap.get(row.keyId).createdAt<=row.start);
+    assert.ok(keyMap.get(row.keyId).policies[row.model]);
+  }
+}
+assert.deepEqual(distributeMockUsageKeys(distributed,keyAnchor),distributed);
+const detailScope={from:'2026-10-10',to:'2026-10-16',model:'all',key:'all'};
+const detailed=filterRequests(distributed,'enterprise',detailScope);
+const keyCount=new Set(detailed.map(row=>row.keyId)).size;
+assert.ok(keyCount>30,`Expected >30 keys with actual requests, got ${keyCount}`);
+assert.deepEqual(aggregate(detailed),aggregate(filterRequests(keySource,'enterprise',detailScope)));
+assert.equal(aggregate(detailed,true).reduce((n,row)=>n+row.cents,0),billTotals(billGroups(distributed,'enterprise',detailScope)).cents);
+const onlyNew=filterRequests(distributed,'enterprise',{...detailScope,key:'ent-key-list-mock-1'});
+assert.ok(onlyNew.length>0);
+assert.ok(onlyNew.every(row=>row.keyId==='ent-key-list-mock-1'));
+const v5={version:5,createdAt:keyAnchor,rows:keySource};
+const v6=migrateUsageLedger(v5,keyAnchor);
+assert.deepEqual(v6.rows,distributed);
+assert.equal(migrateUsageLedger(v6,keyAnchor),v6);
+console.log(`Expanded Key details verified: ${keyCount} keys in recent week; global totals, personal rows and original request snapshots preserved.`);

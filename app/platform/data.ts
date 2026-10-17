@@ -48,7 +48,7 @@ function makeAdditionalMockKeys(anchor: number): KeyRecord[] {
   return Array.from({ length: 30 }, (_, index) => ({
     id: `${MOCK_KEY_PREFIX}${index + 1}`, context: 'enterprise',
     name: `${teams[Math.floor(index / scenes.length)]} · ${scenes[index % scenes.length]}`,
-    masked: `sk-••••••${(0xa000 + index).toString(16)}`, note: '模拟业务 Key，暂无历史请求',
+    masked: `sk-••••••${(0xa000 + index).toString(16)}`, note: `${teams[Math.floor(index / scenes.length)]} · ${scenes[index % scenes.length]}`,
     policies: Object.fromEntries(usageModels.map(model => [model.id, Math.min(5, model.limit)])),
     enabled: index % 10 !== 9, createdAt: anchor - (30 - index) * DAY,
   }));
@@ -102,6 +102,22 @@ export function makeUsageRequests(anchor: number): RequestRecord[] {
     .map(request => ({ ...request, id: `req_calendar_${dateKey(request.start)}_${request.id.slice(4)}` }));
   const november = makeRequests(Date.parse('2026-11-30T18:00:00+08:00'), 30).map(row => ({ ...row, id: `req_nov_${row.id}` }));
   return [...history, ...calendar, ...november, ...makeRecentKimiMockRequests(MOCK_USAGE_THROUGH)].sort((a, b) => b.start - a.start);
+}
+// Spread existing fixture traffic across the expanded key list without inventing
+// extra requests or changing settled quantities, prices, tiers or amounts.
+export function distributeMockUsageKeys(rows: RequestRecord[], anchor: number): RequestRecord[] {
+  const keys = makeAdditionalMockKeys(anchor);
+  const originalKeys = new Set(makeStore(anchor).keys.filter(key => key.context === 'enterprise' && !key.id.startsWith(MOCK_KEY_PREFIX)).map(key => key.id));
+  return rows.map(row => {
+    if (row.context !== 'enterprise' || !row.id.startsWith('req_') || !originalKeys.has(row.keyId)) return row;
+    let hash = 2166136261;
+    for (const char of row.id) hash = Math.imul(hash ^ char.charCodeAt(0), 16777619) >>> 0;
+    // Keep some traffic on the original keys too; assignment is refresh-stable.
+    if (hash % 4 === 0) return row;
+    const eligible = keys.filter(key => key.createdAt <= row.start && key.policies[row.model]);
+    if (!eligible.length) return row;
+    return { ...row, keyId: eligible[Math.floor(hash / 4) % eligible.length].id };
+  });
 }
 // Usage settles the next day, with a single Beijing midnight cutoff for every view.
 export function settledUsageCutoff(now: number) {
@@ -162,6 +178,8 @@ export function parseStore(raw: string): Store {
   if (!s.keys.some(k => k.id === 'ent-key-six-model-preview')) s.keys.push(makeStore(s.anchor).keys.find(k => k.id === 'ent-key-six-model-preview')!);
   const existingIds = new Set(s.keys.map(key => key.id));
   s.keys.push(...makeAdditionalMockKeys(s.anchor).filter(key => !existingIds.has(key.id)));
+  const defaults = new Map(makeAdditionalMockKeys(s.anchor).map(key => [key.id, key.note]));
+  for (const key of s.keys) if (defaults.has(key.id) && key.note === '模拟业务 Key，暂无历史请求') key.note = defaults.get(key.id)!;
   return s;
 }
 export function csv(headers: string[], rows: (string | number)[][]) {
