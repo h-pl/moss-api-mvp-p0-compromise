@@ -1,6 +1,7 @@
 import { applyRecentTierFixture } from './recent-tier-fixture.ts';
 import { extendUsageCalendar } from './usage-calendar.ts';
 import { BILL_MOCK_PERIOD, makeBillMockRequests } from './bill-fixture.ts';
+import { chargeCents, rateFor } from './pricing-data.ts';
 import { dateKey, makeUsageRequests, type RequestRecord } from './data.ts';
 
 export const HISTORICAL_BILL_PERIOD = { from: '2026-09-01', to: '2026-09-07' };
@@ -8,7 +9,7 @@ const DATABASE = 'moss-platform-usage';
 const TABLE = 'ledgers';
 const LEDGER_KEY = 'account-usage-v1';
 
-export type UsageLedger = { version: 1 | 2 | 3 | 4; createdAt: number; rows: RequestRecord[] };
+export type UsageLedger = { version: 1 | 2 | 3 | 4 | 5; createdAt: number; rows: RequestRecord[] };
 
 // Seed once, then read the saved requests and their settlement snapshots.
 // The earlier billing period keeps the current month and recent trend unchanged.
@@ -20,10 +21,18 @@ export function makeInitialUsageLedger(anchor: number): RequestRecord[] {
 }
 
 export function migrateUsageLedger(ledger: UsageLedger, anchor: number): UsageLedger {
-  if (ledger.version === 4) return ledger;
+  if (ledger.version === 5) return ledger;
   // Version 2 accidentally backfilled daily seeds into the historical tier period.
   const rows = ledger.version === 2 ? ledger.rows.filter(row => row.context !== 'enterprise' || dateKey(row.start) < HISTORICAL_BILL_PERIOD.from || dateKey(row.start) > HISTORICAL_BILL_PERIOD.to || row.id.startsWith('req_ledger_sep_')) : ledger.rows;
-  return { ...ledger, version: 4, rows: extendUsageCalendar(applyRecentTierFixture(rows), anchor) };
+  const calendar = ledger.version === 4 ? rows : extendUsageCalendar(applyRecentTierFixture(rows), anchor);
+  // Repair only the obsolete personal fixture snapshot, not real historical rates
+  // or enterprise settlements. Preserve request identity, usage, status and dates.
+  const corrected = calendar.map(row => {
+    if (row.context !== 'personal' || row.rate?.version !== 'platform-list-2026-09' || row.billing) return row;
+    const rate = rateFor('personal', row.model);
+    return { ...row, rate, cents: chargeCents(row.units, rate) };
+  });
+  return { ...ledger, version: 5, rows: corrected };
 }
 
 function openDatabase(): Promise<IDBDatabase> {
@@ -50,13 +59,13 @@ export async function loadUsageLedger(anchor: number): Promise<RequestRecord[]> 
         try {
           if (request.result !== undefined) {
             ledger = request.result as UsageLedger;
-            if (![1, 2, 3, 4].includes(ledger.version) || !Array.isArray(ledger.rows) || !ledger.rows.length) throw new Error('账单数据格式不兼容，已保留原数据。');
-            if (ledger.version !== 4) {
+            if (![1, 2, 3, 4, 5].includes(ledger.version) || !Array.isArray(ledger.rows) || !ledger.rows.length) throw new Error('账单数据格式不兼容，已保留原数据。');
+            if (ledger.version !== 5) {
               ledger = migrateUsageLedger(ledger, anchor);
               table.put(ledger, LEDGER_KEY);
             }
           } else {
-            ledger = { version: 4, createdAt: Date.now(), rows: extendUsageCalendar(applyRecentTierFixture(makeInitialUsageLedger(anchor)), anchor) };
+            ledger = { version: 5, createdAt: Date.now(), rows: extendUsageCalendar(applyRecentTierFixture(makeInitialUsageLedger(anchor)), anchor) };
             table.add(ledger, LEDGER_KEY);
           }
         } catch (error) { issue = error; transaction.abort(); }

@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { makeInitialUsageLedger, migrateUsageLedger, HISTORICAL_BILL_PERIOD } from '../app/platform/usage-ledger.ts';
+import { chargeCents, rateFor } from '../app/platform/pricing-data.ts';
 import { makeUsageRequests, filterRequests } from '../app/platform/data.ts';
 import { billGroups, billTotals } from '../app/platform/bill-data.ts';
 import { mockBillGroups } from '../app/platform/bill-fixture.ts';
@@ -21,7 +22,7 @@ assert.deepEqual(restored, rows);
 console.log(`Ledger checks passed: ${rows.length} durable requests; historical tiers; daily/monthly isolation; personal history preserved.`);
 
 const migrated = migrateUsageLedger({ version: 1, createdAt: anchor, rows }, anchor);
-assert.equal(migrated.version, 4);
+assert.equal(migrated.version, 5);
 assert.deepEqual(billTotals(billGroups(migrated.rows, 'enterprise', historical)), billTotals(mockBillGroups()));
 assert.equal(migrateUsageLedger(migrated, anchor), migrated, 'Migration must not recreate saved data on refresh');
 assert.equal(new Set(migrated.rows.map(row => row.id)).size, migrated.rows.length);
@@ -67,3 +68,32 @@ assert.equal(billTotals(weekGroups).cents,filterRequests(migrated.rows,'enterpri
 const upgraded = migrateUsageLedger({version:3,createdAt:anchor,rows},anchor);
 assert.deepEqual(upgraded,migrated);
 console.log('Recent week: Kimi and ASR cross tiers; Kimi remains below 1,000 points; v3 migration preserves other models.');
+
+// A saved v4 browser ledger must be repaired without recreating keys or requests.
+const legacyPersonal = rows.map(row => {
+  if (row.context !== 'personal') return row;
+  const rate = { ...row.rate, version: 'platform-list-2026-09', standardCents: row.model === 'moss-transcribe' ? 1300 : row.model === 'moss-transcribe-diarize-pro' ? 1700 : 2000, minimumCents: row.model.includes('transcribe') ? 2 : 10 };
+  return { ...row, rate, cents: chargeCents(row.units, rate) };
+});
+const saved = {version:4, createdAt:anchor, rows:legacyPersonal};
+const savedCopy = structuredClone(saved);
+const fixed = migrateUsageLedger(saved, anchor);
+assert.equal(fixed.version, 5);
+assert.equal(fixed.rows.length, saved.rows.length);
+assert.deepEqual(saved, savedCopy);
+assert.deepEqual(fixed.rows.filter(row=>row.context==='enterprise'), saved.rows.filter(row=>row.context==='enterprise'));
+for (const [index, row] of fixed.rows.entries()) {
+  const before = saved.rows[index];
+  assert.equal(row.id, before.id);
+  assert.equal(row.units, before.units);
+  assert.equal(row.start, before.start);
+  if (row.context === 'personal') {
+    assert.deepEqual(row.rate, rateFor('personal',row.model));
+    assert.equal(row.cents, chargeCents(row.units,row.rate));
+  }
+}
+assert.equal(migrateUsageLedger(fixed, anchor), fixed);
+const personalBill = billGroups(fixed.rows, 'personal', {...historical});
+for (const group of personalBill) assert.deepEqual(group.lines[0].rates, [group.model==='moss-transcribe'?'0.800 元 / 小时':group.kind==='ASR'?'2.000 元 / 小时':'2.000 元 / 万字符']);
+assert.equal(billTotals(personalBill).cents, filterRequests(fixed.rows,'personal',historical).reduce((sum,row)=>sum+row.cents,0));
+console.log('Personal pricing verified against official rates; v4 snapshots repaired once, enterprise history unchanged.');

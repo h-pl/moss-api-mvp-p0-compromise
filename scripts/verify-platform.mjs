@@ -57,7 +57,17 @@ check('损坏数据明确报错，不自动覆盖', () => { assert.throws(() => 
 check('CSV兼容中文、引号、换行并防止公式注入', () => { const result = csv(['备注'], [['=1+1'], ['普通,"名称"\n第二行']]); assert.ok(result.startsWith('\uFEFF')); assert.ok(result.includes('"\'=1+1"')); assert.ok(result.includes('"普通,""名称""\n第二行"')); });
 check('北京时间自然日边界', () => { assert.equal(dateKey(Date.parse('2026-09-13T16:00:00Z')), '2026-09-14'); });
 check('企业每模型折扣分别生效', () => { assert.equal(ratePoints(rateFor('enterprise', models[0].id)), 16); assert.equal(ratePoints(rateFor('enterprise', models[1].id)), 18); assert.equal(ratePoints(rateFor('enterprise', models[2].id)), 11.05); });
-check('个人价格不继承企业折扣', () => assert.equal(ratePoints(rateFor('personal', models[0].id)), 20));
+check('个人官网价格与企业合同独立，未公开的最低消费不额外套用', () => {
+  for (const model of models) {
+    const rate = rateFor('personal', model.id);
+    const expected = model.id === 'moss-transcribe' ? 16 : 40;
+    assert.equal(ratePoints(rate), expected);
+    assert.equal(estimateYuan(chargeCents(rate.basisUnits, rate)), model.id === 'moss-transcribe' ? 0.8 : 2);
+    assert.equal(rate.minimumCents, 0);
+    assert.equal(rate.discountBps, 10000);
+  }
+  assert.equal(chargeCents(1, rateFor('personal', models[0].id)), 0);
+});
 check('计费按折扣、用量与单次最低消费结算', () => { const rate = rateFor('enterprise', models[0].id); assert.equal(chargeCents(10000, rate), 1600); assert.equal(chargeCents(1, rate), 10); assert.equal(chargeCents(0, rate), 0); assert.throws(() => chargeCents(-1, rate)); });
 check('未知企业不能回退使用其他企业合同', () => assert.throws(() => rateFor('enterprise', models[0].id, 'unknown')));
 check('请求保留结算费率快照并可重算金额', () => { for (const request of requests) { assert.ok(request.rate?.version); assert.equal(request.cents, chargeCents(request.units, request.rate)); } const rate = rateFor('enterprise', models[0].id); rate.discountBps = 1000; assert.equal(requests.find(r => r.context === 'enterprise' && r.model === models[0].id).rate.discountBps, 8000); });
