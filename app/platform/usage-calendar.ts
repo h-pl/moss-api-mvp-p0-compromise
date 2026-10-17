@@ -1,12 +1,13 @@
+import { kimiContractCategories, kimiContractTiers } from './pricing-data.ts';
 import { DAY, dateKey, makeUsageRequests, type RequestRecord } from './data.ts';
 import type { BillLine } from './bill-data.ts';
 
 export const EXTENDED_USAGE_FROM = '2026-10-16';
 export const EXTENDED_USAGE_THROUGH = '2026-11-30';
-const labels = ['输入-缓存命中', '输入-缓存未命中', '输出'];
-const tokenLimits = [100_000_000, 200_000_000, Infinity];
-const tokenRates = [[2, 20, 100], [1.6, 16, 80], [1.2, 12, 60]];
-const tokenLabels = ['≤100', '>100', '>200'];
+const labels = kimiContractCategories;
+const tokenLimits = kimiContractTiers.map(tier => tier.upperTokens);
+const tokenRates = kimiContractTiers.map(tier => tier.yuan);
+const tokenLabels = kimiContractTiers.map(tier => tier.threshold);
 const asrLimits = [500 * 3600, 1000 * 3600, Infinity];
 const asrRates = [.553, .45, .35];
 const asrLabels = ['≤500', '>500', '>1,000'];

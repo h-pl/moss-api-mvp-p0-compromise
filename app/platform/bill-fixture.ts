@@ -1,3 +1,4 @@
+import { kimiContractCategories, kimiContractTiers } from './pricing-data.ts';
 import type { BillGroup, BillLine, BillUnit } from './bill-data.ts';
 import type { RequestRecord } from './data.ts';
 export const BILL_MOCK_PERIOD = { from: '2026-10-01', to: '2026-10-07' };
@@ -18,11 +19,11 @@ export function mockBillGroups(): BillGroup[] {
   // The combined input/output volume fills 100 M, 100 M and 5 M segments.
   // Categories are the measured allocation within each segment, not separate ladders.
   const segments = [
-    { threshold: '≤100', requests: 6400, units: [60, 31, 9], rates: [2, 20, 100] },
-    { threshold: '>100', requests: 6100, units: [62, 29.5, 8.5], rates: [1.6, 16, 80] },
-    { threshold: '>200', requests: 300, units: [3, 1.5, .5], rates: [1.2, 12, 60] },
+    { threshold: '≤100', requests: 6400, units: [60, 31, 9], rates: kimiContractTiers[0].yuan },
+    { threshold: '>100', requests: 6100, units: [62, 29.5, 8.5], rates: kimiContractTiers[1].yuan },
+    { threshold: '>200', requests: 300, units: [3, 1.5, .5], rates: kimiContractTiers[2].yuan },
   ];
-  const labels = ['输入-缓存命中', '输入-缓存未命中', '输出'];
+  const labels = kimiContractCategories;
   return [...voice, ...segments.map(segment => ({ model: 'kimi-k3', kind: 'LLM', billedCount: segment.requests, threshold: segment.threshold, lines: labels.map((label, i) => line(segment.rates[i], segment.units[i], 'M tokens', undefined, label)) }))];
 }
 
@@ -64,8 +65,8 @@ export function makeRecentKimiMockRequests(through: string): RequestRecord[] {
   const result: RequestRecord[] = [];
   const start = Date.parse('2026-10-01T00:00:00+08:00');
   const end = Date.parse(`${through}T00:00:00+08:00`);
-  const labels = ['输入-缓存命中', '输入-缓存未命中', '输出'];
-  const rates = [2, 20, 100];
+  const labels = kimiContractCategories;
+  const rates = kimiContractTiers[0].yuan;
   for (let day = start, index = 0; day <= end; day += 86_400_000, index++) {
     // A few dozen daily requests keep recent Kimi spend comparable to voice models.
     const weekday = new Date(day + 8 * 3_600_000).getUTCDay();

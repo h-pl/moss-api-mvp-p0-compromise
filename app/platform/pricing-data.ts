@@ -32,3 +32,11 @@ export function chargeCents(units: number, rate: RatePolicy) {
 
 // Estimate only: screenshot base package 400 points / RMB 20. Does not apply a second model discount.
 export const estimateYuan = (pointCents: number) => pointCents / 100 * 0.05;
+
+// Shared with the enterprise ledger so the price page and mock bills cannot drift.
+export const kimiContractCategories = ['输入-缓存命中', '输入-缓存未命中', '输出'] as const;
+export const kimiContractTiers = [
+  { upperTokens: 100_000_000, threshold: '≤100', range: '≤100', yuan: [2, 20, 100] },
+  { upperTokens: 200_000_000, threshold: '>100', range: '>100–200', yuan: [1.6, 16, 80] },
+  { upperTokens: Infinity, threshold: '>200', range: '>200', yuan: [1.2, 12, 60] },
+] as const;
