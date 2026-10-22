@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { billGroups, billShowsTierThresholds, billTotals, paginateBill } from '../app/platform/bill-data.ts';
+import { billDisplayGroups, billGroups, billShowsTierThresholds, billTotals, paginateBill } from '../app/platform/bill-data.ts';
 import { makeRequests, makeUsageRequests, aggregate, filterRequests, rangeFor, dateKey } from '../app/platform/data.ts';
 import { mockBillGroups, makeBillMockRequests, BILL_MOCK_PERIOD } from '../app/platform/bill-fixture.ts';
 import { usageExport } from '../app/platform/export-data.ts';
@@ -114,14 +114,44 @@ assert.ok(dailyKimi.reduce((sum, row) => sum + row.units, 0) < 100_000_000);
 assert.ok(dailyKimi.every(row => row.billing.threshold === '≤100'));
 console.log('Daily mock checks passed: stable monthly scale, varied days, and token tiers matching actual volume.');
 
-// Threshold visibility reflects whether progressive pricing actually applies.
-assert.equal(billShowsTierThresholds([kimi[0]]), false, 'First-tier Kimi should show only unit rates');
+// Every configured tier keeps its threshold visible, including the first tier.
+assert.equal(billShowsTierThresholds([kimi[0]]), true, 'First-tier Kimi retains its threshold');
 assert.equal(billShowsTierThresholds(kimi), true, 'Full progressive Kimi must retain every threshold');
 assert.equal(billShowsTierThresholds([kimi[2]]), true, 'Filtering to a later tier must retain its threshold');
-assert.equal(billShowsTierThresholds([{ ...asr, lines: [asr.lines[0]] }]), false, 'First-tier ASR should show only its rate');
+assert.equal(billShowsTierThresholds([{ ...asr, lines: [asr.lines[0]] }]), true, 'First-tier ASR retains its threshold');
 assert.equal(billShowsTierThresholds([asr]), true, 'Progressive ASR must retain thresholds');
-assert.equal(billShowsTierThresholds(billGroups(recent, 'enterprise', recentScope)), false, 'Daily Kimi bill must hide the untriggered tier label');
-console.log('Tier display checks passed: first-tier only hidden, progressive and later-tier scopes retained.');
+assert.equal(billShowsTierThresholds(billGroups(recent, 'enterprise', recentScope)), true, 'Daily Kimi retains its first-tier threshold');
+// Date/Key filters may contain only later tiers. Display all three without
+// changing settled requests, usage, rates or money, including a zero first tier.
+for (const source of [
+  [{ ...asr, lines: asr.lines.slice(1) }, ...kimi.slice(1)],
+  [{ ...asr, lines: asr.lines.slice(0, 1) }, kimi[0]],
+  [{ ...asr, lines: [asr.lines[2]] }, kimi[2]],
+]) {
+  const before = structuredClone(source);
+  const display = billDisplayGroups(source);
+  assert.deepEqual(display[0].lines.map(line => line.threshold), ['≤500', '>500', '>1,000']);
+  assert.deepEqual(display.slice(1).map(group => group.threshold), ['≤100', '>100', '>200']);
+  assert.deepEqual(billTotals(display), billTotals(source));
+  assert.deepEqual(source, before, 'Completing display tiers must not mutate settlement snapshots');
+  assert.deepEqual(billDisplayGroups(display), display, 'Completing tiers is idempotent');
+  for (const group of source) {
+    const rendered = display.find(item => item.model === group.model && item.threshold === group.threshold);
+    assert.equal(rendered.billedCount, group.billedCount);
+    for (const line of group.lines) assert.ok(rendered.lines.includes(line), 'Keep original line snapshots');
+  }
+}
+const laterOnly = billDisplayGroups([{ ...asr, lines: asr.lines.slice(1) }, ...kimi.slice(1)]);
+assert.deepEqual(laterOnly[0].lines[0], { threshold: '≤500', rates: ['0.553 元 / 小时'], units: 0, unit: '小时', cents: 0 });
+assert.equal(laterOnly[1].billedCount, 0);
+assert.deepEqual(laterOnly[1].lines.map(line => line.rates[0]), ['2.000 元 / M tokens', '20.000 元 / M tokens', '100.000 元 / M tokens']);
+assert.ok(laterOnly[1].lines.every(line => line.units === 0 && line.cents === 0));
+assert.deepEqual(billDisplayGroups([]), []);
+assert.deepEqual(billDisplayGroups(groups), groups);
+const ordinary = billGroups(personalRows, 'personal', filters);
+assert.deepEqual(billDisplayGroups(ordinary), ordinary, 'Ordinary personal pricing must not acquire enterprise tiers');
+assert.equal(billShowsTierThresholds(ordinary), false);
+console.log('Tier display checks passed: complete three-tier ladders, zero missing segments, preserved totals and snapshots.');
 
 // Real paper metrics, independent of the narrow modal's wrapped scope text.
 const filteredTiers = [{...asr,lines:asr.lines.slice(0,2)}, ...kimi.slice(0,2)];

@@ -1,5 +1,5 @@
 import { aggregate, filterRequests, models, type Context, type Filters, type RequestRecord } from './data.ts';
-import { estimateYuan, ratePoints } from './pricing-data.ts';
+import { asrContractTiers, kimiContractCategories, kimiContractTiers, estimateYuan, ratePoints } from './pricing-data.ts';
 
 export type BillUnit = '字符' | '小时' | 'M tokens';
 export type BillLine = { label?: string; rates: string[]; threshold?: string; units: number; unit: BillUnit; cents: number };
@@ -48,11 +48,36 @@ export function billGroups(rows: RequestRecord[], context: Context, filters: Fil
   }
   return [...settled.values()].sort((a, b) => rank(a) - rank(b) || tierOrder(a.threshold) - tierOrder(b.threshold));
 }
-// A first-tier-only bill reads like ordinary unit pricing. Keep thresholds once
-// a higher segment applies, including a date filter containing only that segment.
+// Complete the contract ladder for display after filtering settled requests.
+// Missing segments have zero usage; existing snapshots retain their actual rates.
+export function billDisplayGroups(groups: BillGroup[]): BillGroup[] {
+  return billModelGroups(groups).flatMap(modelGroups => {
+    if (modelGroups[0].model === 'moss-transcribe') {
+      return modelGroups.map(group => {
+        if (!group.lines.some(line => line.threshold)) return group;
+        const lines = [...group.lines];
+        for (const tier of asrContractTiers) {
+          if (!lines.some(line => line.threshold === tier.threshold)) lines.push({ threshold: tier.threshold, rates: [`${tier.yuan.toFixed(3)} 元 / 小时`], units: 0, unit: '小时', cents: 0 });
+        }
+        const order = (threshold?: string) => asrContractTiers.findIndex(tier => tier.threshold === threshold);
+        lines.sort((a, b) => (order(a.threshold) < 0 ? Infinity : order(a.threshold)) - (order(b.threshold) < 0 ? Infinity : order(b.threshold)));
+        return { ...group, lines };
+      });
+    }
+    if (modelGroups[0].model === 'kimi-k3' && modelGroups.some(group => group.threshold)) {
+      const completed = [...modelGroups];
+      for (const tier of kimiContractTiers) {
+        if (!completed.some(group => group.threshold === tier.threshold)) completed.push({ model: 'kimi-k3', kind: 'LLM', billedCount: 0, threshold: tier.threshold, lines: kimiContractCategories.map((label, index) => ({ label, rates: [`${tier.yuan[index].toFixed(3)} 元 / M tokens`], units: 0, unit: 'M tokens', cents: 0 })) });
+      }
+      const order = (threshold?: string) => kimiContractTiers.findIndex(tier => tier.threshold === threshold);
+      return completed.sort((a, b) => (order(a.threshold) < 0 ? Infinity : order(a.threshold)) - (order(b.threshold) < 0 ? Infinity : order(b.threshold)));
+    }
+    return modelGroups;
+  });
+}
+
 export function billShowsTierThresholds(groups: BillGroup[]) {
-  const thresholds = groups.flatMap(group => [group.threshold, ...group.lines.map(line => line.threshold)]).filter((value): value is string => Boolean(value));
-  return new Set(thresholds).size > 1 || thresholds.some(value => value.trim().startsWith('>'));
+  return groups.some(group => group.threshold || group.lines.some(line => line.threshold));
 }
 
 export function billTotals(groups: BillGroup[]) {

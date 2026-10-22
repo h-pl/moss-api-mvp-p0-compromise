@@ -2,7 +2,7 @@
 import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { isAllSelection, selectionLabel, selectionValues, type Context, type Filters, type KeyRecord, points, type RequestRecord } from './data';
-import { billAmount, billGroups, billModelGroups, billShowsTierThresholds, billTotals, billUnits, paginateBill, type BillGroup } from './bill-data';
+import { billAmount, billDisplayGroups, billGroups, billModelGroups, billShowsTierThresholds, billTotals, billUnits, paginateBill, type BillGroup } from './bill-data';
 import { Dialog, Icon } from './ui';
 import FilterScopeSummary, { type FilterScope } from './filter-scope';
 import { UsageDocumentHeading, UsageDocumentSummary, UsageDocumentFooter } from './usage-document';
@@ -28,7 +28,7 @@ export default function BillPreview({ rows, filters, context, keys, scope: filte
   const [generatedAt] = useState(() => Date.now());
   const [printing, setPrinting] = useState(false);
   const [error, setError] = useState('');
-  const groups = useMemo(() => billGroups(rows, context, { from: filters.from, to: filters.to, model: filters.model, key: filters.key }), [rows, context, filters.from, filters.to, filters.model, filters.key]);
+  const groups = useMemo(() => billDisplayGroups(billGroups(rows, context, { from: filters.from, to: filters.to, model: filters.model, key: filters.key })), [rows, context, filters.from, filters.to, filters.model, filters.key]);
   const totals = billTotals(groups);
   const account = context === 'enterprise' ? '星河科技' : '林晓 · 2090649342695182666';
   const period = `${filters.from} 至 ${filters.to}`;
