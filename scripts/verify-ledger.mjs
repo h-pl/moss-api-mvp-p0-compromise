@@ -145,7 +145,7 @@ assert.equal(billTotals(currentGroups).cents,currentCents);
 for (const kind of ['keys','requests']) {
   const exported=usageExport(kind,current,keyStore.keys,'星河科技',currentScope);
   const pointIndex=exported.headers.indexOf('消耗积分');
-  const yuanIndex=exported.headers.indexOf('折后金额（元）');
+  const yuanIndex=exported.headers.indexOf('折算金额（元）');
   assert.equal(exported.data.reduce((sum,row)=>sum+Math.round(Number(row[pointIndex])*100),0),currentCents);
   assert.equal(exported.data.reduce((sum,row)=>sum+Math.round(Number(row[yuanIndex])*10000),0),currentCents*5);
 }

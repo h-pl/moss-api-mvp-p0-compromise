@@ -89,7 +89,7 @@ check('两种 CSV 保留 Key ID、不导出请求次数，且列值保持对应'
     for (const row of result.data) {
       assert.equal(row.length, result.headers.length);
       assert.equal(row[result.headers.indexOf('Key ID')], store.keys[0].id);
-      assert.equal(row[result.headers.indexOf('API Key')], store.keys[0].name);
+      assert.equal(row[result.headers.indexOf('API Key 名称')], store.keys[0].name);
     }
     if (kind === 'keys') {
       assert.equal(result.data.length, 1);

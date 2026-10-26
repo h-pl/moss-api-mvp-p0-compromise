@@ -11,12 +11,12 @@ export function UsageDocumentHeading({ title, account, month, period, periodLabe
   </header>;
 }
 
-export function UsageDocumentSummary({ primaryLabel, primaryValue, primaryUnit, billedCount, cents }: { primaryLabel: string; primaryValue: number; primaryUnit: string; billedCount: number; cents: number }) {
+export function UsageDocumentSummary({ primaryLabel, primaryValue, primaryUnit, billedCount, cents, amountLabel = '折后金额' }: { primaryLabel: string; primaryValue: number; primaryUnit: string; billedCount: number; cents: number; amountLabel?: string }) {
   return <dl className="p-bill-summary">
     <div><dt>{primaryLabel}</dt><dd>{primaryValue.toLocaleString('zh-CN')}<small>{primaryUnit}</small></dd></div>
     <div><dt>计费请求次数</dt><dd>{billedCount.toLocaleString('zh-CN')}<small>次</small></dd></div>
     <div><dt>消耗积分</dt><dd>{points(cents)}<small>积分</small></dd></div>
-    <div className="p-bill-amount"><dt>折后金额</dt><dd>{billAmount(cents)}</dd></div>
+    <div className="p-bill-amount"><dt>{amountLabel}</dt><dd>{billAmount(cents)}</dd></div>
   </dl>;
 }
 
