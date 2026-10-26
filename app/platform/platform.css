@@ -427,7 +427,7 @@
 .p-usage-export-dialog .p-export-kind{margin:calc(12 * var(--bill-unit)) 0 calc(15 * var(--bill-unit));padding:0;border:0;display:flex;flex-wrap:wrap;gap:calc(6 * var(--bill-unit)) calc(18 * var(--bill-unit));font-size:calc(9.5 * var(--bill-unit))}
 .p-usage-export-dialog .p-export-kind label{display:inline-flex;align-items:center;gap:calc(6 * var(--bill-unit));min-height:32px;cursor:pointer}
 .p-usage-export-dialog .p-export-kind input{accent-color:var(--bill-ink);margin:0}
-.p-usage-export-dialog .p-export-key{display:block;overflow-wrap:anywhere}
+.p-usage-export-dialog .p-export-key{display:block;max-width:100%;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;overflow-wrap:normal}
 .p-usage-export-dialog .p-bill-table:focus-visible{outline:none}
 .p-usage-export-dialog .p-dialog-body .p-export-request-summary{margin:0;color:var(--bill-muted);font-size:calc(9.5 * var(--bill-unit));line-height:calc(16 * var(--bill-unit))}
 
