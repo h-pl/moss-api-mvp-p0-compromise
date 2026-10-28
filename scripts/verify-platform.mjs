@@ -75,7 +75,7 @@ check('计费次数排除零扣费请求但不改变请求总数', () => { const
 check('充值换算统一，金额不重复应用模型折扣', () => assert.equal(estimateYuan(chargeCents(10000, rateFor('enterprise', models[0].id))), 0.8));
 check('六个授权模型均有企业计费与请求数据', () => { assert.equal(models.length, 6); for (const m of models) { assert.ok(rateFor('enterprise', m.id)); assert.ok(rows.some(r => r.model === m.id)); } });
 check('旧数据扩充模型时保留原有Key', () => { const old = makeStore(now); old.keys = old.keys.filter(k => k.id !== 'ent-key-six-model-preview'); const migrated = parseStore(JSON.stringify(old)); assert.deepEqual(migrated.keys.slice(0, old.keys.length), old.keys); assert.equal(migrated.keys.filter(k => k.id === 'ent-key-six-model-preview').length, 1); });
-check('两种 CSV 保留 Key ID、不导出请求次数，且列值保持对应', () => {
+check('两种 CSV 保留 API Key ID、不导出请求次数，且列值保持对应', () => {
   const from = '2026-09-07', to = '2026-09-13';
   const sample = [
     { ...requests[0], keyId: store.keys[0].id, id: 'request-success', status: '成功', cents: 100, units: 500 },
@@ -83,12 +83,12 @@ check('两种 CSV 保留 Key ID、不导出请求次数，且列值保持对应'
   ];
   for (const kind of ['keys', 'requests']) {
     const result = usageExport(kind, sample, store.keys, '测试企业', { from, to, model: 'all', key: 'all' });
-    assert.ok(result.headers.includes('Key ID'));
+    assert.ok(result.headers.includes('API Key ID'));
     assert.ok(!result.headers.includes('请求次数'));
     assert.ok(!result.headers.includes('计费版本'));
     for (const row of result.data) {
       assert.equal(row.length, result.headers.length);
-      assert.equal(row[result.headers.indexOf('Key ID')], store.keys[0].id);
+      assert.equal(row[result.headers.indexOf('API Key ID')], store.keys[0].id);
       assert.equal(row[result.headers.indexOf('API Key 名称')], store.keys[0].name);
     }
     if (kind === 'keys') {

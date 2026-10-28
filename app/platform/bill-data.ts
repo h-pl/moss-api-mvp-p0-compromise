@@ -11,7 +11,7 @@ export const billAmount = (cents: number) => `¥${number(estimateYuan(cents), 2)
 
 
 export function billGroups(rows: RequestRecord[], context: Context, filters: Filters): BillGroup[] {
-  rows = filterRequests(rows, context, filters);
+  rows = filterRequests(rows, context, filters).filter(row => row.cents > 0);
   const settled = new Map<string, BillGroup>();
   for (const request of rows) {
     if (!request.billing) continue;

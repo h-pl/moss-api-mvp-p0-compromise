@@ -1,3 +1,4 @@
+import { addFailedRequestFixture } from './failed-request-fixture.ts';
 import { applyRecentTierFixture } from './recent-tier-fixture.ts';
 import { extendUsageCalendar } from './usage-calendar.ts';
 import { spreadOctoberUsage } from './spread-usage-fixture.ts';
@@ -10,7 +11,7 @@ const DATABASE = 'moss-platform-usage';
 const TABLE = 'ledgers';
 const LEDGER_KEY = 'account-usage-v1';
 
-export type UsageLedger = { version: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8; createdAt: number; rows: RequestRecord[] };
+export type UsageLedger = { version: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9; createdAt: number; rows: RequestRecord[] };
 
 // Seed once, then read the saved requests and their settlement snapshots.
 // The earlier billing period keeps the current month and recent trend unchanged.
@@ -22,6 +23,12 @@ export function makeInitialUsageLedger(anchor: number): RequestRecord[] {
 }
 
 export function migrateUsageLedger(ledger: UsageLedger, anchor: number): UsageLedger {
+  if (ledger.version === 9) return ledger;
+  const migrated = migrateUsageLedgerV8(ledger, anchor);
+  return { ...migrated, version: 9, rows: addFailedRequestFixture(migrated.rows) };
+}
+
+function migrateUsageLedgerV8(ledger: UsageLedger, anchor: number): UsageLedger {
   if (ledger.version === 8) return ledger;
   if (ledger.version === 7) return { ...ledger, version: 8, rows: spreadOctoberUsage(ledger.rows, anchor) };
   // Version 2 accidentally backfilled daily seeds into the historical tier period.
@@ -67,8 +74,8 @@ export async function loadUsageLedger(anchor: number): Promise<RequestRecord[]> 
         try {
           if (request.result !== undefined) {
             ledger = request.result as UsageLedger;
-            if (![1, 2, 3, 4, 5, 6, 7, 8].includes(ledger.version) || !Array.isArray(ledger.rows) || !ledger.rows.length) throw new Error('账单数据格式不兼容，已保留原数据。');
-            if (ledger.version !== 8) {
+            if (![1, 2, 3, 4, 5, 6, 7, 8, 9].includes(ledger.version) || !Array.isArray(ledger.rows) || !ledger.rows.length) throw new Error('账单数据格式不兼容，已保留原数据。');
+            if (ledger.version !== 9) {
               ledger = migrateUsageLedger(ledger, anchor);
               table.put(ledger, LEDGER_KEY);
             }

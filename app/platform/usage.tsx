@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Context, DAY, Filters, isAllSelection, matchesSelection, selectionValues, selectionLabel, monitoringKeyLimit, KeyRecord, RequestRecord, aggregate, concurrencyPeak, contextModels, csv, dateKey, filterRequests, makeConcurrencySamples, settledUsageCutoff, usageModels as models, requestEndpoint, points, rangeFor, timeLabel } from './data';
 import { Dialog, Empty, Help, Icon, Pagination, Select } from './ui';
 import { estimateYuan } from './pricing-data';
@@ -12,6 +12,44 @@ import { usageExport } from './export-data';
 import { readUsageQuery, writeUsageQuery } from './usage-url';
 
 type ExportKind = 'bill' | 'keys' | 'requests';
+const requestHeaders = ['请求时间（北京时间）', '请求 ID', '计费模型', 'API Key ID', 'API Key 名称', '密钥掩码', 'API Key 备注', '接口', '请求状态', '计费用量', '用量单位', '消耗积分'];
+
+function RequestCode({ value, tail = 0 }: { value: string; tail?: number }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const [display, setDisplay] = useState(value);
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+    const context = document.createElement('canvas').getContext('2d');
+    if (!context) return;
+    let active = true;
+    const fit = () => {
+      if (!active) return;
+      context.font = getComputedStyle(element).font;
+      const width = element.clientWidth;
+      if (!width) return;
+      if (context.measureText(value).width <= width) { setDisplay(value); return; }
+      const suffix = tail ? ` … ${value.slice(-tail)}` : '…';
+      let low = 0, high = Math.max(0, value.length - tail);
+      while (low < high) {
+        const middle = Math.ceil((low + high) / 2);
+        if (context.measureText(value.slice(0, middle) + suffix).width <= width) low = middle;
+        else high = middle - 1;
+      }
+      setDisplay(value.slice(0, low) + suffix);
+    };
+    const observer = new ResizeObserver(fit);
+    observer.observe(element);
+    void document.fonts.ready.then(fit);
+    return () => { active = false; observer.disconnect(); };
+  }, [value, tail]);
+  return <span ref={ref} className="p-request-code" title={value} aria-label={value}>{display}</span>;
+}
+
+function RequestIdCell({ id, open }: { id: string; open: () => void }) {
+  return <button className="p-request-id" title={id} aria-label={`查看请求 ${id} 的详情`} onClick={open}><RequestCode value={id} tail={8} /></button>;
+}
+
 export default function Usage({ context, keys, requests, initialKey, balance, getCredits }: { context: Context; keys: KeyRecord[]; requests: RequestRecord[]; initialKey: string; balance: number; getCredits: () => void }) {
   const [now, setNow] = useState(() => Math.floor(Date.now() / 60_000) * 60_000);
   const [initial] = useState(() => readUsageQuery(typeof window === 'undefined' ? '' : window.location.search, keys, now, initialKey));
@@ -24,6 +62,7 @@ export default function Usage({ context, keys, requests, initialKey, balance, ge
   const [pageSize, setPageSize] = useState(initial.pageSize);
   const [exporting, setExporting] = useState<ExportKind | null>(null);
   const [request, setRequest] = useState<RequestRecord | null>(null);
+  const requestKey = request ? keys.find(key => key.id === request.keyId) : undefined;
   useEffect(() => { const timer = window.setInterval(() => setNow(Math.floor(Date.now() / 60_000) * 60_000), 60_000); return () => window.clearInterval(timer); }, []);
   const dates = range === 'custom' ? custom : rangeFor(range, now);
   const latestUsageDate = dateKey(now - DAY);
@@ -31,7 +70,8 @@ export default function Usage({ context, keys, requests, initialKey, balance, ge
   const invalidRange = !monthPending && (!dates.from || !dates.to || dates.from > dates.to || dates.to > latestUsageDate);
   const filters: Filters = { ...dates, model, key: keyId };
   const settledBefore = settledUsageCutoff(now);
-  const rows = useMemo(() => invalidRange ? [] : filterRequests(requests, context, { from: dates.from, to: dates.to, model, key: keyId }, settledBefore).filter(request => request.cents > 0), [requests, context, dates.from, dates.to, model, keyId, settledBefore, invalidRange]);
+  const requestRows = useMemo(() => invalidRange ? [] : filterRequests(requests, context, { from: dates.from, to: dates.to, model, key: keyId }, settledBefore), [requests, context, dates.from, dates.to, model, keyId, settledBefore, invalidRange]);
+  const rows = useMemo(() => requestRows.filter(request => request.cents > 0), [requestRows]);
   const summary = useMemo(() => aggregate(rows), [rows]);
   const sum = rows.reduce((n, r) => n + r.cents, 0);
   const total = requests.filter(r => r.context === context && r.start < settledBefore).reduce((n, r) => n + r.cents, 0);
@@ -44,7 +84,7 @@ export default function Usage({ context, keys, requests, initialKey, balance, ge
   const peakModels = available.filter(m => matchesSelection(model, m.id) && (keyId === 'all' || selectedKeys.some(key => monitoringKeyLimit(key, m.id) !== undefined) || requests.some(r => matchesSelection(keyId, r.keyId) && r.model === m.id)));
   const concurrencySamples = useMemo(() => makeConcurrencySamples(now), [now]);
   const peaks = useMemo(() => Object.fromEntries(models.map(m => [m.id, concurrencyPeak(concurrencySamples, context, m.id, keyId, now)])), [concurrencySamples, context, keyId, now]);
-  const currentPage = Math.min(page, Math.max(1, Math.ceil(rows.length / pageSize)));
+  const currentPage = Math.min(page, Math.max(1, Math.ceil(requestRows.length / pageSize)));
   useEffect(() => {
     const query = writeUsageQuery(window.location.search, { range, custom, model, key: keyId, tab, page: currentPage, pageSize });
     const url = `${window.location.pathname}?${query}${window.location.hash}`;
@@ -60,27 +100,26 @@ export default function Usage({ context, keys, requests, initialKey, balance, ge
     {context === 'enterprise' ? <section className="p-panel p-concurrency" aria-label="近 24 小时并发峰值"><div className="p-section-heading"><div><h2>近 24h 并发峰值 <Help text={`近 24 小时的最高同时处理请求数 / 当前${keyId === 'all' ? '企业' : selectedKeys.length > 1 ? '所选 Key 合计（不超过企业上限）' : 'Key'}并发上限。绿色低于 80%，橙色为 80% 至不足 100%，红色为达到或超过上限；不代表当前并发。`} /></h2></div><small>更新于 {timeLabel(now).slice(5, 16)}</small></div>
       {peakModels.length ? <div key={`${context}:${model}:${keyId}`} className={`p-peaks${peakModels.length > 6 ? " p-peaks-expanded" : ""}`} style={{ gridTemplateColumns: `repeat(${peakModels.length > 6 ? 4 : Math.min(6, peakModels.length)}, minmax(0, 1fr))` }}>{peakModels.map(m => { const p = peaks[m.id]; const limit = keyId === 'all' ? m.limit : selectedKey ? monitoringKeyLimit(selectedKey, m.id) : (Math.min(m.limit, selectedKeys.filter(key => key.enabled && !key.deletedAt).reduce((sum, key) => sum + (monitoringKeyLimit(key, m.id) ?? 0), 0)) || undefined); const inactive = selectedKey && (selectedKey.deletedAt || !selectedKey.enabled); const ratio = limit ? p.peak / limit : 0; return <article key={m.id}><div className="p-peak-name"><span className="p-model-ellipsis" title={m.id}>{m.id}</span>{inactive ? <span className="p-muted">{selectedKey?.deletedAt ? 'Key 已删除' : 'Key 已停用'}</span> : null}</div><div className="p-peak-value"><strong>{p.peak}</strong><span>/ {limit ?? '未授权'} {limit ? '路' : ''}</span></div><div className={`p-meter ${ratio >= 1 ? 'p-meter-full' : ratio >= .8 ? 'p-meter-near' : ''}`} role="meter" aria-label={`${m.id} 峰值占当前上限`} aria-valuenow={Math.min(p.peak, limit ?? p.peak)} aria-valuemin={0} aria-valuemax={limit ?? Math.max(p.peak, 1)} aria-valuetext={`近24小时峰值 ${p.peak}，当前上限 ${limit ?? '未授权'}`}><span style={{ width: `${Math.min(100, ratio * 100)}%` }} /></div>{limit && ratio >= .8 ? <small className={ratio >= 1 ? 'p-peak-status-full' : 'p-peak-status-near'}>{p.peak > limit ? '历史峰值高于当前上限' : ratio >= 1 ? '峰值达到上限' : '峰值接近上限'}</small> : null}</article>; })}</div> : <Empty>{model === 'kimi-k3' ? '该模型暂无并发监控数据。' : '该 Key 未授权所选模型，且没有对应的历史请求。'}</Empty>}
     </section> : null}
-    <RekaTabs value={tab} onValueChange={value => setTab(value as 'overview' | 'requests')} items={[{ value: 'overview', label: '用量概览' }, { value: 'requests', label: '请求用量明细' }]} toolbar={<div className="p-export-actions"><button className="p-button" disabled={!rows.length || invalidRange} onClick={() => setExporting('bill')}><Icon name="download" />导出账单</button><button className="p-button" disabled={!rows.length || invalidRange} onClick={() => setExporting('keys')}><Icon name="download" />导出明细</button></div>}>{tab === 'overview' ? <><section className="p-panel p-trend"><h2>积分使用趋势</h2><p className="p-muted">{rangeLabel}，按模型消耗汇总</p>{monthPending ? <Empty>本月暂无已同步数据</Empty> : <Trend key={`${dates.from}:${dates.to}:${model}:${keyId}`} rows={rows} from={dates.from} to={dates.to} settledBefore={settledBefore} />}</section><section className="p-model-usage"><h2>模型用量概览 <Help text="请求次数仅统计实际扣除积分的请求，消耗积分已包含模型折扣。" /></h2><div className="p-table-scroll"><table><thead><tr><th>模型</th><th className="p-number">计费请求次数（次）</th><th className="p-number">计费用量</th><th className="p-number">消耗积分</th><th className="p-number">折算金额</th><th className="p-number">操作</th></tr></thead><tbody>{summary.map(r => <tr key={r.model}><td><strong className="p-model-title">{r.model}</strong><small className="p-muted">{models.find(m => m.id === r.model)?.kind} · {requestEndpoint(r.model)}</small></td><td className="p-number">{r.billedCount.toLocaleString()}</td><td className="p-number">{usageUnits(r.model, r.units)}</td><td className="p-number">{points(r.cents)} 积分</td><td className="p-number">{estimateAmount(r.cents)}</td><td className="p-number"><button className="p-text-button" onClick={() => { setModel(r.model); setTab('requests'); setPage(1); }}>查看明细</button></td></tr>)}</tbody>{summary.length ? <tfoot><tr><th>合计</th><td className="p-number">{summary.reduce((n, r) => n + r.billedCount, 0).toLocaleString()}</td><td className="p-number">{['TTS', 'ASR', 'LLM'].map(kind => { const group = summary.filter(r => models.find(m => m.id === r.model)?.kind === kind); return group.length ? <div key={kind}>{usageUnits(group[0].model, group.reduce((n, r) => n + r.units, 0))}</div> : null; })}</td><td className="p-number">{points(sum)} 积分</td><td className="p-number">{estimateAmount(sum)}</td><td /></tr></tfoot> : null}</table>{!rows.length ? <Empty>{monthPending ? '本月暂无已同步数据' : '所选范围内暂无已同步的用量数据。'}</Empty> : null}</div></section></> : <section className="p-request-table"><div className="p-table-scroll" role="region" aria-label="请求用量明细" tabIndex={0}><table>
-      <colgroup>{[17, 20, 13, 11, 16, 6, 10, 7].map((width, index) => <col key={index} style={{ width: `${width}%` }} />)}</colgroup>
-      <thead><tr>{['请求时间（北京时间）', '请求 ID', 'API Key 名称', '接口', '计费模型', '请求状态', '计费用量', '消耗积分'].map((label, index) => <th key={label} scope="col" className={index >= 6 ? 'p-number' : undefined}><span className="p-request-truncate" title={label}>{label}</span></th>)}</tr></thead>
-      <tbody>{rows.slice((currentPage - 1) * pageSize, currentPage * pageSize).map(r => {
-        const keyName = keys.find(k => k.id === r.keyId)?.name ?? r.keyId;
-        const time = timeLabel(r.start);
-        const usage = `${r.units.toLocaleString('zh-CN')} ${models.find(m => m.id === r.model)?.unit ?? ''}`;
-        const credits = points(r.cents);
+    <RekaTabs value={tab} onValueChange={value => setTab(value as 'overview' | 'requests')} items={[{ value: 'overview', label: '用量概览' }, { value: 'requests', label: '请求明细' }]} toolbar={<div className="p-export-actions"><button className="p-button" disabled={!rows.length || invalidRange} onClick={() => setExporting('bill')}><Icon name="download" />导出账单</button><button className="p-button" disabled={!requestRows.length || invalidRange} onClick={() => setExporting('keys')}><Icon name="download" />导出明细</button></div>}>{tab === 'overview' ? <><section className="p-panel p-trend"><h2>积分使用趋势</h2><p className="p-muted">{rangeLabel}，按模型消耗汇总</p>{monthPending ? <Empty>本月暂无已同步数据</Empty> : <Trend key={`${dates.from}:${dates.to}:${model}:${keyId}`} rows={rows} from={dates.from} to={dates.to} settledBefore={settledBefore} />}</section><section className="p-model-usage"><h2>模型用量概览 <Help text="请求次数仅统计实际扣除积分的请求，消耗积分已包含模型折扣。" /></h2><div className="p-table-scroll"><table><thead><tr><th>模型</th><th className="p-number">计费请求次数（次）</th><th className="p-number">计费用量</th><th className="p-number">消耗积分</th><th className="p-number">折算金额</th><th className="p-number">操作</th></tr></thead><tbody>{summary.map(r => <tr key={r.model}><td><strong className="p-model-title">{r.model}</strong><small className="p-muted">{models.find(m => m.id === r.model)?.kind} · {requestEndpoint(r.model)}</small></td><td className="p-number">{r.billedCount.toLocaleString()}</td><td className="p-number">{usageUnits(r.model, r.units)}</td><td className="p-number">{points(r.cents)} 积分</td><td className="p-number">{estimateAmount(r.cents)}</td><td className="p-number"><button className="p-text-button" onClick={() => { setModel(r.model); setTab('requests'); setPage(1); }}>查看明细</button></td></tr>)}</tbody>{summary.length ? <tfoot><tr><th>合计</th><td className="p-number">{summary.reduce((n, r) => n + r.billedCount, 0).toLocaleString()}</td><td className="p-number">{['TTS', 'ASR', 'LLM'].map(kind => { const group = summary.filter(r => models.find(m => m.id === r.model)?.kind === kind); return group.length ? <div key={kind}>{usageUnits(group[0].model, group.reduce((n, r) => n + r.units, 0))}</div> : null; })}</td><td className="p-number">{points(sum)} 积分</td><td className="p-number">{estimateAmount(sum)}</td><td /></tr></tfoot> : null}</table>{!rows.length ? <Empty>{monthPending ? '本月暂无已同步数据' : '所选范围内暂无已同步的用量数据。'}</Empty> : null}</div></section></> : <section className="p-request-table"><div className="p-table-scroll" role="region" aria-label="请求明细" tabIndex={0}><table>
+      <colgroup>{[184, 160, 136, undefined, 140, 88, 152, 92].map((width, index) => <col key={index} style={width ? { width } : undefined} />)}</colgroup>
+      <thead><tr>{['请求时间', '请求 ID', '计费模型', 'API Key 名称', '接口', '请求状态', '计费用量', '消耗积分'].map((label, index) => <th key={label} scope="col" className={index >= 6 ? 'p-number' : undefined}>{label}</th>)}</tr></thead>
+      <tbody>{requestRows.slice((currentPage - 1) * pageSize, currentPage * pageSize).map(r => {
+        const key = keys.find(k => k.id === r.keyId);
+        const keyName = key?.name ?? r.keyId;
+        const unit = models.find(m => m.id === r.model)?.unit ?? '—';
         return <tr key={r.id}>
-          <td><span className="p-request-truncate" title={time}>{time}</span></td>
-          <td><button className="p-request-id p-request-truncate" title={r.id} onClick={() => setRequest(r)}>{r.id}</button></td>
+          <td><span className="p-nowrap">{timeLabel(r.start)}</span></td>
+          <td><RequestIdCell id={r.id} open={() => setRequest(r)} /></td>
+          <td><code className="p-request-truncate"><RequestCode value={r.model} /></code></td>
           <td><span className="p-request-truncate" title={keyName}>{keyName}</span></td>
-          <td><code className="p-request-truncate" title={requestEndpoint(r.model)}>{requestEndpoint(r.model)}</code></td>
-          <td><code className="p-request-truncate" title={r.model}>{r.model}</code></td>
-          <td><span className={`p-request-status ${r.status === '成功' ? 'is-success' : 'is-failed'}`}><span className="p-request-truncate" title={r.status}>{r.status}</span></span></td>
-          <td className="p-number"><span className="p-request-truncate" title={usage}>{usage}</span></td>
-          <td className="p-number"><span className="p-request-truncate" title={credits}>{credits}</span></td>
+          <td><code className="p-request-truncate"><RequestCode value={requestEndpoint(r.model)} /></code></td>
+          <td><span className={`p-request-status ${r.status === '成功' ? 'is-success' : 'is-failed'}`}>{r.status}</span></td>
+          <td className="p-number"><span className="p-nowrap">{r.units.toLocaleString('zh-CN')} {unit}</span></td>
+          <td className="p-number"><span className="p-nowrap">{points(r.cents)}</span></td>
         </tr>;
-      })}</tbody></table>{!rows.length ? <Empty>{monthPending ? '本月暂无已同步数据' : '所选范围内暂无请求用量明细。您可以调整筛选条件，或等待次日同步。'}</Empty> : null}</div><Pagination count={rows.length} page={currentPage} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} /></section>}</RekaTabs>
-    {exporting === 'bill' ? <BillPreview rows={rows} filters={filters} context={context} keys={keys} scope={billScope} close={() => setExporting(null)} /> : exporting ? <ExportDialog kind={exporting} setKind={setExporting} rows={rows} filters={filters} context={context} keys={keys} scope={billScope} close={() => setExporting(null)} /> : null}
-    {request ? <Dialog title="请求详情" close={() => setRequest(null)}><div className="p-dialog-body"><dl className="p-request-detail">{[['请求 ID', request.id], ['请求时间（北京时间）', timeLabel(request.start)], ['API Key 名称', keys.find(k => k.id === request.keyId)?.name ?? request.keyId], ['Key ID', request.keyId], ['计费模型', request.model], ['接口', requestEndpoint(request.model)], ['请求状态', request.status], ['计费用量', `${request.units} ${models.find(m => m.id === request.model)?.unit}`], ['消耗积分', points(request.cents)]].map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl></div><footer><button className="p-button p-primary" onClick={() => setRequest(null)}>关闭</button></footer></Dialog> : null}
+      })}</tbody></table>{!requestRows.length ? <Empty>{monthPending ? '本月暂无已同步数据' : '所选范围内暂无请求明细。您可以调整筛选条件，或等待次日同步。'}</Empty> : null}</div><Pagination count={requestRows.length} page={currentPage} pageSize={pageSize} setPage={setPage} setPageSize={setPageSize} /></section>}</RekaTabs>
+    {exporting === 'bill' ? <BillPreview rows={rows} filters={filters} context={context} keys={keys} scope={billScope} close={() => setExporting(null)} /> : exporting ? <ExportDialog kind={exporting} setKind={setExporting} rows={exporting === 'requests' ? requestRows : rows} filters={filters} context={context} keys={keys} scope={billScope} close={() => setExporting(null)} /> : null}
+    {request ? <Dialog title="请求详情" className="p-request-dialog" close={() => setRequest(null)}><div className="p-dialog-body"><dl className="p-request-detail">{[timeLabel(request.start), request.id, request.model, request.keyId, requestKey?.name ?? request.keyId, requestKey?.masked || '—', requestKey?.note || '—', requestEndpoint(request.model), request.status, request.units.toLocaleString('zh-CN'), models.find(m => m.id === request.model)?.unit ?? '—', points(request.cents)].map((value, index) => <div key={requestHeaders[index]}><dt>{requestHeaders[index]}</dt><dd title={value}>{value}</dd></div>)}</dl></div><footer><button className="p-button p-primary" onClick={() => setRequest(null)}>关闭</button></footer></Dialog> : null}
   </main>;
 }
 function Trend({ rows, from, to, settledBefore }: { rows: RequestRecord[]; from: string; to: string; settledBefore: number }) {
@@ -119,7 +158,7 @@ function ExportDialog({ kind, setKind, rows, filters, context, keys, scope, clos
       const blob = new Blob([csv(headers, data)], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url;
       const downloadedAt = timeLabel(Date.now()).replace(' ', '_').replaceAll(':', '-');
-      a.download = `${account}_${kind === 'keys' ? '用量汇总_按模型与API Key' : '请求用量明细'}_${filters.from}至${filters.to}_导出于${downloadedAt}_UTC+8.csv`;
+      a.download = `${account}_${kind === 'keys' ? '用量汇总_按模型与API Key' : '请求明细'}_${filters.from}至${filters.to}_导出于${downloadedAt}_UTC+8.csv`;
       document.body.appendChild(a); a.click(); a.remove(); window.setTimeout(() => URL.revokeObjectURL(url), 1000); setDone(true); setError('');
     } catch { setError('导出失败，请重试。'); }
   };
@@ -138,7 +177,7 @@ function ExportDialog({ kind, setKind, rows, filters, context, keys, scope, clos
         <div className="p-bill-section-heading"><h2 id="export-details-title">计费明细</h2><FilterScopeSummary scope={scope} /></div>
         <fieldset className="p-export-kind" aria-label="导出方式">
           <label><input type="radio" name="export-kind" checked={kind === 'keys'} onChange={() => { setKind('keys'); setDone(false); }} />用量汇总（按模型与 API Key）</label>
-          <label><input type="radio" name="export-kind" checked={kind === 'requests'} onChange={() => { setKind('requests'); setDone(false); }} />请求用量明细</label>
+          <label><input type="radio" name="export-kind" checked={kind === 'requests'} onChange={() => { setKind('requests'); setDone(false); }} />请求明细</label>
         </fieldset>
         {kind === 'keys' ? <div className="p-bill-table" role="region" aria-label="用量汇总（按模型与 API Key）" tabIndex={0}>
           <table><thead><tr><th scope="col">计费模型</th><th scope="col">API Key 名称</th><th scope="col" className="p-number">计费请求次数</th><th scope="col" className="p-number">计费用量</th><th scope="col" className="p-number">消耗积分</th><th scope="col" className="p-number">折算金额</th></tr></thead>
@@ -148,7 +187,7 @@ function ExportDialog({ kind, setKind, rows, filters, context, keys, scope, clos
             </tr>)}</tbody>
             <tfoot><tr><th colSpan={2} scope="row">合计</th><td className="p-number">{billedCount.toLocaleString('zh-CN')}</td><td className="p-number">{totalUnits.map(unit => <div key={unit}>{unit}</div>)}</td><td className="p-number">{points(totalCents)} 积分</td><td className="p-number">{billAmount(totalCents)}</td></tr></tfoot>
           </table>
-        </div> : <p className="p-export-request-summary">将导出当前筛选范围内的全部计费请求，不受页面分页影响。</p>}
+        </div> : <p className="p-export-request-summary">将导出当前筛选范围内的全部请求（含失败请求），不受页面分页影响。</p>}
       </section>
       </div>
       {error ? <p className="p-error" role="alert">{error}</p> : null}

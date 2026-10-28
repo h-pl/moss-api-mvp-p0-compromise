@@ -25,7 +25,7 @@ assert.deepEqual(restored, rows);
 console.log(`Ledger checks passed: ${rows.length} durable requests; historical tiers; daily/monthly isolation; personal history preserved.`);
 
 const migrated = migrateUsageLedger({ version: 1, createdAt: anchor, rows }, anchor);
-assert.equal(migrated.version, 8);
+assert.equal(migrated.version, 9);
 assert.deepEqual(billTotals(billGroups(migrated.rows, 'enterprise', historical)), billTotals(mockBillGroups()));
 assert.equal(migrateUsageLedger(migrated, anchor), migrated, 'Migration must not recreate saved data on refresh');
 assert.equal(new Set(migrated.rows.map(row => row.id)).size, migrated.rows.length);
@@ -75,7 +75,7 @@ const legacyPersonal = rows.map(row => {
 const saved = {version:4, createdAt:anchor, rows:legacyPersonal};
 const savedCopy = structuredClone(saved);
 const fixed = migrateUsageLedger(saved, anchor);
-assert.equal(fixed.version, 8);
+assert.equal(fixed.version, 9);
 assert.equal(fixed.rows.length, saved.rows.length);
 assert.deepEqual(saved, savedCopy);
 assert.deepEqual(financial(fixed.rows.filter(row=>row.context==='enterprise')), financial(saved.rows.filter(row=>row.context==='enterprise')));
@@ -155,7 +155,7 @@ const legacyTail=unspread.filter(row=>!octoberTail(row)||row.id.endsWith('_0'));
 const legacyV6={version:6,createdAt:anchor,rows:legacyTail};
 const legacyCopy=structuredClone(legacyV6);
 const upgradedV7=migrateUsageLedger(legacyV6,anchor);
-assert.equal(upgradedV7.version,8);
+assert.equal(upgradedV7.version,9);
 assert.deepEqual(legacyV6,legacyCopy);
 assert.deepEqual(upgradedV7.rows.filter(row=>row.context==='personal'),legacyTail.filter(row=>row.context==='personal'));
 assert.deepEqual(upgradedV7.rows,migrated.rows);
@@ -170,7 +170,7 @@ assert.deepEqual(v7,beforeV7);
 assert.deepEqual(spread.rows,migrated.rows);
 assert.equal(migrateUsageLedger(spread,anchor),spread);
 const byId=new Map(unspread.map(row=>[row.id,row]));
-for(const row of spread.rows) {
+for(const row of spread.rows.filter(row=>row.id!=='req_failed_2026-10-27_moss-transcribe')) {
   const before=byId.get(row.id);
   assert.deepEqual({...row,start:before.start,end:before.end,keyId:before.keyId},before);
   if(row.start!==before.start) assert.equal(row.end-row.start,before.end-before.start);
@@ -196,3 +196,27 @@ for(const model of ['kimi-k3','moss-transcribe']) {
   assert.equal(lastTier,2);
 }
 console.log('Daily distribution verified:',totalsByDay.map(n=>n/100),'points; monthly charges and all three tiers preserved.');
+
+// The failed fixture is persisted exactly once and never changes settlements.
+const failedId='req_failed_2026-10-27_moss-transcribe';
+const withoutFailed=migrated.rows.filter(row=>row.id!==failedId);
+const previousLedger={version:8,createdAt:anchor,rows:withoutFailed};
+const previousCopy=structuredClone(previousLedger);
+const withFailed=migrateUsageLedger(previousLedger,anchor);
+assert.deepEqual(previousLedger,previousCopy);
+assert.equal(withFailed.rows.length,withoutFailed.length+1);
+assert.deepEqual(withFailed.rows.filter(row=>row.id!==failedId),withoutFailed);
+const failed=withFailed.rows.find(row=>row.id===failedId);
+assert.equal(failed.status,'失败');
+assert.equal(failed.units,0);
+assert.equal(failed.cents,0);
+assert.equal(migrateUsageLedger(withFailed,anchor),withFailed);
+const failedScope={from:'2026-10-21',to:'2026-10-27',model:failed.model,key:failed.keyId};
+const failedRequests=filterRequests(withFailed.rows,'enterprise',failedScope);
+assert.ok(failedRequests.includes(failed));
+assert.deepEqual(billGroups(withFailed.rows,'enterprise',failedScope),billGroups(withoutFailed,'enterprise',failedScope));
+const failedExport=usageExport('requests',failedRequests,[],'星河科技',failedScope);
+const failedRow=failedExport.data.find(row=>row[failedExport.headers.indexOf('请求 ID')]===failedId);
+assert.equal(failedRow[failedExport.headers.indexOf('请求状态')],'失败');
+assert.equal(failedRow[failedExport.headers.indexOf('消耗积分')],'0.00');
+console.log('Failed request fixture verified: persisted once, filterable, exportable, zero charge and unchanged bill.');
