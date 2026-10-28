@@ -1,69 +1,55 @@
 # Moss API MVP-P0 · PRD 与 Figma 交接
 
-交付核对日期：2026-10-28；当前功能快照：2beca7c。请求明细已同步到飞书、GitHub、Vercel 和 Figma；详细规则见 [本次发布记录](发布说明-20261028.md)。
+交付核对日期：2026-10-29；功能基线：2beca7c。Figma 当前交付文件为用户指定的「Moss API · 蓝耘月度账单设计」，文件标识 x9fxtgxEWEpIAKwyGKQz8K。
 
 - [飞书 PRD](https://acnc6zeentra.feishu.cn/docx/S9zbdxp89oGfXYxKWkTc22QAnef)
-- [新版 Figma](https://www.figma.com/design/uKJHefil0SBm8xMnc37NnE?node-id=44-2)
-- [线上参考](https://moss-api-mvp-p0-compromise.vercel.app/app/api-keys)
-- [GitHub｜公开代码仓库](https://github.com/h-pl/moss-api-mvp-p0-compromise)
+- [线上请求明细](https://moss-api-mvp-p0-compromise.vercel.app/app/usage?range=7&tab=requests)
+- [GitHub](https://github.com/h-pl/moss-api-mvp-p0-compromise)
+- [Figma 目录与交互说明](https://www.figma.com/design/x9fxtgxEWEpIAKwyGKQz8K?node-id=187-5066)
 
-PRD 按最终有效功能描述本轮研发调整、字段、数据口径、接口职责与验收。设计稿包含企业、个人分区的产品状态，沿用“模块 / 子页面 / 状态”的命名方式，并提供目录、独立的全局导航工作空间切换页和通用组件页。
+## 页面目录
 
-中文设计字体为经确认的 Noto Sans SC，上线仍使用 MiSans；英文和数字使用 Sora，请求 ID、计费模型和接口使用 Roboto Mono 对应线上等宽字体。采用可编辑图层、16 个颜色变量、6 个文字样式、共用导航、主按钮和个人模型授权卡片。
+按确认截图排列，复用原有账单、密钥和用量页面；组件库集中于通用组件页。
 
-主要模块内原型路径已连接；打印 PDF、CSV 下载、支付提交及完整动态交互以线上原型为准。一次性密钥画板中的值仅为设计示例。
+- [目录与交互说明](https://www.figma.com/design/x9fxtgxEWEpIAKwyGKQz8K?node-id=184-4632)
+- [全局导航 · 工作空间切换](https://www.figma.com/design/x9fxtgxEWEpIAKwyGKQz8K?node-id=184-4633)
+- [接入管理 · API 密钥](https://www.figma.com/design/x9fxtgxEWEpIAKwyGKQz8K?node-id=112-860)
+- [费用中心 · 用量与积分](https://www.figma.com/design/x9fxtgxEWEpIAKwyGKQz8K?node-id=112-861)
+- [费用中心 · 账单](https://www.figma.com/design/x9fxtgxEWEpIAKwyGKQz8K?node-id=0-1)
+- [通用组件与提示](https://www.figma.com/design/x9fxtgxEWEpIAKwyGKQz8K?node-id=184-4634)
 
-## 主要页面入口
+## 常用画板
 
-完整状态以 Figma 各页面目录为准，以下为常用直达入口。
+- [全局导航及账户入口](https://www.figma.com/design/x9fxtgxEWEpIAKwyGKQz8K?node-id=187-3917)
+- [账户菜单](https://www.figma.com/design/x9fxtgxEWEpIAKwyGKQz8K?node-id=187-4137)
+- [企业 API Keys](https://www.figma.com/design/x9fxtgxEWEpIAKwyGKQz8K?node-id=117-865)
+- [个人 API Keys](https://www.figma.com/design/x9fxtgxEWEpIAKwyGKQz8K?node-id=121-6809)
+- [创建 API Key](https://www.figma.com/design/x9fxtgxEWEpIAKwyGKQz8K?node-id=121-4704)
+- [编辑 API Key](https://www.figma.com/design/x9fxtgxEWEpIAKwyGKQz8K?node-id=121-5189)
+- [停用 API Key](https://www.figma.com/design/x9fxtgxEWEpIAKwyGKQz8K?node-id=121-5604)
+- [删除 API Key](https://www.figma.com/design/x9fxtgxEWEpIAKwyGKQz8K?node-id=121-5665)
+- [企业用量概览](https://www.figma.com/design/x9fxtgxEWEpIAKwyGKQz8K?node-id=117-2363)
+- [请求明细 · 8 列](https://www.figma.com/design/x9fxtgxEWEpIAKwyGKQz8K?node-id=121-7626)
+- [请求详情 · 12 字段](https://www.figma.com/design/x9fxtgxEWEpIAKwyGKQz8K?node-id=121-5946)
+- [失败请求详情](https://www.figma.com/design/x9fxtgxEWEpIAKwyGKQz8K?node-id=188-3917)
+- [按模型与 Key 汇总导出](https://www.figma.com/design/x9fxtgxEWEpIAKwyGKQz8K?node-id=121-6095)
+- [请求明细导出](https://www.figma.com/design/x9fxtgxEWEpIAKwyGKQz8K?node-id=121-6590)
+- [个人用量概览](https://www.figma.com/design/x9fxtgxEWEpIAKwyGKQz8K?node-id=121-9300)
+- [账单预览与阶梯示例](https://www.figma.com/design/x9fxtgxEWEpIAKwyGKQz8K?node-id=49-524)
+- [通用组件与状态](https://www.figma.com/design/x9fxtgxEWEpIAKwyGKQz8K?node-id=169-6560)
 
-### 全局导航 · 工作空间切换
+## 请求明细定稿
 
-- [全局导航 / 工作空间切换 / 双向流程](https://www.figma.com/design/uKJHefil0SBm8xMnc37NnE?node-id=129-41)
-- 双向切换流程单独一页；菜单、账户入口和侧栏组件保留在通用组件中。
+主表 8 列：请求时间、请求 ID、计费模型、API Key 名称、接口、请求状态、计费用量、消耗积分。用量合并原始单位，数值右对齐。请求 ID 打开详情，无复制按钮；成功绿点、失败红点，失败样例为 0 秒、0.00 积分。
 
-### 接入管理 · API 密钥
+详情 12 字段：请求时间（北京时间）、请求 ID、计费模型、API Key ID、API Key 名称、密钥掩码、API Key 备注、接口、请求状态、计费用量、用量单位、消耗积分。主表和详情均无折算金额。
 
-- [接入管理 / API 密钥 / 个人·创建](https://www.figma.com/design/uKJHefil0SBm8xMnc37NnE?node-id=17-2)
-- [接入管理 / API 密钥 / 个人·默认](https://www.figma.com/design/uKJHefil0SBm8xMnc37NnE?node-id=17-272)
-- [接入管理 / API 密钥 / 企业·创建](https://www.figma.com/design/uKJHefil0SBm8xMnc37NnE?node-id=17-539)
-- [接入管理 / API 密钥 / 企业·默认](https://www.figma.com/design/uKJHefil0SBm8xMnc37NnE?node-id=17-1030)
-- [接入管理 / API 密钥 / 企业·编辑](https://www.figma.com/design/uKJHefil0SBm8xMnc37NnE?node-id=30-20)
-- [接入管理 / API 密钥 / 企业·资源展开](https://www.figma.com/design/uKJHefil0SBm8xMnc37NnE?node-id=30-528)
-- [接入管理 / API 密钥 / 企业·停用确认](https://www.figma.com/design/uKJHefil0SBm8xMnc37NnE?node-id=39-2)
-- [接入管理 / API 密钥 / 企业·启用确认](https://www.figma.com/design/uKJHefil0SBm8xMnc37NnE?node-id=39-467)
-- [接入管理 / API 密钥 / 企业·删除确认](https://www.figma.com/design/uKJHefil0SBm8xMnc37NnE?node-id=39-932)
-- [接入管理 / API 密钥 / 个人·未选择模型](https://www.figma.com/design/uKJHefil0SBm8xMnc37NnE?node-id=39-2020)
-- [接入管理 / API 密钥 / 个人·创建已填写](https://www.figma.com/design/uKJHefil0SBm8xMnc37NnE?node-id=43-130)
-- [接入管理 / API 密钥 / 个人·一次性密钥](https://www.figma.com/design/uKJHefil0SBm8xMnc37NnE?node-id=43-399)
+页面最大宽度 1200px，1728px 画板内表格宽 1136px，列宽 184 / 160 / 136 / 184 / 140 / 88 / 152 / 92px。单元格左右内边距 12px，首尾外侧 8px。全部单行；ID 中间省略号两侧留空格，模型和接口末尾省略号前不留空格。
 
-### 费用中心 · 用量与积分
+详情宽 680px，标签宽 160px，标签与值间距 20px。保留可编辑文字、Auto Layout、行组件及现有导航和按钮实例；中文使用 Noto Sans SC 对应页面 MiSans，英文和数字使用 Sora，等宽字段使用 Roboto Mono。原有组件中的 Inter 字体随组件保留。
 
-- [个人角色分区：概览、请求、详情、账单及两种导出](https://www.figma.com/design/uKJHefil0SBm8xMnc37NnE?node-id=80-1104)
+## 核对记录
 
-- [费用中心 / 用量与积分 / 账单预览](https://www.figma.com/design/uKJHefil0SBm8xMnc37NnE?node-id=19-2)
-- [费用中心 / 用量与积分 / 企业·用量概览](https://www.figma.com/design/uKJHefil0SBm8xMnc37NnE?node-id=19-694)
-- [费用中心 / 用量与积分 / 导出明细·按模型与Key](https://www.figma.com/design/uKJHefil0SBm8xMnc37NnE?node-id=24-2)
-- [费用中心 / 用量与积分 / 导出明细·逐请求](https://www.figma.com/design/uKJHefil0SBm8xMnc37NnE?node-id=24-744)
-- [费用中心 / 用量与积分 / 企业·请求明细](https://www.figma.com/design/uKJHefil0SBm8xMnc37NnE?node-id=24-1272)
-- [费用中心 / 用量与积分 / 请求详情](https://www.figma.com/design/uKJHefil0SBm8xMnc37NnE?node-id=39-1397)
-- [费用中心 / 用量与积分 / 个人·用量概览](https://www.figma.com/design/uKJHefil0SBm8xMnc37NnE?node-id=41-94)
+2026-10-29：已将本轮交付目标更正到上述文件，六页目录与截图一致，核对请求列表、成功与失败详情、分页靠右及并发卡片对齐。飞书交付章节同步当前文件链接。
 
-### 费用中心 · 计费标准
-
-- [费用中心 / 计费标准 / 企业·默认](https://www.figma.com/design/uKJHefil0SBm8xMnc37NnE?node-id=28-2)
-- [费用中心 / 积分获取 / 企业·个人充值](https://www.figma.com/design/uKJHefil0SBm8xMnc37NnE?node-id=28-328)
-- [费用中心 / 积分获取 / 企业支付](https://www.figma.com/design/uKJHefil0SBm8xMnc37NnE?node-id=30-1036)
-- [费用中心 / 计费标准 / 个人·默认](https://www.figma.com/design/uKJHefil0SBm8xMnc37NnE?node-id=41-671)
-- [费用中心 / 积分获取 / 个人·充值](https://www.figma.com/design/uKJHefil0SBm8xMnc37NnE?node-id=51-185)
-
-## 本轮交付核对
-
-- 当前代码快照：[bfc7f47](https://github.com/h-pl/moss-api-mvp-p0-compromise/commit/bfc7f478676ac0e34397d78bb2100fdca09a0a89)，Vercel 提交状态成功。
-- 在该快照重新运行 `scripts/verify-platform.mjs`，40 项业务检查通过。
-- PRD 补正：分页默认值、URL 恢复语义、CSV 精确列名 / 顺序和 ASR 秒 / 小时换算、多费率账单、个人 / 企业入账归属、请求详情末行分隔线、工作空间目录及版本入口。
-- 固定参考金额：消耗积分 × 0.05 元 / 积分，不再次乘模型折扣，不作为实付成本或结算依据。
-- 已更新企业用量、请求明细 / 详情、个人充值及企业支付的线上截图；原有流程图、工作空间截图与手工标注保留。
-- 当前交付为研发需求与交互参考。真实接口、收款配置、配置传播时延、导出阈值和目标浏览器 PDF 验收按 PRD 的联调清单确认。
-
-最终回读：飞书修订 91；详细记录见 [交付核对](交付核对-20260915.md)。
+功能验证及线上截图见 [2026-10-28 发布说明](发布说明-20261028.md)。历史交付记录保留历史版本信息；后续设计更新以上述文件为准。

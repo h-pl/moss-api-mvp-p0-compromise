@@ -4,7 +4,7 @@
 
 [线上原型｜API Keys](https://moss-api-mvp-p0-compromise.vercel.app/app/api-keys)
 
-[新版 Figma｜Moss API MVP-P0 产品需求与 UI 交接](https://www.figma.com/design/uKJHefil0SBm8xMnc37NnE)
+[Figma｜Moss API · 蓝耘月度账单设计](https://www.figma.com/design/x9fxtgxEWEpIAKwyGKQz8K?node-id=184-4632)
 
 [GitHub｜公开代码仓库](https://github.com/h-pl/moss-api-mvp-p0-compromise)
 
@@ -580,7 +580,7 @@ CSV 列名与顺序沿用上表。API Key 名称来自 Key 名称，API Key 备�
 
 - [GitHub 功能提交 2beca7c](https://github.com/h-pl/moss-api-mvp-p0-compromise/commit/2beca7caf7861fc9ec24875480edf583441ed3b8)
 - [线上请求明细](https://moss-api-mvp-p0-compromise.vercel.app/app/usage?range=7&tab=requests)
-- [Figma 请求明细](https://www.figma.com/design/uKJHefil0SBm8xMnc37NnE?node-id=24-1272) · [请求详情](https://www.figma.com/design/uKJHefil0SBm8xMnc37NnE?node-id=39-1397)
+- [Figma 请求明细](https://www.figma.com/design/x9fxtgxEWEpIAKwyGKQz8K?node-id=121-7626) · [请求详情](https://www.figma.com/design/x9fxtgxEWEpIAKwyGKQz8K?node-id=121-5946)
 
 ### 联调顺序与上线门禁
 
@@ -605,3 +605,7 @@ CSV 列名与顺序沿用上表。API Key 名称来自 Key 名称，API Key 备�
 前端交付收口：本次线上核对发现，用量页面的浏览器标签标题仍为“API 密钥 — Moss API”。研发实现时须随当前功能页面更新为相应标题，并验证空间切换后保持正确；正文页面标题及本轮业务规则不受影响。
 
 上线前以真实服务联调证据关闭以上事项。交互原型的可点击状态和演示数据，不替代生产能力确认。
+
+### 2026-10-29 Figma 交付目标更正
+
+[当前设计文件 · 用量与积分](https://www.figma.com/design/x9fxtgxEWEpIAKwyGKQz8K?node-id=112-861)；[六页目录与交互说明](https://www.figma.com/design/x9fxtgxEWEpIAKwyGKQz8K?node-id=187-5066)。目录、组件集中管理和请求明细对齐规则见 [Figma 交接文档](HANDOFF-PRD-Figma-MVP-P0.md)。
